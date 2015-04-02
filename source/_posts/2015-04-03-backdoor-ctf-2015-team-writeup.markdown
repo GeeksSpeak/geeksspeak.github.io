@@ -21,7 +21,7 @@ Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RU
 
 ```
 
-Ok looking into the binary in IDA shows us two function `0x08048769` and `0x080486ad` are important to us. the first on can be seen bellow:
+Ok looking into the binary in IDA shows us two function `0x08048769` and `0x080486ad` are important to us. the first one can be seen bellow:
 <!--more-->
 ```
 int sub_8048769()

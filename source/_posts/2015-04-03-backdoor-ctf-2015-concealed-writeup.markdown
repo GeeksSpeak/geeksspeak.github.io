@@ -7,7 +7,7 @@ categories: ctf backdoor exploit javascript sandbox
 ---
 
 **Backdoor 2015 CONCEALED Writeup**  
-**Point = 100**  
+**Point = 150**  
 **Category = Exploit**  
 
 > All paths have been concealed. Get the hidden flag: nc hack.bckdr.in 8005. Submit sha-256 of the flag
