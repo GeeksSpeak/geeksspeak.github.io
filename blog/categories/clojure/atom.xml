@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Clojure, | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/clojure/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T00:51:46+04:30</updated>
+  <updated>2015-04-03T00:55:24+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -18,9 +18,9 @@
     <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-noname-writeup/"/>
     <updated>2015-04-03T00:42:36+04:30</updated>
     <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-noname-writeup</id>
-    <content type="html"><![CDATA[<p><strong>Backdoor2015 NONAME Writeup</strong>
-<strong>Point = 200</strong>
-<strong>Category = Exploit</strong>
+    <content type="html"><![CDATA[<p><strong>Backdoor2015 NONAME Writeup</strong><br/>
+<strong>Point = 200</strong><br/>
+<strong>Category = Exploit</strong><br/>
 <strong>Description : </strong></p>
 
 <blockquote><p>Intrestingly enough, even though it was not expected, Chintu found a cool website to play with, though he can&rsquo;t get the flag. Can you? Visit <a href="https://agile-garden-1672.herokuapp.com/">this</a>. Submit the SHA-256 hash of the flag obtained.</p>
@@ -101,7 +101,7 @@ found this <a href="http://christophermaier.name/blog/2011/04/30/not-so-private-
 
 <p>awesome :D</p>
 
-<p>do what it said :
+<p>do what it said : <br/>
 <img src="http://up.ashiyane.org/images/lqo0cppgkh89dci505u1.png" alt="enter image description here" /></p>
 
 <p>and its the first part of the flag :</p>
