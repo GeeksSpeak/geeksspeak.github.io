@@ -8,7 +8,6 @@ categories: ctf, clojure, sandbox
 
 
 **Backdoor2015 NONAME Writeup**  
-
 **Point = 200**  
 **Category = Exploit**  
 **Description : **  
@@ -22,6 +21,9 @@ Get admin's flag and admin's secret. Remember admin is one of the people
 Submit sha-256 of secret and flag joined
 
 We could see  see an intrepreter like this : 
+
+<!-- more -->
+
 ![enter image description here](http://up.ashiyane.org/images/7f689wqyxbbwiaxbwl.png)
 so first for testing script give "1" as input it will retrun "1" again ..
 lets check whats going on in browser run firebug and check : 

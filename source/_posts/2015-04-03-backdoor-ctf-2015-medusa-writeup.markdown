@@ -19,6 +19,8 @@ categories: ctf backdoor web
 
 After We open the link that is provided in description we are welcomed with a form.you can send message with html code and after that admin will visit your page with the flag.
 
+<!-- more -->
+
 ![alt text](http://up.ashiyane.org/images/nxcfynwxymxjqi2v4u7.png "Medusa Form")
 
 Backdoor CTF admin add a hint and mention that they sent flag as post request
@@ -47,7 +49,8 @@ Server.php
 <?php
 $ref = $_SERVER['HTTP_REFERER'];
 file_put_contents("flag.txt",$ref);
-?>```
+?>
+```
 
  > and sent this code as our page to Medusa form :
 ```
