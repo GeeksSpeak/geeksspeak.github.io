@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Leak | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/leak/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T03:18:05+04:30</updated>
+  <updated>2015-04-03T03:20:34+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -31,7 +31,7 @@ RELRO           STACK CANARY      NX            PIE             RPATH      RUNPA
 Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   team
 </code></pre>
 
-<p>Ok looking into the binary in IDA shows us two function <code>0x08048769</code> and <code>0x080486ad</code> are important to us. the first on can be seen bellow:</p>
+<p>Ok looking into the binary in IDA shows us two function <code>0x08048769</code> and <code>0x080486ad</code> are important to us. the first one can be seen bellow:</p>
 
 <!--more-->
 

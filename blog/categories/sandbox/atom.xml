@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Sandbox | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/sandbox/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T03:18:05+04:30</updated>
+  <updated>2015-04-03T03:20:34+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -19,7 +19,7 @@
     <updated>2015-04-03T02:33:31+04:30</updated>
     <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup</id>
     <content type="html"><![CDATA[<p><strong>Backdoor 2015 CONCEALED Writeup</strong><br/>
-<strong>Point = 100</strong><br/>
+<strong>Point = 150</strong><br/>
 <strong>Category = Exploit</strong></p>
 
 <blockquote><p>All paths have been concealed. Get the hidden flag: nc hack.bckdr.in 8005. Submit sha-256 of the flag</p></blockquote>
