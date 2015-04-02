@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/</loc>
+    <lastmod>2015-04-03T02:33:31+04:30</lastmod>
+  </url>
+  <url>
     <loc>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-echo-writeup/</loc>
     <lastmod>2015-04-03T02:12:58+04:30</lastmod>
   </url>
@@ -44,5 +48,8 @@
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/categories/bof/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/javascript/</loc>
   </url>
 </urlset>

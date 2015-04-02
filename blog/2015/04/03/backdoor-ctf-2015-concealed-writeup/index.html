@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>GeeksSpeak Team Blog</title>
+  <title>Backdoor CTF 2015 - CONCEALED Writeup - GeeksSpeak Team Blog</title>
   <meta name="author" content="GeeksSpeak">
 
   
@@ -20,7 +20,7 @@ Category = Exploit All paths have been concealed. Get the hidden flag: nc hack.b
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://geeksspeak.github.io/">
+  <link rel="canonical" href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="GeeksSpeak Team Blog" type="application/atom+xml">
@@ -65,15 +65,12 @@ Category = Exploit All paths have been concealed. Get the hidden flag: nc hack.b
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/">Backdoor CTF 2015 - CONCEALED Writeup</a></h1>
+      <h1 class="entry-title">Backdoor CTF 2015 - CONCEALED Writeup</h1>
     
     
       <p class="meta">
@@ -89,7 +86,7 @@ Category = Exploit All paths have been concealed. Get the hidden flag: nc hack.b
   </header>
 
 
-  <div class="entry-content"><p><strong>Backdoor 2015 CONCEALED Writeup</strong><br/>
+<div class="entry-content"><p><strong>Backdoor 2015 CONCEALED Writeup</strong><br/>
 <strong>Point = 100</strong><br/>
 <strong>Category = Exploit</strong></p>
 
@@ -126,170 +123,130 @@ Category = Exploit All paths have been concealed. Get the hidden flag: nc hack.b
 
 <p>First of all as banner says we should use all our payload as a function like :</p>
 
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/">Read on &rarr;</a>
-    </footer>
-  
+<!--more-->
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/03/backdoor-ctf-2015-echo-writeup/">Backdoor CTF 2015 - ECHO Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-03T02:12:58+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:12 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>Backdoor 2015 ECHO Writeup</strong><br/>
-<strong>Point = 100</strong><br/>
-<strong>Category = Binary</strong></p>
-
-<blockquote><p>Little Suzie started learning C. She created a simple program that echo&rsquo;s back whatever you input. Here is the binary file. The vampire came across this service on the internet. nc hack.bckdr.in 8002. Reports say he found a flag. See if you can get it.</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ file echo
-</span><span class='line'>echo: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=15ec07e5664a13e94069c818141cc9f70591d0f0, not stripped</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As it seems we have a 32bit binary as a ECHO server. the output confirms this:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ nc hack.bckdr.in 8002
+</pre></td><td class='code'><pre><code class=''><span class='line'>home@jail:$ function exploit() { return "GeeksSpeak"; }
 </span><span class='line'>GeeksSpeak
-</span><span class='line'>ECHO: GeeksSpeak</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>home@jail:$ </span></code></pre></td></tr></table></div></figure>
 
 
-<p>opening the binary in IDA shows us that the main function calls test() as we can see the psuedo-code below :</p>
+<p>After some diging into the the challenge, trying to break the jail and so on, reading banner carefully indicates that the flag is in the code so i should read codes but how?</p>
 
+<p>In javascript we can use arguments.caller to see which function calls our current function so i made up an example and tested it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>home@jail:$ function exploit() { return exploit.caller.toString(); }
+</span><span class='line'>function () {return (function exploit() { return exploit.caller.toString(); })()}
+</span><span class='line'>home@jail:$ function exploit() { return (exploit.caller).caller.toString(); }
+</span><span class='line'>function () {
+</span><span class='line'>        if (!(this instanceof Script)) {
+</span><span class='line'>          throw new TypeError('invalid call to ' + f);
+</span><span class='line'>        }
+</span><span class='line'>        return ns[f].apply(ns, arguments);
+</span><span class='line'>      }
+</span><span class='line'>home@jail:$ 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>this proved my idea, so i used caller repeatedly and finally got the flag as bellow:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>home@jail:$ function exploit() { return ((((((((exploit.caller).caller).caller).caller).caller).caller).caller).caller).caller.toString(); }
+</span><span class='line'>function (err, line) {
+</span><span class='line'>
+</span><span class='line'>    // flag : 50_y0u_f1n4lly_f0und_17
+</span><span class='line'>
+</span><span class='line'>    if (err && wait === false) {
+</span><span class='line'>      return callback(err);
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    var against = {},
+</span><span class='line'>        numericInput,
+</span><span class='line'>        isValid;
+</span><span class='line'>
+</span><span class='line'>    if (line !== '') {
+</span><span class='line'>      if (schema.properties[propName]) 
+</span><span class='line'>      [..stripped..]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and sha256 of the <code>50_y0u_f1n4lly_f0und_17</code> gives us another 150pts.</p>
+
+<p>HAMIDx9</p>
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/03/backdoor-ctf-2015-echo-writeup/">Read on &rarr;</a>
-    </footer>
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/03/backdoor-ctf-2015-medusa-writeup/">Backdoor CTF 2015 - Medusa Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-03T01:06:09+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>1:06 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>Backdoor2015 Medusa Writeup</strong><br/>
-<strong>Point = 100</strong><br/>
-<strong>Category = Web</strong><br/>
-<strong>Description : </strong></p>
-
-<blockquote><p>The html page you create will be visited by the backdoor admin with the flag.
-You can enter a fake flag to simulate the challenge.</p>
-
-<p>Get the flag at <a href="http://hack.bckdr.in/MEDUSA/">http://hack.bckdr.in/MEDUSA/</a></p></blockquote>
-
-<p>After We open the link that is provided in description we are welcomed with a form.you can send message with html code and after that admin will visit your page with the flag.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/03/backdoor-ctf-2015-medusa-writeup/">Read on &rarr;</a>
-    </footer>
   
 
+<span class="byline author vcard">Posted by <span class="fn">GeeksSpeak</span></span>
 
-    </article>
-  
-  
-    <article>
       
-  <header>
+
+
+
+
+<time class='entry-date' datetime='2015-04-03T02:33:31+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:33 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/backdoor/'>backdoor</a>, <a class='category' href='/blog/categories/ctf/'>ctf</a>, <a class='category' href='/blog/categories/exploit/'>exploit</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/sandbox/'>sandbox</a>
+  
+</span>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2015/04/03/backdoor-ctf-2015-noname-writeup/">Backdoor CTF 2015 - Noname Writeup</a></h1>
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/" data-via="" data-counturl="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/" >Tweet</a>
+  
+  
+  
+</div>
+
     
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-03T00:42:36+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>12:42 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>Backdoor2015 NONAME Writeup</strong><br/>
-<strong>Point = 200</strong><br/>
-<strong>Category = Exploit</strong><br/>
-<strong>Description : </strong></p>
-
-<blockquote><p>Intrestingly enough, even though it was not expected, Chintu found a cool website to play with, though he can&rsquo;t get the flag. Can you? Visit <a href="https://agile-garden-1672.herokuapp.com/">this</a>. Submit the SHA-256 hash of the flag obtained.</p>
-
-<p>Welcome to Noname! You can see an intrepreter above
-Get admin&rsquo;s flag and admin&rsquo;s secret. Remember admin is one of the people
-Submit sha-256 of secret and flag joined
-Get admin&rsquo;s flag and admin&rsquo;s secret. Remember admin is one of the people
-Submit sha-256 of secret and flag joined</p></blockquote>
-
-<p>We could see  see an intrepreter like this :</p>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/03/backdoor-ctf-2015-echo-writeup/" title="Previous Post: Backdoor CTF 2015 - ECHO Writeup">&laquo; Backdoor CTF 2015 - ECHO Writeup</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/03/backdoor-ctf-2015-noname-writeup/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -350,6 +307,7 @@ Submit sha-256 of secret and flag joined</p></blockquote>
 
   
 </aside>
+
 
     </div>
   </div>
