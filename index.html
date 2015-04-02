@@ -9,9 +9,9 @@
   <meta name="author" content="GeeksSpeak">
 
   
-  <meta name="description" content="Backdoor 2015 FORGOT Writeup
-Point = 200
-Category = Exploit Fawkes has been playing around with Finite State Automaton lately. While exploring the &hellip;">
+  <meta name="description" content="Backdoor 2015 TEAM Writeup
+Point = 600
+Category = Exploit There is a wierd kind of authentication service running: nc hack.bckdr.in 8004. The binary &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,59 @@ Category = Exploit Fawkes has been playing around with Finite State Automaton la
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/03/backdoor-ctf-2015-team-writeup/">Backdoor CTF 2015 - TEAM Writeup</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-04-03T03:16:39+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>3:16 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>Backdoor 2015 TEAM Writeup</strong><br/>
+<strong>Point = 600</strong><br/>
+<strong>Category = Exploit</strong></p>
+
+<blockquote><p>There is a wierd kind of authentication service running: nc hack.bckdr.in 8004. The binary can be found here. The vampire says that there is no need for bruteforce.</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ file team
+</span><span class='line'>team: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=3fb6836dc9249bd1e7c33e023d563ff429d7dca4, stripped
+</span><span class='line'>$ checksec.sh --file team
+</span><span class='line'>RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+</span><span class='line'>Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   team
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok looking into the binary in IDA shows us two function <code>0x08048769</code> and <code>0x080486ad</code> are important to us. the first on can be seen bellow:</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/04/03/backdoor-ctf-2015-team-writeup/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -386,6 +439,10 @@ Submit sha-256 of secret and flag joined</p></blockquote>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/04/03/backdoor-ctf-2015-team-writeup/">Backdoor CTF 2015 - TEAM Writeup</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/04/03/backdoor-ctf-2015-forgot-writeup/">Backdoor CTF 2015 - FORGOT Writeup</a>
       </li>
     
@@ -399,10 +456,6 @@ Submit sha-256 of secret and flag joined</p></blockquote>
     
       <li class="post">
         <a href="/blog/2015/04/03/backdoor-ctf-2015-medusa-writeup/">Backdoor CTF 2015 - Medusa Writeup</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/03/backdoor-ctf-2015-noname-writeup/">Backdoor CTF 2015 - Noname Writeup</a>
       </li>
     
   </ul>
