@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Leak | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/leak/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T03:20:34+04:30</updated>
+  <updated>2015-04-03T19:00:38+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -105,7 +105,7 @@ Enter teamname: Enter flag: 0x640x9dd11400xf770ec20(nil)0x10x9dd10d80x9dd10080xf
 </code>
 is our flag. using python <code>struct</code> module for all gives us this one:</p>
 
-<pre><code>d3f5106d91e77a42be5805acd58a1b8dad11af78fcc5f381c2df5636953571fb
+<pre><code>[redacted]
 </code></pre>
 
 <p>which added 600pts to our points.</p>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Javascript | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T03:20:34+04:30</updated>
+  <updated>2015-04-03T19:00:38+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -70,7 +70,7 @@ home@jail:$
 <pre><code>home@jail:$ function exploit() { return ((((((((exploit.caller).caller).caller).caller).caller).caller).caller).caller).caller.toString(); }
 function (err, line) {
 
-    // flag : 50_y0u_f1n4lly_f0und_17
+    // flag : [redacted]
 
     if (err &amp;&amp; wait === false) {
       return callback(err);
@@ -85,7 +85,7 @@ function (err, line) {
       [..stripped..]
 </code></pre>
 
-<p>and sha256 of the <code>50_y0u_f1n4lly_f0und_17</code> gives us another 150pts.</p>
+<p>and sha256 of the <code>[redacted]</code> gives us another 150pts.</p>
 
 <p>HAMIDx9</p>
 ]]></content>

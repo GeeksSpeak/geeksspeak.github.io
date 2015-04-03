@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Clojure, | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/clojure/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T03:20:34+04:30</updated>
+  <updated>2015-04-03T19:00:38+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -106,11 +106,11 @@ found this <a href="http://christophermaier.name/blog/2011/04/30/not-so-private-
 <p>and its the first part of the flag :</p>
 
 <blockquote><p>(#&lsquo;noname.people.admin/secret)
-&ldquo;Ma secret is: 1_4m_50_cl0jur3d_y0u_c4n7_3v3n_7h1nk&rdquo;</p>
+&ldquo;Ma secret is: [redacted]&rdquo;</p>
 
 <p>Flag Format = sha256(secret+flag)
-sha256(1_4m_50_cl0jur3d_y0u_c4n7_3v3n_7h1nk_b7w_1_l1k3_60l4n6_700)
-<strong>147fadb708195779c6414a0ce9171bc4b966e03a9818383eabafa0e71a240d5a</strong></p></blockquote>
+sha256(1_4m_50..[FILTERED]..1k3_60l4n6_700)
+<strong>[redacted]</strong></p></blockquote>
 
 <p>200 points ;)</p>
 

