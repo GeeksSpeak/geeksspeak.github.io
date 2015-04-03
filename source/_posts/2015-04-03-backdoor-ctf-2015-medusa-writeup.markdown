@@ -80,7 +80,7 @@ and guess what?
 
 
 
-[Referer Link With Flag!](http://hack.bckdr.in/MEDUSA/view.php?flag=6bbaf4e1d3af423dd6c5a03c21c2a35c075392861709f2e896a27ae1f57d30c5&id=d61d051c6e741595491c)
+[Referer Link With Flag!](http://hack.bckdr.in/MEDUSA/view.php?flag=[redacted]&id=d61d051c6e741595491c)
 
 and now you have 100 point :D
 

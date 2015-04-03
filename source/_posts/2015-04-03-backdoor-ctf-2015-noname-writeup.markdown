@@ -94,11 +94,11 @@ do what it said :
 and its the first part of the flag :
 
 > (#'noname.people.admin/secret)
-> "Ma secret is: 1_4m_50_cl0jur3d_y0u_c4n7_3v3n_7h1nk"
+> "Ma secret is: [redacted]"
 > 
 > Flag Format = sha256(secret+flag)
-> sha256(1_4m_50_cl0jur3d_y0u_c4n7_3v3n_7h1nk_b7w_1_l1k3_60l4n6_700)
-> **147fadb708195779c6414a0ce9171bc4b966e03a9818383eabafa0e71a240d5a**
+> sha256(1_4m_50..[FILTERED]..1k3_60l4n6_700)
+> **[redacted]**
 
 200 points ;)
 

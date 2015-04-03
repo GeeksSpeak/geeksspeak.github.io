@@ -135,7 +135,7 @@ t.interact()
 
 ```
 $ python sol.py 
-ebe2c4abf85c239c7bd0385a685c460b2c5fe1dcdb2236f87dfef826bb690adf
+[redacted]
 *** Connection closed by remote host ***
 ```
 

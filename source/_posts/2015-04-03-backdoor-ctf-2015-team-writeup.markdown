@@ -95,7 +95,7 @@ you can see that
 is our flag. using python `struct` module for all gives us this one:
 
 ```
-d3f5106d91e77a42be5805acd58a1b8dad11af78fcc5f381c2df5636953571fb
+[redacted]
 ```
 
 which added 600pts to our points.
