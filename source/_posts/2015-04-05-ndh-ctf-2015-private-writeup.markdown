@@ -2,7 +2,7 @@
 layout: post
 title: "NDH CTF 2015 - Private Writeup"
 date: 2015-04-05 15:43:15 +0430
-comments: false
+comments: true
 categories: ctf forensics scapy
 ---
 

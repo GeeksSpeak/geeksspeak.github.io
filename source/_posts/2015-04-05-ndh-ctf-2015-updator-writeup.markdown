@@ -2,7 +2,7 @@
 layout: post
 title: "NDH CTF 2015 - Updator Writeup"
 date: 2015-04-05 03:28:56 +0430
-comments: false
+comments: true
 categories: ctf exploit crypto web
 ---
 

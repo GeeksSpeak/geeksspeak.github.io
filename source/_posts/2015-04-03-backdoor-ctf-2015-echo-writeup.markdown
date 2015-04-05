@@ -2,7 +2,7 @@
 layout: post
 title: "Backdoor CTF 2015 - ECHO Writeup"
 date: 2015-04-03 02:12:58 +0430
-comments: false
+comments: true
 categories: ctf backdoor bianry exploit bof
 ---
 

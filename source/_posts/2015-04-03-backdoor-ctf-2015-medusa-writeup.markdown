@@ -2,7 +2,7 @@
 layout: post
 title: "Backdoor CTF 2015 - Medusa Writeup"
 date: 2015-04-03 01:06:09 +0430
-comments: false
+comments: true
 categories: ctf backdoor web
 ---
 
