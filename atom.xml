@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-05T15:57:19+04:30</updated>
+  <updated>2015-04-06T01:53:03+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,6 +12,60 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[NDH CTF 2015 - Cooper Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/"/>
+    <updated>2015-04-06T01:52:15+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-cooper-writeup</id>
+    <content type="html"><![CDATA[<h1>NDH CTF 2015 - Cooper Writeup</h1>
+
+<p><strong>NDH 2015 Cooper Writeup</strong><br/>
+<strong>Point = 300</strong><br/>
+<strong>Category = Stegano</strong></p>
+
+<blockquote><p>&ldquo;I am not crazy, my mother had me tested.&rdquo; (Sheldon)</p>
+
+<p>What did Sheldon &hellip; huh sorry, Dr. Cooper really mean?
+(<a href="http://quals.nuitduhack.com/challenges/view/14">http://quals.nuitduhack.com/challenges/view/14</a>)</p></blockquote>
+
+<p>The tar zip contains a Windows executable, so the first thing I did was opening it in CFF Explorer.
+Doing so I found a picture of Sheldon &hellip; or better say <code>"Dr. Cooper"</code> in resources and a section called .hidden containing a ZIP file.</p>
+
+<p><img src="http://geeksspeak.github.io/files/ctf/ndh2k15/cooper/cooper.bmp" title="khkhkhhhhhh" alt="Sheldon's picture" /></p>
+
+<p>Within the zip file there was a C++ code project with encrypt and decrypt functions.</p>
+
+<pre><code>&gt; dir Stegano-BMP-master
+...
+2013-06-21  05:24 PM               533 decrypt.cpp
+2015-04-04  12:10 PM    &lt;DIR&gt;          easybmp
+2013-06-21  05:24 PM               768 encrypt.cpp
+2013-06-21  05:24 PM                28 main.cpp
+2013-06-21  05:24 PM               564 Makefile
+2013-06-21  05:24 PM               238 README.md
+2013-06-21  05:24 PM             2,705 stegano.cpp
+2013-06-21  05:24 PM               196 stegano.h
+               7 File(s)          5,032 bytes
+</code></pre>
+
+<p> First thing that strikes the mind is to compile the project and decrypt (extract) the flag from it, and I did, and I FAILED :(</p>
+
+<pre><code class="`"> &gt;decrypt cooper.bmp
+ 3
+</code></pre>
+
+<p> Obviously <code>3</code> cannot be the flag! (but I did submit it and the server did reject it :))
+ So I insepected the files more, and I found a <a href="http://geeksspeak.github.io/pdfFile.pdf">PDF</a> file in the EXE&rsquo;s hex dump.
+ I fixed and opened it and finally found &ldquo;my precious&rdquo;!</p>
+
+<p> <img src="http://geeksspeak.github.io/files/ctf/ndh2k15/cooper/flag.jpg" title="StephenHawkingSpentSomeTimeOnSteganoTrolling" alt="tha flag" /></p>
+
+<p>BTW: The <a href="http://geeksspeak.github.io/files/ctf/ndh2k15/cooper/pdfFile.pdf">PDF</a> is password protected which the reader has to guess :D</p>
+
+<p> Written by <strong><a href="http://twitter.com/shabgrd">MMS</a></strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[NDH CTF 2015 - Private Writeup]]></title>

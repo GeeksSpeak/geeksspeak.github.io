@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/</loc>
+    <lastmod>2015-04-06T01:52:15+04:30</lastmod>
+  </url>
+  <url>
     <loc>http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-private-writeup/</loc>
     <lastmod>2015-04-05T15:43:15+04:30</lastmod>
   </url>
@@ -82,5 +86,11 @@
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/categories/scapy/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/ndh2k15/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/stegano/</loc>
   </url>
 </urlset>
