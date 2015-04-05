@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ndh2k15 | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/ndh2k15/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-06T01:53:03+04:30</updated>
+  <updated>2015-04-06T01:54:30+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -18,9 +18,7 @@
     <link href="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/"/>
     <updated>2015-04-06T01:52:15+04:30</updated>
     <id>http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-cooper-writeup</id>
-    <content type="html"><![CDATA[<h1>NDH CTF 2015 - Cooper Writeup</h1>
-
-<p><strong>NDH 2015 Cooper Writeup</strong><br/>
+    <content type="html"><![CDATA[<p><strong>NDH 2015 Cooper Writeup</strong><br/>
 <strong>Point = 300</strong><br/>
 <strong>Category = Stegano</strong></p>
 
@@ -33,6 +31,9 @@
 Doing so I found a picture of Sheldon &hellip; or better say <code>"Dr. Cooper"</code> in resources and a section called .hidden containing a ZIP file.</p>
 
 <p><img src="/files/ctf/ndh2k15/cooper/cooper.bmp" title="khkhkhhhhhh" alt="Sheldon's picture" /></p>
+
+<!--more-->
+
 
 <p>Within the zip file there was a C++ code project with encrypt and decrypt functions.</p>
 
