@@ -97,7 +97,7 @@ Description : &ldquo;The quiet you are, the more you are able to ear&rdquo; We&r
 
 <blockquote><p>&ldquo;The quiet you are, the more you are able to ear&rdquo;</p></blockquote>
 
-<p>We&rsquo;ve provided a pcapng file in this challenge. At first glance I thought it may be VoIP challenge because of description but after viewing packets , this assumption goes wrong. there were some STP , CDP and some ICMP packets . after some investigation in packets i found some unusual ICMP packets ! their identification fields were 0 ! all of them ! hmmm. seems somebody generated them manually by a packet generator . so i focused on them to find a pattern .actually their IP headers had a pattern and they were ASCII numbers ! sweet . that easy . let&rsquo;s have some fun with Scapy .</p>
+<p>We&rsquo;ve provided a pcapng file in this challenge. At first glance I thought it may be VoIP challenge because of description but after viewing packets , this assumption goes wrong. there were some STP , CDP and some ICMP packets . after some investigation in packets i found some unusual ICMP packets ! their identification fields were 0 ! all of them ! hmmm. seems somebody generated them manually by a packet generator . so i focused on them to find a pattern .actually their IP headers had a pattern and they were ASCII numbers ! sweet . that&rsquo;s easy . let&rsquo;s have some fun with Scapy .</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Scapy | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/scapy/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-05T15:45:20+04:30</updated>
+  <updated>2015-04-05T15:45:52+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -25,7 +25,7 @@
 
 <blockquote><p>&ldquo;The quiet you are, the more you are able to ear&rdquo;</p></blockquote>
 
-<p>We&rsquo;ve provided a pcapng file in this challenge. At first glance I thought it may be VoIP challenge because of description but after viewing packets , this assumption goes wrong. there were some STP , CDP and some ICMP packets . after some investigation in packets i found some unusual ICMP packets ! their identification fields were 0 ! all of them ! hmmm. seems somebody generated them manually by a packet generator . so i focused on them to find a pattern .actually their IP headers had a pattern and they were ASCII numbers ! sweet . that easy . let&rsquo;s have some fun with Scapy .</p>
+<p>We&rsquo;ve provided a pcapng file in this challenge. At first glance I thought it may be VoIP challenge because of description but after viewing packets , this assumption goes wrong. there were some STP , CDP and some ICMP packets . after some investigation in packets i found some unusual ICMP packets ! their identification fields were 0 ! all of them ! hmmm. seems somebody generated them manually by a packet generator . so i focused on them to find a pattern .actually their IP headers had a pattern and they were ASCII numbers ! sweet . that&rsquo;s easy . let&rsquo;s have some fun with Scapy .</p>
 
 <pre><code>from scapy.all import *
 from scapy.utils import rdpcap
