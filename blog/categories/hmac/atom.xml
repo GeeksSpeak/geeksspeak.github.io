@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Hmac | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/hmac/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-06T17:03:30+04:30</updated>
+  <updated>2015-04-06T17:08:59+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -162,6 +162,8 @@ print hash("flag",emptystate)
 
 <p>FLAG ? FLAG !
 Can_I_haz_s3cureD_hm4c_plz?</p></blockquote>
+
+<p>PS: There is a solution as PDF file for <code>Persian</code> Users too which can be obtained from <a href="/files/ctf/ndh2k15/weshgrow/weshgrow-sol-fa.pdf">here</a>.</p>
 
 <p>by <code>f02</code></p>
 ]]></content>
