@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ctf | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/ctf/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-06T16:59:28+04:30</updated>
+  <updated>2015-04-06T17:00:18+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -35,6 +35,9 @@
 <p>if you open the /flag address without the purposed HMAC you see redirection to <code>address+"#missinghmac"</code>.</p>
 
 <p>So this could be HMAC of pages and we should prepare a HMAC for <code>flag</code>.</p>
+
+<!--more-->
+
 
 <p>By going further into login page, we noticed after submiting the form, HMAC of the password sent to the page not the password itself. it used BHE class in <code>bhe.js</code> as mentioned &ldquo;Best Hash Ever&rdquo;.</p>
 
