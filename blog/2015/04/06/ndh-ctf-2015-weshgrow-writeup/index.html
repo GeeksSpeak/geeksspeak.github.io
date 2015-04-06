@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>NDH CTF 2015 - Weshgrow Writeup - GeeksSpeak Team Blog</title>
+  <meta name="author" content="GeeksSpeak">
+
+  
+  <meta name="description" content="NDH 2015 Weshgrow Writeup
+Point = 300
+Category = Crypto By openning the url we redirected to following link: http://weshgrow.challs.nuitduhack.com/? &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="GeeksSpeak Team Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">GeeksSpeak Team Blog</a></h1>
+  
+    <h2>WriteUps and random thoughts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="geeksspeak.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">NDH CTF 2015 - Weshgrow Writeup</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-04-06T16:58:41+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:58 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><strong>NDH 2015 Weshgrow Writeup</strong><br/>
+<strong>Point = 300</strong><br/>
+<strong>Category = Crypto</strong></p>
+
+<p>By openning the url we redirected to following link:</p>
+
+<blockquote><p><a href="http://weshgrow.challs.nuitduhack.com/?hmac=ca8473d35a80a5ca4e9f3555c2869f71">http://weshgrow.challs.nuitduhack.com/?hmac=ca8473d35a80a5ca4e9f3555c2869f71</a></p></blockquote>
+
+<p>As we know HMAC is a cryptographic message for authenticating using a secret key. So this has been made of something.</p>
+
+<p>Also we could find another HMAC in the page source as you can see:</p>
+
+<blockquote><p><a href="http://weshgrow.challs.nuitduhack.com/admin?hmac=fac0887096a54ac497d968daf4c4fe0b">http://weshgrow.challs.nuitduhack.com/admin?hmac=fac0887096a54ac497d968daf4c4fe0b</a></p></blockquote>
+
+<p>if you open the /flag address without the purposed HMAC you see redirection to <code>address+"#missinghmac"</code>.</p>
+
+<p>So this could be HMAC of pages and we should prepare a HMAC for <code>flag</code>.</p>
+
+<p>By going further into login page, we noticed after submiting the form, HMAC of the password sent to the page not the password itself. it used BHE class in <code>bhe.js</code> as mentioned &ldquo;Best Hash Ever&rdquo;.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var BestHashEver = function() {
+</span><span class='line'>    this.state = [
+</span><span class='line'>        str2bigInt('1336226589', 10),
+</span><span class='line'>        str2bigInt('251977347', 10),
+</span><span class='line'>        str2bigInt('716107527', 10),
+</span><span class='line'>        str2bigInt('1774966033', 10),
+</span><span class='line'>    ];
+</span><span class='line'>};
+</span><span class='line'>BestHashEver.prototype.bhe_round = function(byte) {
+</span><span class='line'>    var c = str2bigInt('162888806', 10);
+</span><span class='line'>    console.log(c);
+</span><span class='line'>    for (var i=3; i&gt;0; i--) {
+</span><span class='line'>        this.state[i] = mod(add(mult(this.state[0], this.state[i]), mult(this.state[0], int2bigInt(byte, 10))), str2bigInt('4294967295', 10));
+</span><span class='line'>        console.log(this.state[i]);
+</span><span class='line'>    }
+</span><span class='line'>    this.state[0] = mod(add(mult(this.state[0], c), mult(this.state[1], int2bigInt(byte, 10))), str2bigInt('4294967295', 10));
+</span><span class='line'>};
+</span><span class='line'>BestHashEver.prototype.dword2hex = function(dw) {
+</span><span class='line'>    var hexchars = ["0", "1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
+</span><span class='line'>    var output = '';
+</span><span class='line'>    var c1 = '', c2=''
+</span><span class='line'>    for (var i = 0; i &lt; 4; i++) {
+</span><span class='line'>        byte = dw & 0x0000000F;
+</span><span class='line'>        c1 = hexchars[byte];
+</span><span class='line'>        dw = (dw &gt;&gt; 4);
+</span><span class='line'>        byte = dw & 0x0000000F;
+</span><span class='line'>        c2 = hexchars[byte];
+</span><span class='line'>        dw = (dw &gt;&gt; 4);
+</span><span class='line'>        output = output + c2 + c1;
+</span><span class='line'>    }
+</span><span class='line'>    console.log(output);
+</span><span class='line'>    return output;
+</span><span class='line'>};
+</span><span class='line'>BestHashEver.prototype.hash = function(data) {
+</span><span class='line'>    for (var i = 0; i &lt; data.length; i++){
+</span><span class='line'>        this.bhe_round(data.charCodeAt(i));
+</span><span class='line'>        console.log(this.state);
+</span><span class='line'>    }
+</span><span class='line'>    /* Generate output. */
+</span><span class='line'>    var digest = [
+</span><span class='line'>        parseInt(bigInt2str(this.state[0], 10)),
+</span><span class='line'>        parseInt(bigInt2str(this.state[1], 10)),
+</span><span class='line'>        parseInt(bigInt2str(this.state[2], 10)),
+</span><span class='line'>        parseInt(bigInt2str(this.state[3], 10)),
+</span><span class='line'>    ];
+</span><span class='line'>    return this.dword2hex(digest[0]) + this.dword2hex(digest[1]) + this.dword2hex(digest[2]) +
+</span><span class='line'>    this.dword2hex(digest[3]);
+</span><span class='line'>};
+</span><span class='line'>function hmac(data) {
+</span><span class='line'>    _bhe = new BestHashEver();
+</span><span class='line'>    return _bhe.hash(data);
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The Hash like md5 has four state variables and multiple rounds which in each round based on previous values and variables, formulas generate a new state variables and change them. Also it has four initialize state value as default.</p>
+
+<p>In this Algorithm each round is for every character of inputs which at the end output produced by hex and concatenation of final state variable.</p>
+
+<p>But there is some flaw in the algorithm such as not using length of input and &hellip;</p>
+
+<p>This means if we know the state variable value for some string <code>s</code>, we can continue the rounds and produce the output of <code>s+x</code> for any <code>x</code>. this attack mentioned as <code>hash length extension attack</code>.</p>
+
+<p>It&rsquo;s obvious that we can obtain state variable&#8217; value from HASH(s). The reader should notice that int the <code>bhe.js</code> <strong>Big Endian byte order</strong> has been used.</p>
+
+<p>So we have:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Hash(s+x, default initialize state value) = Hash(s, state value of hash(s))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>based on what discussed earlier and some knowledge about HMAC our scenario is:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>HMAC(message)= Hash(secret + message)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>which page name will be used as <code>message</code>. As you saw we have valid HMAC for empty(NULL) page name, so:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>HMAC("") = Hash(secret)
+</span><span class='line'>
+</span><span class='line'>HMAC("flag") = Hash(s, state value of HMAC(""))
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In order to obtain the proper HMAC i wrote a python script but it can be done by changing default value in js too.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def convert2be(s):#convert to big endian byte order
+</span><span class='line'>    return s[6:8]+s[4:6]+s[2:4]+s[0:2]
+</span><span class='line'>    
+</span><span class='line'>def myhex(s):
+</span><span class='line'>    return convert2be(hex(s)[2:-1].rjust(8,'0'))
+</span><span class='line'>    
+</span><span class='line'>def hash(inp,state=[1336226589,251977347,716107527,1774966033]):
+</span><span class='line'>    a,b,c,d=state[0],state[1],state[2],state[3]
+</span><span class='line'>    m=4294967295
+</span><span class='line'>    for x in inp:
+</span><span class='line'>        x=ord(x)
+</span><span class='line'>        aa=(a*(162888806+x*(b+x)))%m
+</span><span class='line'>        bb=(a*(b+x))%m
+</span><span class='line'>        cc=(a*(c+x))%m
+</span><span class='line'>        dd=(a*(d+x))%m
+</span><span class='line'>        a,b,c,d=aa,bb,cc,dd
+</span><span class='line'>    return myhex(a)+myhex(b)+myhex(c)+myhex(d)
+</span><span class='line'>    
+</span><span class='line'>emptyhmac="ca8473d35a80a5ca4e9f3555c2869f71" #hmac("")
+</span><span class='line'>
+</span><span class='line'>import re
+</span><span class='line'>emptystate=map(lambda x:int(convert2be(x),16),re.findall('.'*8,emptyhmac))
+</span><span class='line'>
+</span><span class='line'>print hash("flag",emptystate)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>by executing the script we have the following HMAC:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ python weshgrow-sol.py                                                                                                                                                                      
+</span><span class='line'>3f6933240ae234edddc27544d949238c  </span></code></pre></td></tr></table></div></figure>
+
+
+<p>by opening the following url we have the flag:</p>
+
+<blockquote><p>/flag?hmac=3f6933240ae234edddc27544d949238c</p>
+
+<p>FLAG ? FLAG !
+Can_I_haz_s3cureD_hm4c_plz?</p></blockquote>
+
+<p>by <code>f02</code></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">GeeksSpeak</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-04-06T16:58:41+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:58 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/crypto/'>crypto</a>, <a class='category' href='/blog/categories/ctf/'>ctf</a>, <a class='category' href='/blog/categories/hash/'>hash</a>, <a class='category' href='/blog/categories/hmac/'>hmac</a>, <a class='category' href='/blog/categories/length-extension-attack/'>length-extension-attack</a>, <a class='category' href='/blog/categories/ndh2k15/'>ndh2k15</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/" data-via="" data-counturl="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/" title="Previous Post: NDH CTF 2015 - Facesec Writeup">&laquo; NDH CTF 2015 - Facesec Writeup</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/">NDH CTF 2015 - Weshgrow Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/">NDH CTF 2015 - Facesec Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/">NDH CTF 2015 - Cooper Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/05/ndh-ctf-2015-private-writeup/">NDH CTF 2015 - Private Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/05/ndh-ctf-2015-updator-writeup/">NDH CTF 2015 - Updator Writeup</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/GeeksSpeak">@GeeksSpeak</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'GeeksSpeak',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - GeeksSpeak -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'geeksspeak';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/';
+        var disqus_url = 'http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

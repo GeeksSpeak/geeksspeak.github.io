@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Ndh2k15 | GeeksSpeak Team Blog]]></title>
-  <link href="http://geeksspeak.github.io/blog/categories/ndh2k15/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Length-extension-attack | GeeksSpeak Team Blog]]></title>
+  <link href="http://geeksspeak.github.io/blog/categories/length-extension-attack/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
   <updated>2015-04-06T16:59:28+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
@@ -161,112 +161,6 @@ print hash("flag",emptystate)
 Can_I_haz_s3cureD_hm4c_plz?</p></blockquote>
 
 <p>by <code>f02</code></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[NDH CTF 2015 - Facesec Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/"/>
-    <updated>2015-04-06T01:56:25+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-facesec-writeup</id>
-    <content type="html"><![CDATA[<p><strong>NDH 2015 Facesec Writeup</strong><br/>
-<strong>Point = 100</strong><br/>
-<strong>Category = Web</strong><br/>
-<strong>Description : </strong></p>
-
-<blockquote><p>&ldquo;Hello there,</p>
-
-<p>We are looking for a developer or security consultant to secure our filebox system. We stumbled upon your LinkedIn profile and it seems like you would be a perfect candidate for this job. Could you please send us your CV and Motivation letter?<br/>
-Thanks,</p>
-
-<p><a href="http://facesec.challs.nuitduhack.com/">http://facesec.challs.nuitduhack.com/</a></p></blockquote>
-
-<p>after you open the link , you can see a login/register system.so sign up and login to my account</p>
-
-<p>after that you seen a upload form with this description :</p>
-
-<blockquote><p>You can upload a .txt file if you specify the type of the content (cv or motivation letter).
-If you want, you can upload a tar archive which contains two files (cv.txt and motiv.txt).
-The content will be update in your profil we can examine your instance.</p></blockquote>
-
-<p>so try to upload your file , contents of 2 texts go to 2 field in your profile name as CV and Motivation Letter</p>
-
-<!--more-->
-
-
-<p>if you try to upload file with extension you got an error</p>
-
-<p>you can .tar file.<br/>
-according to this link you can execute command with tar file :</p>
-
-<p><a href="http://www.defensecode.com/public/DefenseCode_Unix_WildCards_Gone_Wild.txt">Tar file command execution</a><br/>
-so we try to Symlink /etc/passwd to CV.txt</p>
-
-<p>when upload complete and we go to the profile link we can see this :</p>
-
-<pre><code>root:x:0:0:root:/root:/bin/bash daemon:x:1:1:daemon:/usr/sbin:/bin/sh bin:x:2:2:bin:/bin:/bin/sh sys:x:3:3:sys:/dev:/bin/sh sync:x:4:65534:sync:/bin:/bin/sync games:x:5:60:games:/usr/games:/bin/sh man:x:6:12:man:/var/cache/man:/bin/sh lp:x:7:7:lp:/var/spool/lpd:/bin/sh mail:x:8:8:mail:/var/mail:/bin/sh news:x:9:9:news:/var/spool/news:/bin/sh uucp:x:10:10:uucp:/var/spool/uucp:/bin/sh proxy:x:13:13:proxy:/bin:/bin/sh www-data:x:33:33:www-data:/var/www:/bin/sh backup:x:34:34:backup:/var/backups:/bin/sh list:x:38:38:Mailing List Manager:/var/list:/bin/sh irc:x:39:39:ircd:/var/run/ircd:/bin/sh gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/bin/sh nobody:x:65534:65534:nobody:/nonexistent:/bin/sh libuuid:x:100:101::/var/lib/libuuid:/bin/sh sshd:x:101:65534::/var/run/sshd:/usr/sbin/nologin facesec:x:1000:1000:W00tSymL1nkAttackStillW0rksIn2k15:/home/facesec:/bin/sh 
-</code></pre>
-
-<p>Bingo :D</p>
-
-<p>Flag is : W00tSymL1nkAttackStillW0rksIn2k15</p>
-
-<p>WriteUp By Fr0nk</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[NDH CTF 2015 - Cooper Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/"/>
-    <updated>2015-04-06T01:52:15+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-cooper-writeup</id>
-    <content type="html"><![CDATA[<p><strong>NDH 2015 Cooper Writeup</strong><br/>
-<strong>Point = 300</strong><br/>
-<strong>Category = Stegano</strong></p>
-
-<blockquote><p>&ldquo;I am not crazy, my mother had me tested.&rdquo; (Sheldon)</p>
-
-<p>What did Sheldon &hellip; huh sorry, Dr. Cooper really mean?
-(<a href="http://quals.nuitduhack.com/challenges/view/14">http://quals.nuitduhack.com/challenges/view/14</a>)</p></blockquote>
-
-<p>The tar zip contains a Windows executable, so the first thing I did was opening it in CFF Explorer.
-Doing so I found a picture of Sheldon &hellip; or better say <code>"Dr. Cooper"</code> in resources and a section called .hidden containing a ZIP file.</p>
-
-<p><img src="/files/ctf/ndh2k15/cooper/cooper.bmp" title="khkhkhhhhhh" alt="Sheldon's picture" /></p>
-
-<!--more-->
-
-
-<p>Within the zip file there was a C++ code project with encrypt and decrypt functions.</p>
-
-<pre><code>&gt; dir Stegano-BMP-master
-...
-2013-06-21  05:24 PM               533 decrypt.cpp
-2015-04-04  12:10 PM    &lt;DIR&gt;          easybmp
-2013-06-21  05:24 PM               768 encrypt.cpp
-2013-06-21  05:24 PM                28 main.cpp
-2013-06-21  05:24 PM               564 Makefile
-2013-06-21  05:24 PM               238 README.md
-2013-06-21  05:24 PM             2,705 stegano.cpp
-2013-06-21  05:24 PM               196 stegano.h
-               7 File(s)          5,032 bytes
-</code></pre>
-
-<p> First thing that strikes the mind is to compile the project and decrypt (extract) the flag from it, and I did, and I FAILED :(</p>
-
-<pre><code class="`"> &gt;decrypt cooper.bmp
- 3
-</code></pre>
-
-<p> Obviously <code>3</code> cannot be the flag! (but I did submit it and the server did reject it :))
- So I insepected the files more, and I found a <a href="/pdfFile.pdf">PDF</a> file in the EXE&rsquo;s hex dump.
- I fixed and opened it and finally found &ldquo;my precious&rdquo;!</p>
-
-<p> <img src="/files/ctf/ndh2k15/cooper/flag.jpg" title="StephenHawkingSpentSomeTimeOnSteganoTrolling" alt="tha flag" /></p>
-
-<p>BTW: The <a href="/files/ctf/ndh2k15/cooper/pdfFile.pdf">PDF</a> is password protected which the reader has to guess :D</p>
-
-<p> Written by <strong><a href="http://twitter.com/shabgrd">MMS</a></strong></p>
 ]]></content>
   </entry>
   
