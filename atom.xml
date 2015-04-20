@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-20T22:40:50+04:30</updated>
+  <updated>2015-04-20T22:43:00+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -47,6 +47,9 @@
 
 
 <p>We noticed that the binary is provided with disabled NX.</p>
+
+<!-- more -->
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
