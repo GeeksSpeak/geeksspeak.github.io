@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-20T22:43:00+04:30</updated>
+  <updated>2015-04-20T22:47:12+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -200,7 +200,7 @@
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ python 5.py 
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ python ebp-exploit.py 
 </span><span class='line'>[+] Leaked Address:  0xffbea7c8
 </span><span class='line'>[+] 2Byte Significant Byte to write :  0xa7ac
 </span><span class='line'>[+] Here you go

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Fmt | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/fmt/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-20T22:43:00+04:30</updated>
+  <updated>2015-04-20T22:47:12+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -134,7 +134,7 @@ t.interact()
 
 <p>running the exploit we have:</p>
 
-<pre><code>$ python 5.py 
+<pre><code>$ python ebp-exploit.py 
 [+] Leaked Address:  0xffbea7c8
 [+] 2Byte Significant Byte to write :  0xa7ac
 [+] Here you go
