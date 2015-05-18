@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-19T01:08:23+04:30</updated>
+  <updated>2015-05-19T01:09:03+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,6 +12,197 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[DefConCTF 2015 Quals - Access Control Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/"/>
+    <updated>2015-05-19T00:52:48+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/05/19/defconctf-2015-quals-access-control-writeup</id>
+    <content type="html"><![CDATA[<p><strong>DefConCTF 2015 Access-Control Writeup</strong><br/>
+<strong>Point = 1</strong><br/>
+<strong>Category = Reverse</strong></p>
+
+<p>TL;DR</p>
+
+<p>we are given a binary which seems to be a client to access a server.</p>
+
+<!--more-->
+
+
+<p>you can see my solution here:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import socket 
+</span><span class='line'>import telnetlib
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>s = socket.create_connection(("access_control_server_f380fcad6e9b2cdb3c73c651824222dc.quals.shallweplayaga.me", 17069))
+</span><span class='line'>
+</span><span class='line'>cid =  s.recv(1024).split(" ")[2]
+</span><span class='line'>#cid = "H\"Y1)3IY+yEl\\3\n"
+</span><span class='line'>print cid , len(cid)
+</span><span class='line'>s80 = ord(cid[7])
+</span><span class='line'>print chr(s80)
+</span><span class='line'>s80 = s80 % 3
+</span><span class='line'>#s80 = 0
+</span><span class='line'>dst = cid[s80+1:s80+1+5]
+</span><span class='line'>print dst
+</span><span class='line'>p = "duchess" #grumpy
+</span><span class='line'>passw = ""
+</span><span class='line'>
+</span><span class='line'>for i in range(5):
+</span><span class='line'>    passw += chr(ord(p[i]) ^ ord(dst[i]))
+</span><span class='line'>passw = list(passw)
+</span><span class='line'>print passw
+</span><span class='line'>for i in range(5):
+</span><span class='line'>    if ord(passw[i]) &lt;= 0x1f:
+</span><span class='line'>        passw[i] = chr(ord(passw[i]) + ord(' '))
+</span><span class='line'>    if ord(passw[i]) == 0x7f:
+</span><span class='line'>        passw[i] = chr(ord(passw[i]) - 0x7E + 0x20)
+</span><span class='line'>
+</span><span class='line'>passw = ''.join(passw)
+</span><span class='line'>print passw
+</span><span class='line'>print s.recv(1024)
+</span><span class='line'>#print s.recv(1024)
+</span><span class='line'>s.send("version 3.11.54\n")
+</span><span class='line'>print s.recv(1024)
+</span><span class='line'>s.send("duchess\n")
+</span><span class='line'>print s.recv(1024)
+</span><span class='line'>s.send(passw+"\n")
+</span><span class='line'>print s.recv(1024)
+</span><span class='line'>
+</span><span class='line'>s.send("print key\n")
+</span><span class='line'>print s.recv(1024)
+</span><span class='line'>chall = s.recv(1024)
+</span><span class='line'>print chall
+</span><span class='line'>chall = chall.split(" ")[1]
+</span><span class='line'>print chall
+</span><span class='line'>#print s.recv(1024)
+</span><span class='line'>
+</span><span class='line'># compute answer on chall
+</span><span class='line'>
+</span><span class='line'>dst = cid[s80+7:s80+7+5]
+</span><span class='line'>print dst
+</span><span class='line'>passw = ""
+</span><span class='line'>
+</span><span class='line'>for i in range(5):
+</span><span class='line'>    passw += chr(ord(chall[i]) ^ ord(dst[i]))
+</span><span class='line'>passw = list(passw)
+</span><span class='line'>print passw
+</span><span class='line'>for i in range(5):
+</span><span class='line'>    if ord(passw[i]) &lt;= 0x1f:
+</span><span class='line'>        passw[i] = chr(ord(passw[i]) + ord(' '))
+</span><span class='line'>    if ord(passw[i]) == 0x7f:
+</span><span class='line'>        passw[i] = chr(ord(passw[i]) - 0x7E + 0x20)
+</span><span class='line'>
+</span><span class='line'>passw = ''.join(passw)
+</span><span class='line'>print passw, len(passw)
+</span><span class='line'>
+</span><span class='line'>s.send(passw+"\n")
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>t = telnetlib.Telnet()
+</span><span class='line'>t.sock = s
+</span><span class='line'>t.interact()
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Running the script:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ python access-sol.py
+</span><span class='line'>XZI_}jT.'l@Km+
+</span><span class='line'>[..]
+</span><span class='line'>
+</span><span class='line'>the key is: The only easy day was yesterday. 44564
+</span><span class='line'>
+</span><span class='line'>hello duchess, what would you like to do?</span></code></pre></td></tr></table></div></figure>
+
+
+<p>@HAMIDx9</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[DefConCTF 2015 Quals - Babyecho Writeup]]></title>
