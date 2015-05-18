@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-18T13:44:45+04:30</updated>
+  <updated>2015-05-18T13:47:02+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -96,12 +96,12 @@
 
 <ol>
 <li><p>6 main functions:<br/>
- <code>sub_F5C</code>: parse and execute dig<br/>
- <code>sub_10BD</code>: parse and execute host<br/>
- <code>sub_E35</code>: parse and execute ping<br/>
- <code>sub_121E</code>: main()<br/>
- <code>sub_D65</code>: parse the input<br/>
- <code>sub_DCC</code>: filter the input</p></li>
+<code>sub_F5C</code>: parse and execute dig<br/>
+<code>sub_10BD</code>: parse and execute host<br/>
+<code>sub_E35</code>: parse and execute ping<br/>
+<code>sub_121E</code>: main()<br/>
+<code>sub_D65</code>: parse the input<br/>
+<code>sub_DCC</code>: filter the input</p></li>
 <li><p><code>ping</code> does not seem to be vulnerable:</p></li>
 </ol>
 
@@ -383,7 +383,7 @@ but instead of reversing the filter function, i can use <code>sh</code>, aren&rs
 <ol>
 <li>enter <code>host l`sh`l</code> as command</li>
 <li>enter:<br/>
- <code>cat /home/babycmd/flag</code></li>
+<code>cat /home/babycmd/flag</code></li>
 <li>Press Ctrl+D</li>
 <li>Press Ctrl+C</li>
 </ol>
