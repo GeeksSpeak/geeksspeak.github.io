@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-18T13:40:45+04:30</updated>
+  <updated>2015-05-18T13:44:45+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -90,17 +90,17 @@
 
 <p>as strace says, it seems it parses the input and filter it and then try to execute!</p>
 
-<p>Basicly with <code>executing</code> word i always look for a filter bypass and execute arbitrary commands. but <code>0x56191abe7100acket</code> in the ping command take my attention.</p>
+<p>Basicly with <code>executing</code> word i always look for a filter bypass and execute arbitrary commands. but <code>0x56191abe7100acket</code> in the ping command got my attention.</p>
 
 <p>It&rsquo;s time to open the binary in IDA:</p>
 
 <ol>
-<li><p>6 main functions:
- <code>sub_F5C</code>: parse and execute dig
- <code>sub_10BD</code>: parse and execute host
- <code>sub_E35</code>: parse and execute ping
- <code>sub_121E</code>: main()
- <code>sub_D65</code>: parse the input
+<li><p>6 main functions:<br/>
+ <code>sub_F5C</code>: parse and execute dig<br/>
+ <code>sub_10BD</code>: parse and execute host<br/>
+ <code>sub_E35</code>: parse and execute ping<br/>
+ <code>sub_121E</code>: main()<br/>
+ <code>sub_D65</code>: parse the input<br/>
  <code>sub_DCC</code>: filter the input</p></li>
 <li><p><code>ping</code> does not seem to be vulnerable:</p></li>
 </ol>
@@ -382,7 +382,7 @@ but instead of reversing the filter function, i can use <code>sh</code>, aren&rs
 
 <ol>
 <li>enter <code>host l`sh`l</code> as command</li>
-<li>enter:
+<li>enter:<br/>
  <code>cat /home/babycmd/flag</code></li>
 <li>Press Ctrl+D</li>
 <li>Press Ctrl+C</li>
