@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/</loc>
+    <lastmod>2015-05-18T14:00:56+04:30</lastmod>
+  </url>
+  <url>
     <loc>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/</loc>
     <lastmod>2015-05-18T13:39:52+04:30</lastmod>
   </url>
@@ -138,6 +142,15 @@
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/categories/bypass/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/coding/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/ppc/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/math/</loc>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/posts/2/</loc>

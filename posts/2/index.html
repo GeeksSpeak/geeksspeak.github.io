@@ -9,9 +9,9 @@
   <meta name="author" content="GeeksSpeak">
 
   
-  <meta name="description" content="Backdoor 2015 ECHO Writeup
-Point = 100
-Category = Binary Little Suzie started learning C. She created a simple program that echo&rsquo;s back &hellip;">
+  <meta name="description" content="Backdoor 2015 CONCEALED Writeup
+Point = 150
+Category = Exploit All paths have been concealed. Get the hidden flag: nc hack.bckdr.in 8005. Submit sha- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,78 @@ Category = Binary Little Suzie started learning C. She created a simple program 
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/">Backdoor CTF 2015 - CONCEALED Writeup</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-04-03T02:33:31+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:33 am</span></time>
+        
+           | <a href="/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>Backdoor 2015 CONCEALED Writeup</strong><br/>
+<strong>Point = 150</strong><br/>
+<strong>Category = Exploit</strong></p>
+
+<blockquote><p>All paths have been concealed. Get the hidden flag: nc hack.bckdr.in 8005. Submit sha-256 of the flag</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ nc hack.bckdr.in 8005
+</span><span class='line'>######################################
+</span><span class='line'>####           CONCEAL            ####
+</span><span class='line'>######################################
+</span><span class='line'>
+</span><span class='line'>Welcome to CONCEAL
+</span><span class='line'>You have access to object named sandboxed and its functions 
+</span><span class='line'>Rest everything is sandboxed, don't be a jerk and break something
+</span><span class='line'>Wrap your code in a function and return what you want as output
+</span><span class='line'>Flag is hidden somewhere in the code. 
+</span><span class='line'>Get the flag :D!
+</span><span class='line'>
+</span><span class='line'>home@jail:$ 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First of all as banner says we should use all our payload as a function like :</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -239,6 +311,10 @@ Submit sha-256 of secret and flag joined</p></blockquote>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/">DefConCTF 2015 Quals - Mathwize Writeup</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/">DefConCTF 2015 Quals - Babycmd Writeup</a>
       </li>
     
@@ -252,10 +328,6 @@ Submit sha-256 of secret and flag joined</p></blockquote>
     
       <li class="post">
         <a href="/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/">NDH CTF 2015 - Facesec Writeup</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/">NDH CTF 2015 - Cooper Writeup</a>
       </li>
     
   </ul>
