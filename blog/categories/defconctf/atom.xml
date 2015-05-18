@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Defconctf | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/defconctf/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-18T21:17:14+04:30</updated>
+  <updated>2015-05-18T21:18:39+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -176,9 +176,9 @@ Copyright (C) 2014 Free Software Foundation, Inc.
 
 <p>** note: just use LD_LIBRARY_PATH to use this version to implement the attack completely.</p>
 
-<p>Then i found the offset of <code>/bin/sh</code> and <code>pop rdi; ret</code> from the <code>system</code> symbols of the our given <code>libc.so.6</code> as you can see below:
-* /bin/sh offset from system: +0x13669b
-* pop rdi; ret offset from system: -0x23b26</p>
+<p>Then i found the offset of <code>/bin/sh</code> and <code>pop rdi; ret</code> from the <code>system</code> symbols of the our given <code>libc.so.6</code> as you can see below:<br/>
+  * /bin/sh offset from system: +0x13669b<br/>
+  * pop rdi; ret offset from system: -0x23b26</p>
 
 <p>you can see my implementation here:</p>
 

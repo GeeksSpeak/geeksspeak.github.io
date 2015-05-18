@@ -381,9 +381,9 @@ i used the libc&rsquo;s version of the <code>babycmd</code> challenge.</p>
 
 <p>** note: just use LD_LIBRARY_PATH to use this version to implement the attack completely.</p>
 
-<p>Then i found the offset of <code>/bin/sh</code> and <code>pop rdi; ret</code> from the <code>system</code> symbols of the our given <code>libc.so.6</code> as you can see below:
-* /bin/sh offset from system: +0x13669b
-* pop rdi; ret offset from system: -0x23b26</p>
+<p>Then i found the offset of <code>/bin/sh</code> and <code>pop rdi; ret</code> from the <code>system</code> symbols of the our given <code>libc.so.6</code> as you can see below:<br/>
+  * /bin/sh offset from system: +0x13669b<br/>
+  * pop rdi; ret offset from system: -0x23b26</p>
 
 <p>you can see my implementation here:</p>
 
