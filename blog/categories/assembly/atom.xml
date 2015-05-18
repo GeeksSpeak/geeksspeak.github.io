@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Coding | GeeksSpeak Team Blog]]></title>
-  <link href="http://geeksspeak.github.io/blog/categories/coding/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Assembly | GeeksSpeak Team Blog]]></title>
+  <link href="http://geeksspeak.github.io/blog/categories/assembly/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
   <updated>2015-05-18T14:20:29+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
@@ -232,65 +232,6 @@ The flag is: Cats with frickin lazer beamz on top of their heads!
 </code></pre>
 
 <p>Here another point, but really i assumed i should do this multiple times :)</p>
-
-<p>@HAMIDx9</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[DefConCTF 2015 Quals - Mathwize Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/"/>
-    <updated>2015-05-18T14:00:56+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup</id>
-    <content type="html"><![CDATA[<p><strong>DefConCTF 2015 Mathwize Writeup</strong><br/>
-<strong>Point = 1</strong><br/>
-<strong>Category = Coding</strong></p>
-
-<p>We just given the dest address.</p>
-
-<blockquote><p>mathwhiz_c951d46fed68687ad93a84e702800b7a.quals.shallweplayaga.me:21249</p></blockquote>
-
-<pre><code>nc mathwhiz_c951d46fed68687ad93a84e702800b7a.quals.shallweplayaga.me 21249
-1 + 1 =
-</code></pre>
-
-<p>It&rsquo;s seems we should just answer all the questions.</p>
-
-<p>but among using a script to answer all, i see following patterns:</p>
-
-<ol>
-<li>using [ and ]  instead of (, )</li>
-<li>using { , } instead of (, )</li>
-<li>using ONE, TWO, THREE, instead of 1, 2, 3</li>
-</ol>
-
-
-<p>So here is my completely dirty solution :) :</p>
-
-<pre><code>import socket
-
-
-s = socket.create_connection(("mathwhiz_c951d46fed68687ad93a84e702800b7a.quals.shallweplayaga.me", 21249))
-
-
-while True:
-    a = s.recv(1024)
-    print a
-    b = eval(a.replace("=", "").replace("{", "(").replace("}", ")").replace("ONE", "1").replace("TWO", "2").replace("THREE", "3").replace("^", "**").replace("[", "(").replace("]", ")"))
-    print b
-    s.send(str(b)+"\n")
-</code></pre>
-
-<p>And finally:</p>
-
-<pre><code>$ python mathwize-sol.py
-[..]
-
-You won!!!
-The flag is: Farva says you are a FickenChucker and you'd better watch Super Troopers 2
-</code></pre>
-
-<p>another 1 point ;)</p>
 
 <p>@HAMIDx9</p>
 ]]></content>

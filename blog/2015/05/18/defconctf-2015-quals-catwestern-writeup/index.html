@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>GeeksSpeak Team Blog</title>
+  <title>DefConCTF 2015 Quals - Catwestern Writeup - GeeksSpeak Team Blog</title>
   <meta name="author" content="GeeksSpeak">
 
   
@@ -21,7 +21,7 @@ meow catwestern_631d7907670909fc4df2defc13f2057c.quals.shallweplayaga.me &hellip
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://geeksspeak.github.io/">
+  <link rel="canonical" href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="GeeksSpeak Team Blog" type="application/atom+xml">
@@ -66,15 +66,12 @@ meow catwestern_631d7907670909fc4df2defc13f2057c.quals.shallweplayaga.me &hellip
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/">DefConCTF 2015 Quals - Catwestern Writeup</a></h1>
+      <h1 class="entry-title">DefConCTF 2015 Quals - Catwestern Writeup</h1>
     
     
       <p class="meta">
@@ -85,15 +82,15 @@ meow catwestern_631d7907670909fc4df2defc13f2057c.quals.shallweplayaga.me &hellip
 
 <time class='entry-date' datetime='2015-05-18T14:19:44+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:19 pm</span></time>
         
-           | <a href="/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/">Comments</a>
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p><strong>DefConCTF 2015 Catwestern Writeup</strong><br/>
+<div class="entry-content"><p><strong>DefConCTF 2015 Catwestern Writeup</strong><br/>
 <strong>Point = 1</strong><br/>
 <strong>Category = Coding</strong></p>
 
@@ -495,576 +492,58 @@ after that i use <code>python-ptrace</code> to create child and trace the binary
 
 <p>@HAMIDx9</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/">DefConCTF 2015 Quals - Mathwize Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-05-18T14:00:56+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:00 pm</span></time>
-        
-           | <a href="/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>DefConCTF 2015 Mathwize Writeup</strong><br/>
-<strong>Point = 1</strong><br/>
-<strong>Category = Coding</strong></p>
-
-<p>We just given the dest address.</p>
-
-<blockquote><p>mathwhiz_c951d46fed68687ad93a84e702800b7a.quals.shallweplayaga.me:21249</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>nc mathwhiz_c951d46fed68687ad93a84e702800b7a.quals.shallweplayaga.me 21249
-</span><span class='line'>1 + 1 =
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It&rsquo;s seems we should just answer all the questions.</p>
-
-<p>but among using a script to answer all, i see following patterns:</p>
-
-<ol>
-<li>using [ and ]  instead of (, )</li>
-<li>using { , } instead of (, )</li>
-<li>using ONE, TWO, THREE, instead of 1, 2, 3</li>
-</ol>
-
-
-<p>So here is my completely dirty solution :) :</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import socket
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>s = socket.create_connection(("mathwhiz_c951d46fed68687ad93a84e702800b7a.quals.shallweplayaga.me", 21249))
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>while True:
-</span><span class='line'>    a = s.recv(1024)
-</span><span class='line'>    print a
-</span><span class='line'>    b = eval(a.replace("=", "").replace("{", "(").replace("}", ")").replace("ONE", "1").replace("TWO", "2").replace("THREE", "3").replace("^", "**").replace("[", "(").replace("]", ")"))
-</span><span class='line'>    print b
-</span><span class='line'>    s.send(str(b)+"\n")
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And finally:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ python mathwize-sol.py
-</span><span class='line'>[..]
-</span><span class='line'>
-</span><span class='line'>You won!!!
-</span><span class='line'>The flag is: Farva says you are a FickenChucker and you'd better watch Super Troopers 2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>another 1 point ;)</p>
-
-<p>@HAMIDx9</p>
-</div>
-  
   
 
+<span class="byline author vcard">Posted by <span class="fn">GeeksSpeak</span></span>
 
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/">DefConCTF 2015 Quals - Babycmd Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
 
-<time class='entry-date' datetime='2015-05-18T13:39:52+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:39 pm</span></time>
-        
-           | <a href="/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>DefConCTF 2015 babycmd Writeup</strong><br/>
-<strong>Point = 1</strong><br/>
-<strong>Category = Pwnable</strong></p>
-
-<p>As you may now defconctf started 2 days ago, so we participated and you can check our solutions right here.</p>
-
-<p>OK, So there was 4 problem categories: <code>Baby's first</code>,  <code>Pwning</code>, <code>Coding</code>, <code>Reverse</code> and <code>Misc</code>.</p>
-
-<p>This is babycmd writeup as you can see below,</p>
-
-<p>&ndash;</p>
-
-<p>There was a binary <code>babycmd_3ad28b10e8ab283d7df81795075f600b</code> by following properties:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ file babycmd_3ad28b10e8ab283d7df81795075f600b
-</span><span class='line'>babycmd_3ad28b10e8ab283d7df81795075f600b: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, stripped
-</span><span class='line'>$ checksec.sh --file babycmd_3ad28b10e8ab283d7df81795075f600b 
-</span><span class='line'>RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
-</span><span class='line'>No RELRO        Canary found      NX enabled    PIE enabled     No RPATH   No RUNPATH   babycmd_3ad28b10e8ab283d7df81795075f600b</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This is so much for 1 point task, but you know this is DEFCON.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+<time class='entry-date' datetime='2015-05-18T14:19:44+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:19 pm</span></time>
       
-  <header>
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/assembly/'>assembly</a>, <a class='category' href='/blog/categories/coding/'>coding</a>, <a class='category' href='/blog/categories/opcodes/'>opcodes</a>, <a class='category' href='/blog/categories/ptrace/'>ptrace</a>
+  
+</span>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/">PlaidCTF CTF 2015 - EBP Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-20T22:40:13+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:40 pm</span></time>
-        
-           | <a href="/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>PlaidCTF 2015 EBP Writeup</strong><br/>
-<strong>Point = 160</strong><br/>
-<strong>Category = Pwnable</strong></p>
-
-<p>Unfortunately the CTF time for our team was completely under heavy pressure. but here is one i solved in my free time.</p>
-
-<blockquote><p>Category: Pwnable Points: 160 Solves: 157 Description:
-   nc 52.6.64.173 4545
-   Download: %p%o%o%p.</p></blockquote>
-
-<p>We are given an ELF file:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ file ebp_a96f7231ab81e1b0d7fe24d660def25a.elf 
-</span><span class='line'>ebp_a96f7231ab81e1b0d7fe24d660def25a.elf: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=4e8094f9986968cd856db5093810badbb0749fde, not stripped</span></code></pre></td></tr></table></div></figure>
-
-
-<p>first attempt peresented us that it&rsquo;s a Format String Vulenrability.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./ebp_a96f7231ab81e1b0d7fe24d660def25a.elf 
-</span><span class='line'>%p%p%p%p%p
-</span><span class='line'>0xa0x10xf76c40000xffec67180x804852c</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We noticed that the binary is provided with disabled NX.</p>
-
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/" data-via="" data-counturl="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/" >Tweet</a>
+  
+  
+  
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/">NDH CTF 2015 - Weshgrow Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-06T16:58:41+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:58 pm</span></time>
-        
-           | <a href="/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>NDH 2015 Weshgrow Writeup</strong><br/>
-<strong>Point = 300</strong><br/>
-<strong>Category = Crypto</strong></p>
-
-<p>By openning the url we redirected to following link:</p>
-
-<blockquote><p><a href="http://weshgrow.challs.nuitduhack.com/?hmac=ca8473d35a80a5ca4e9f3555c2869f71">http://weshgrow.challs.nuitduhack.com/?hmac=ca8473d35a80a5ca4e9f3555c2869f71</a></p></blockquote>
-
-<p>As we know HMAC is a cryptographic message for authenticating using a secret key. So this has been made of something.</p>
-
-<p>Also we could find another HMAC in the page source as you can see:</p>
-
-<blockquote><p><a href="http://weshgrow.challs.nuitduhack.com/admin?hmac=fac0887096a54ac497d968daf4c4fe0b">http://weshgrow.challs.nuitduhack.com/admin?hmac=fac0887096a54ac497d968daf4c4fe0b</a></p></blockquote>
-
-<p>if you open the /flag address without the purposed HMAC you see redirection to <code>address+"#missinghmac"</code>.</p>
-
-<p>So this could be HMAC of pages and we should prepare a HMAC for <code>flag</code>.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+        <a class="basic-alignment left" href="/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/" title="Previous Post: DefConCTF 2015 Quals - mathwize Writeup">&laquo; DefConCTF 2015 Quals - mathwize Writeup</a>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/">NDH CTF 2015 - Facesec Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-06T01:56:25+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:56 am</span></time>
-        
-           | <a href="/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>NDH 2015 Facesec Writeup</strong><br/>
-<strong>Point = 100</strong><br/>
-<strong>Category = Web</strong><br/>
-<strong>Description : </strong></p>
-
-<blockquote><p>&ldquo;Hello there,</p>
-
-<p>We are looking for a developer or security consultant to secure our filebox system. We stumbled upon your LinkedIn profile and it seems like you would be a perfect candidate for this job. Could you please send us your CV and Motivation letter?<br/>
-Thanks,</p>
-
-<p><a href="http://facesec.challs.nuitduhack.com/">http://facesec.challs.nuitduhack.com/</a></p></blockquote>
-
-<p>after you open the link , you can see a login/register system.so sign up and login to my account</p>
-
-<p>after that you seen a upload form with this description :</p>
-
-<blockquote><p>You can upload a .txt file if you specify the type of the content (cv or motivation letter).
-If you want, you can upload a tar archive which contains two files (cv.txt and motiv.txt).
-The content will be update in your profil we can examine your instance.</p></blockquote>
-
-<p>so try to upload your file , contents of 2 texts go to 2 field in your profile name as CV and Motivation Letter</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/">NDH CTF 2015 - Cooper Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
+    </p>
+  </footer>
+</article>
 
-
-
-
-<time class='entry-date' datetime='2015-04-06T01:52:15+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:52 am</span></time>
-        
-           | <a href="/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>NDH 2015 Cooper Writeup</strong><br/>
-<strong>Point = 300</strong><br/>
-<strong>Category = Stegano</strong></p>
-
-<blockquote><p>&ldquo;I am not crazy, my mother had me tested.&rdquo; (Sheldon)</p>
-
-<p>What did Sheldon &hellip; huh sorry, Dr. Cooper really mean?
-(<a href="http://quals.nuitduhack.com/challenges/view/14">http://quals.nuitduhack.com/challenges/view/14</a>)</p></blockquote>
-
-<p>The tar zip contains a Windows executable, so the first thing I did was opening it in CFF Explorer.
-Doing so I found a picture of Sheldon &hellip; or better say <code>"Dr. Cooper"</code> in resources and a section called .hidden containing a ZIP file.</p>
-
-<p><img src="/files/ctf/ndh2k15/cooper/cooper.bmp" title="khkhkhhhhhh" alt="Sheldon's picture" /></p>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/05/ndh-ctf-2015-private-writeup/">NDH CTF 2015 - Private Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-05T15:43:15+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>3:43 pm</span></time>
-        
-           | <a href="/blog/2015/04/05/ndh-ctf-2015-private-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-private-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>NDH 2015 Private Writeup</strong><br/>
-<strong>Point = 100</strong><br/>
-<strong>Category = Forensics</strong><br/>
-<strong>Description : </strong></p>
-
-<blockquote><p>&ldquo;The quiet you are, the more you are able to ear&rdquo;</p></blockquote>
-
-<p>We&rsquo;ve provided a pcapng file in this challenge. At first glance I thought it may be VoIP challenge because of description but after viewing packets , this assumption goes wrong. there were some STP , CDP and some ICMP packets . after some investigation in packets i found some unusual ICMP packets ! their identification fields were 0 ! all of them ! hmmm. seems somebody generated them manually by a packet generator . so i focused on them to find a pattern .actually their IP headers had a pattern and they were ASCII numbers ! sweet . that&rsquo;s easy . let&rsquo;s have some fun with Scapy .</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>from scapy.all import *
-</span><span class='line'>from scapy.utils import rdpcap
-</span><span class='line'>flag=""
-</span><span class='line'>pkts=rdpcap("private.pcap")
-</span><span class='line'>for pkt in pkts:
-</span><span class='line'>   if (ICMP in pkt and pkt[ICMP].type==8 and pkt[ICMP].id==0 ):
-</span><span class='line'>      flag += chr(pkt[IP].id)
-</span><span class='line'>print flag        
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/05/ndh-ctf-2015-updator-writeup/">NDH CTF 2015 - Updator Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-05T03:28:56+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>3:28 am</span></time>
-        
-           | <a href="/blog/2015/04/05/ndh-ctf-2015-updator-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-updator-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>NDH 2015 Updator Writeup</strong><br/>
-<strong>Point = 200</strong><br/>
-<strong>Category = Exploit</strong></p>
-
-<blockquote><p>Unhackable : &ldquo;Not hackable; that cannot be hacked or broken into.&rdquo;
-We manage updates and thus have fixes, this is not a PS3 as it is unhackable &hellip; or is it?
-Score     200
-Link      <a href="http://updator.challs.nuitduhack.com/">http://updator.challs.nuitduhack.com/</a></p></blockquote>
-
-<p>openning the url gives us a login page and a update button. pressing update button shows an notification:</p>
-
-<blockquote><p>The update managing system is still under construction but will be available soon.</p></blockquote>
-
-<p>We noticed it&rsquo;s a python script <code>update.py</code>. So attempting to loading <code>update.pyc</code> gave us the permission to download the file. Instantly i tried to decompile the code with <code>uncompyle2</code> as:</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/05/ndh-ctf-2015-updator-writeup/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/03/backdoor-ctf-2015-team-writeup/">Backdoor CTF 2015 - TEAM Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-03T03:16:39+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>3:16 am</span></time>
-        
-           | <a href="/blog/2015/04/03/backdoor-ctf-2015-team-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>Backdoor 2015 TEAM Writeup</strong><br/>
-<strong>Point = 600</strong><br/>
-<strong>Category = Exploit</strong></p>
-
-<blockquote><p>There is a wierd kind of authentication service running: nc hack.bckdr.in 8004. The binary can be found here. The vampire says that there is no need for bruteforce.</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ file team
-</span><span class='line'>team: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=3fb6836dc9249bd1e7c33e023d563ff429d7dca4, stripped
-</span><span class='line'>$ checksec.sh --file team
-</span><span class='line'>RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
-</span><span class='line'>Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   team
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok looking into the binary in IDA shows us two function <code>0x08048769</code> and <code>0x080486ad</code> are important to us. the first one can be seen bellow:</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/03/backdoor-ctf-2015-team-writeup/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/posts/2">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -1130,6 +609,7 @@ Link      <a href="http://updator.challs.nuitduhack.com/">http://updator.challs.
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -1144,7 +624,10 @@ Link      <a href="http://updator.challs.nuitduhack.com/">http://updator.challs.
       var disqus_shortname = 'geeksspeak';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/';
+        var disqus_url = 'http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

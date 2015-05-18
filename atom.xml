@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-18T14:03:46+04:30</updated>
+  <updated>2015-05-18T14:20:29+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,6 +12,415 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[DefConCTF 2015 Quals - Catwestern Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/"/>
+    <updated>2015-05-18T14:19:44+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup</id>
+    <content type="html"><![CDATA[<p><strong>DefConCTF 2015 Catwestern Writeup</strong><br/>
+<strong>Point = 1</strong><br/>
+<strong>Category = Coding</strong></p>
+
+<blockquote><p>Catwestern
+meow catwestern_631d7907670909fc4df2defc13f2057c.quals.shallweplayaga.me 9999</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>nc catwestern_631d7907670909fc4df2defc13f2057c.quals.shallweplayaga.me 9999
+</span><span class='line'>****Initial Register State****
+</span><span class='line'>rax=0x33d34005adc0a57c
+</span><span class='line'>rbx=0xe318943106ae1bf9
+</span><span class='line'>rcx=0x805e3dd411fbc177
+</span><span class='line'>rdx=0x9a951fd093fea167
+</span><span class='line'>rsi=0xdecde15b09b2a5f5
+</span><span class='line'>rdi=0x8c1473d5803b0f4c
+</span><span class='line'>r8=0xf38da8ac64cb3b981
+</span><span class='line'>r9=0xda321f211f484523
+</span><span class='line'>r10=0xadb76e93d0e8fd1e
+</span><span class='line'>r11=0x54acc124703437a
+</span><span class='line'>r12=0x6ba39546c9366ffa
+</span><span class='line'>r13=0x2250452bedb3e99a
+</span><span class='line'>r14=0x525e1ed890af328e
+</span><span class='line'>r15=0xdfcbd919b08f5cbe
+</span><span class='line'>****Send Solution In The Same Format****
+</span><span class='line'>About to send 65 bytes: 
+</span><span class='line'>H��I�s �H��)o�zL)�I��� �^M!�I��M �H��M��I��H��I��</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So we should set these initial registers and execute opcodes and send the solution.</p>
+
+<p>For solution i created <code>d.s</code> file in the following format:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>.globl  _start
+</span><span class='line'>_start:
+</span><span class='line'>    movq $0x2222222222222222, %rax
+</span><span class='line'>    movq $0x3333333333333333, %rbx
+</span><span class='line'>    movq $0x4444444444444444, %rcx
+</span><span class='line'>    movq $0x5555555555555555, %rdx
+</span><span class='line'>    movq $0x6666666666666666, %rsi
+</span><span class='line'>    movq $0x7777777777777777, %rdi
+</span><span class='line'>    movq $0x8888888888888888, %r8
+</span><span class='line'>    movq $0x9999999999999999, %r9
+</span><span class='line'>    movq $0xaaaaaaaaaaaaaaaa, %r10
+</span><span class='line'>    movq $0xbbbbbbbbbbbbbbbb, %r11
+</span><span class='line'>    movq $0xcccccccccccccccc, %r12
+</span><span class='line'>    movq $0xdddddddddddddddd, %r13
+</span><span class='line'>    movq $0xeeeeeeeeeeeeeeee, %r14
+</span><span class='line'>    movq $0xffffffffffffffff, %r15
+</span><span class='line'>    nop
+</span><span class='line'>    nop
+</span><span class='line'>    nop
+</span><span class='line'>    nop
+</span><span class='line'>    nop
+</span><span class='line'>    nop
+</span><span class='line'>    ...
+</span><span class='line'>    nop
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>about 100 nops.</p>
+
+<p>i just read the initial registers and replace with these constants and the assemble and link the binary.
+after that i read the opcodes and write them from 0x105 offset to the executable file.
+after that i use <code>python-ptrace</code> to create child and trace the binary execution, and after recvieving SIGSEGV signal i read the registers and send to the server at the same format.</p>
+
+<p>you can see my python script:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/python
+</span><span class='line'> 
+</span><span class='line'>import socket
+</span><span class='line'>import struct
+</span><span class='line'>import telnetlib
+</span><span class='line'>from ptrace.debugger.debugger import PtraceDebugger
+</span><span class='line'>from ptrace.debugger.child import createChild
+</span><span class='line'>from ptrace.tools import locateProgram
+</span><span class='line'>from sys import stderr, argv, exit
+</span><span class='line'>from subprocess import call
+</span><span class='line'>from hexdump import hexdump
+</span><span class='line'>
+</span><span class='line'>def readuntil(f, delim=': '):
+</span><span class='line'>    data = ''
+</span><span class='line'>    while not data.endswith(delim):
+</span><span class='line'>        c = f.read(1)
+</span><span class='line'>        assert len(c) &gt; 0
+</span><span class='line'>        data += c
+</span><span class='line'>    #print data
+</span><span class='line'>    return data
+</span><span class='line'>
+</span><span class='line'>def p(v):
+</span><span class='line'>    return struct.pack('&lt;Q', v)
+</span><span class='line'>
+</span><span class='line'>def u(v):
+</span><span class='line'>    return struct.unpack('&lt;Q', v)[0]
+</span><span class='line'>
+</span><span class='line'>def traceProgram(arguments):
+</span><span class='line'>    env = None
+</span><span class='line'>    arguments1 = [str] * 2
+</span><span class='line'>    arguments1[0] = locateProgram(arguments)
+</span><span class='line'>    arguments1[1] = arguments[2:]
+</span><span class='line'>    #print arguments1
+</span><span class='line'>    return createChild(arguments1, False, env)
+</span><span class='line'>  
+</span><span class='line'>  
+</span><span class='line'>def playWithProcess(process):
+</span><span class='line'>    process.cont()
+</span><span class='line'>    event = process.waitEvent()
+</span><span class='line'>    print "New process event: %s" % event
+</span><span class='line'>    process.dumpRegs()
+</span><span class='line'>     
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>s = socket.create_connection(("catwestern_631d7907670909fc4df2defc13f2057c.quals.shallweplayaga.me", 9999))
+</span><span class='line'>f = s.makefile('rw', bufsize=0)
+</span><span class='line'>
+</span><span class='line'>raw_input("$") # attach debugger
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>a = readuntil(f, "Format")
+</span><span class='line'>print a
+</span><span class='line'>a = a.split('\n')[1:-1]
+</span><span class='line'>print a
+</span><span class='line'>call(["cp", "./d.s.b", "./d.s"])
+</span><span class='line'>
+</span><span class='line'>f1 = open("./d.s", "r")
+</span><span class='line'>b = f1.read()
+</span><span class='line'>f1.close()
+</span><span class='line'>print b
+</span><span class='line'>b = b.replace("0x2222222222222222", a[0].replace("rax=", ""))
+</span><span class='line'>b = b.replace("0x3333333333333333", a[1].replace("rbx=", ""))
+</span><span class='line'>b = b.replace("0x4444444444444444", a[2].replace("rcx=", ""))
+</span><span class='line'>b = b.replace("0x5555555555555555", a[3].replace("rdx=", ""))
+</span><span class='line'>b = b.replace("0x6666666666666666", a[4].replace("rsi=", ""))
+</span><span class='line'>b = b.replace("0x7777777777777777", a[5].replace("rdi=", ""))
+</span><span class='line'>b = b.replace("0x8888888888888888", a[6].replace("r8=", ""))
+</span><span class='line'>b = b.replace("0x9999999999999999", a[7].replace("r9=", ""))
+</span><span class='line'>b = b.replace("0xaaaaaaaaaaaaaaaa", a[8].replace("r10=", ""))
+</span><span class='line'>b = b.replace("0xbbbbbbbbbbbbbbbb", a[9].replace("r11=", ""))
+</span><span class='line'>b = b.replace("0xcccccccccccccccc", a[10].replace("r12=", ""))
+</span><span class='line'>b = b.replace("0xdddddddddddddddd", a[11].replace("r13=", ""))
+</span><span class='line'>b = b.replace("0xeeeeeeeeeeeeeeee", a[12].replace("r14=", ""))
+</span><span class='line'>b = b.replace("0xffffffffffffffff", a[13].replace("r15=", ""))
+</span><span class='line'>print b
+</span><span class='line'>
+</span><span class='line'>f1 = open("./d.s", "w")
+</span><span class='line'>f1.write(b)
+</span><span class='line'>f1.close()
+</span><span class='line'>
+</span><span class='line'>call(["as", "./d.s", "-o", "d"])
+</span><span class='line'>call(["ld", "-s", "./d", "-o", "./dm"])
+</span><span class='line'>
+</span><span class='line'>a = readuntil(f, ":")
+</span><span class='line'>print a
+</span><span class='line'>l = int(a.split(" ")[3])
+</span><span class='line'>s.recv(2)
+</span><span class='line'>print "len : ", l
+</span><span class='line'>
+</span><span class='line'>opcode = s.recv(l)
+</span><span class='line'>
+</span><span class='line'>print hexdump(opcode)
+</span><span class='line'>
+</span><span class='line'>f1 = open("./dm", "r+")
+</span><span class='line'>f1.seek(0x105)
+</span><span class='line'>f1.write(opcode)
+</span><span class='line'>f1.close()
+</span><span class='line'>
+</span><span class='line'>pid = traceProgram("./dm")
+</span><span class='line'>print pid
+</span><span class='line'>
+</span><span class='line'>dbg = PtraceDebugger()
+</span><span class='line'>is_attached = True
+</span><span class='line'>process = dbg.addProcess(pid, is_attached)
+</span><span class='line'>
+</span><span class='line'>playWithProcess(process)
+</span><span class='line'>answer = "rax=0x%x\n" % process.getreg('rax')
+</span><span class='line'>answer += "rbx=0x%x\n" % process.getreg('rbx')
+</span><span class='line'>answer += "rcx=0x%x\n" % process.getreg('rcx')
+</span><span class='line'>answer += "rdx=0x%x\n" % process.getreg('rdx')
+</span><span class='line'>answer += "rsi=0x%x\n" % process.getreg('rsi')
+</span><span class='line'>answer += "rdi=0x%x\n" % process.getreg('rdi')
+</span><span class='line'>answer += "r8=0x%x\n" % process.getreg('r8')
+</span><span class='line'>answer += "r9=0x%x\n" % process.getreg('r9')
+</span><span class='line'>answer += "r10=0x%x\n" % process.getreg('r10')
+</span><span class='line'>answer += "r11=0x%x\n" % process.getreg('r11')
+</span><span class='line'>answer += "r12=0x%x\n" % process.getreg('r12')
+</span><span class='line'>answer += "r13=0x%x\n" % process.getreg('r13')
+</span><span class='line'>answer += "r14=0x%x\n" % process.getreg('r14')
+</span><span class='line'>answer += "r15=0x%x\n" % process.getreg('r15')
+</span><span class='line'>print answer
+</span><span class='line'>f.write(answer)
+</span><span class='line'>dbg.quit()
+</span><span class='line'>
+</span><span class='line'>print "[+] shell is ready: "
+</span><span class='line'>t = telnetlib.Telnet()
+</span><span class='line'>t.sock = s
+</span><span class='line'>t.interact()
+</span><span class='line'>
+</span><span class='line'>#s.close()</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It&rsquo;s not so beatiful code :)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ python coding-sol.py
+</span><span class='line'>[..]
+</span><span class='line'>r14=0x20f838e6af11cbb2
+</span><span class='line'>r15=0x5c1e33373ff7f37c
+</span><span class='line'>
+</span><span class='line'>WARNING:root:Terminate &lt;PtraceProcess #5651&gt;
+</span><span class='line'>[+] shell is ready:
+</span><span class='line'>
+</span><span class='line'>The flag is: Cats with frickin lazer beamz on top of their heads!
+</span><span class='line'>*** Connection closed by remote host ***</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here another point, but really i assumed i should do this multiple times :)</p>
+
+<p>@HAMIDx9</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[DefConCTF 2015 Quals - Mathwize Writeup]]></title>
