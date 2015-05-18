@@ -1,0 +1,229 @@
+---
+layout: post
+title: "DefConCTF 2015 Quals - Catwestern Writeup"
+date: 2015-05-18 14:19:44 +0430
+comments: true
+categories: coding assembly opcodes ptrace
+---
+
+**DefConCTF 2015 Catwestern Writeup**  
+**Point = 1**  
+**Category = Coding**  
+
+> Catwestern
+> meow catwestern_631d7907670909fc4df2defc13f2057c.quals.shallweplayaga.me 9999
+
+```
+nc catwestern_631d7907670909fc4df2defc13f2057c.quals.shallweplayaga.me 9999
+****Initial Register State****
+rax=0x33d34005adc0a57c
+rbx=0xe318943106ae1bf9
+rcx=0x805e3dd411fbc177
+rdx=0x9a951fd093fea167
+rsi=0xdecde15b09b2a5f5
+rdi=0x8c1473d5803b0f4c
+r8=0xf38da8ac64cb3b981
+r9=0xda321f211f484523
+r10=0xadb76e93d0e8fd1e
+r11=0x54acc124703437a
+r12=0x6ba39546c9366ffa
+r13=0x2250452bedb3e99a
+r14=0x525e1ed890af328e
+r15=0xdfcbd919b08f5cbe
+****Send Solution In The Same Format****
+About to send 65 bytes: 
+H��I�s �H��)o�zL)�I��� �^M!�I��M �H��M��I��H��I��
+```
+
+So we should set these initial registers and execute opcodes and send the solution.
+
+For solution i created `d.s` file in the following format:
+
+```
+.globl  _start
+_start:
+    movq $0x2222222222222222, %rax
+    movq $0x3333333333333333, %rbx
+    movq $0x4444444444444444, %rcx
+    movq $0x5555555555555555, %rdx
+    movq $0x6666666666666666, %rsi
+    movq $0x7777777777777777, %rdi
+    movq $0x8888888888888888, %r8
+    movq $0x9999999999999999, %r9
+    movq $0xaaaaaaaaaaaaaaaa, %r10
+    movq $0xbbbbbbbbbbbbbbbb, %r11
+    movq $0xcccccccccccccccc, %r12
+    movq $0xdddddddddddddddd, %r13
+    movq $0xeeeeeeeeeeeeeeee, %r14
+    movq $0xffffffffffffffff, %r15
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    ...
+    nop
+
+```
+
+about 100 nops.
+
+i just read the initial registers and replace with these constants and the assemble and link the binary.
+after that i read the opcodes and write them from 0x105 offset to the executable file.
+after that i use `python-ptrace` to create child and trace the binary execution, and after recvieving SIGSEGV signal i read the registers and send to the server at the same format. 
+
+you can see my python script:
+
+```
+#!/usr/bin/python
+ 
+import socket
+import struct
+import telnetlib
+from ptrace.debugger.debugger import PtraceDebugger
+from ptrace.debugger.child import createChild
+from ptrace.tools import locateProgram
+from sys import stderr, argv, exit
+from subprocess import call
+from hexdump import hexdump
+
+def readuntil(f, delim=': '):
+    data = ''
+    while not data.endswith(delim):
+        c = f.read(1)
+        assert len(c) > 0
+        data += c
+    #print data
+    return data
+
+def p(v):
+    return struct.pack('<Q', v)
+
+def u(v):
+    return struct.unpack('<Q', v)[0]
+
+def traceProgram(arguments):
+    env = None
+    arguments1 = [str] * 2
+    arguments1[0] = locateProgram(arguments)
+    arguments1[1] = arguments[2:]
+    #print arguments1
+    return createChild(arguments1, False, env)
+  
+  
+def playWithProcess(process):
+    process.cont()
+    event = process.waitEvent()
+    print "New process event: %s" % event
+    process.dumpRegs()
+     
+
+
+
+s = socket.create_connection(("catwestern_631d7907670909fc4df2defc13f2057c.quals.shallweplayaga.me", 9999))
+f = s.makefile('rw', bufsize=0)
+
+raw_input("$") # attach debugger
+
+
+a = readuntil(f, "Format")
+print a
+a = a.split('\n')[1:-1]
+print a
+call(["cp", "./d.s.b", "./d.s"])
+
+f1 = open("./d.s", "r")
+b = f1.read()
+f1.close()
+print b
+b = b.replace("0x2222222222222222", a[0].replace("rax=", ""))
+b = b.replace("0x3333333333333333", a[1].replace("rbx=", ""))
+b = b.replace("0x4444444444444444", a[2].replace("rcx=", ""))
+b = b.replace("0x5555555555555555", a[3].replace("rdx=", ""))
+b = b.replace("0x6666666666666666", a[4].replace("rsi=", ""))
+b = b.replace("0x7777777777777777", a[5].replace("rdi=", ""))
+b = b.replace("0x8888888888888888", a[6].replace("r8=", ""))
+b = b.replace("0x9999999999999999", a[7].replace("r9=", ""))
+b = b.replace("0xaaaaaaaaaaaaaaaa", a[8].replace("r10=", ""))
+b = b.replace("0xbbbbbbbbbbbbbbbb", a[9].replace("r11=", ""))
+b = b.replace("0xcccccccccccccccc", a[10].replace("r12=", ""))
+b = b.replace("0xdddddddddddddddd", a[11].replace("r13=", ""))
+b = b.replace("0xeeeeeeeeeeeeeeee", a[12].replace("r14=", ""))
+b = b.replace("0xffffffffffffffff", a[13].replace("r15=", ""))
+print b
+
+f1 = open("./d.s", "w")
+f1.write(b)
+f1.close()
+
+call(["as", "./d.s", "-o", "d"])
+call(["ld", "-s", "./d", "-o", "./dm"])
+
+a = readuntil(f, ":")
+print a
+l = int(a.split(" ")[3])
+s.recv(2)
+print "len : ", l
+
+opcode = s.recv(l)
+
+print hexdump(opcode)
+
+f1 = open("./dm", "r+")
+f1.seek(0x105)
+f1.write(opcode)
+f1.close()
+
+pid = traceProgram("./dm")
+print pid
+
+dbg = PtraceDebugger()
+is_attached = True
+process = dbg.addProcess(pid, is_attached)
+
+playWithProcess(process)
+answer = "rax=0x%x\n" % process.getreg('rax')
+answer += "rbx=0x%x\n" % process.getreg('rbx')
+answer += "rcx=0x%x\n" % process.getreg('rcx')
+answer += "rdx=0x%x\n" % process.getreg('rdx')
+answer += "rsi=0x%x\n" % process.getreg('rsi')
+answer += "rdi=0x%x\n" % process.getreg('rdi')
+answer += "r8=0x%x\n" % process.getreg('r8')
+answer += "r9=0x%x\n" % process.getreg('r9')
+answer += "r10=0x%x\n" % process.getreg('r10')
+answer += "r11=0x%x\n" % process.getreg('r11')
+answer += "r12=0x%x\n" % process.getreg('r12')
+answer += "r13=0x%x\n" % process.getreg('r13')
+answer += "r14=0x%x\n" % process.getreg('r14')
+answer += "r15=0x%x\n" % process.getreg('r15')
+print answer
+f.write(answer)
+dbg.quit()
+
+print "[+] shell is ready: "
+t = telnetlib.Telnet()
+t.sock = s
+t.interact()
+
+#s.close()
+```
+
+It's not so beatiful code :)
+
+```
+$ python coding-sol.py
+[..]
+r14=0x20f838e6af11cbb2
+r15=0x5c1e33373ff7f37c
+
+WARNING:root:Terminate <PtraceProcess #5651>
+[+] shell is ready:
+
+The flag is: Cats with frickin lazer beamz on top of their heads!
+*** Connection closed by remote host ***
+```
+
+Here another point, but really i assumed i should do this multiple times :)
+
+@HAMIDx9

