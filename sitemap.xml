@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://geeksspeak.github.io/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/</loc>
+    <lastmod>2015-05-19T00:52:48+04:30</lastmod>
+  </url>
+  <url>
     <loc>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/</loc>
     <lastmod>2015-05-18T21:45:44+04:30</lastmod>
   </url>
@@ -178,6 +182,12 @@
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/categories/defcon/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/re/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/auth/</loc>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/posts/2/</loc>
