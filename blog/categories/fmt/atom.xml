@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Fmt | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/fmt/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-18T21:46:21+04:30</updated>
+  <updated>2015-05-18T21:47:02+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -41,6 +41,9 @@ Reading 13 bytes
 </code></pre>
 
 <p>There is format string vulnerability, and based on binary properties we should run our shellcode.</p>
+
+<!--more-->
+
 
 <p>but there&rsquo;s a limit, 13 bytes? right?</p>
 

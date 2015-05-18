@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Pwn | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/pwn/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-18T21:46:21+04:30</updated>
+  <updated>2015-05-18T21:47:02+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -41,6 +41,9 @@ Reading 13 bytes
 </code></pre>
 
 <p>There is format string vulnerability, and based on binary properties we should run our shellcode.</p>
+
+<!--more-->
+
 
 <p>but there&rsquo;s a limit, 13 bytes? right?</p>
 
@@ -216,52 +219,59 @@ The flag is: 1s 1s th3r3 th3r3 @n @n 3ch0 3ch0 1n 1n h3r3 h3r3? 3uoiw!T0*%
 
 <blockquote><p>r0pbaby_542ee6516410709a1421141501f03760</p></blockquote>
 
-<pre><code>./r0pbaby_542ee6516410709a1421141501f03760 
+<p>&#8220;`
+./r0pbaby_542ee6516410709a1421141501f03760</p>
 
-Welcome to an easy Return Oriented Programming challenge...
-Menu:
-1) Get libc address
-2) Get address of a libc function
-3) Nom nom r0p buffer to stack
-4) Exit
-: 1
-libc.so.6: 0x00007FF0352429B0
-1) Get libc address
-2) Get address of a libc function
-3) Nom nom r0p buffer to stack
-4) Exit
-: 2
-Enter symbol: system
-Symbol system: 0x00007FF034A9DC40
-1) Get libc address
-2) Get address of a libc function
-3) Nom nom r0p buffer to stack
-4) Exit
-: 
+<!--more-->
+
+
+<dl>
+<dt>Welcome to an easy Return Oriented Programming challenge&hellip;</dt>
+<dt>Menu:</dt>
+<dt>1) Get libc address</dt>
+<dt>2) Get address of a libc function</dt>
+<dt>3) Nom nom r0p buffer to stack</dt>
+<dt>4) Exit</dt>
+<dd>1</dd>
+<dt>libc.so.6: 0x00007FF0352429B0</dt>
+<dt>1) Get libc address</dt>
+<dt>2) Get address of a libc function</dt>
+<dt>3) Nom nom r0p buffer to stack</dt>
+<dt>4) Exit</dt>
+<dd>2</dd>
+<dt>Enter symbol: system</dt>
+<dt>Symbol system: 0x00007FF034A9DC40</dt>
+<dt>1) Get libc address</dt>
+<dt>2) Get address of a libc function</dt>
+<dt>3) Nom nom r0p buffer to stack</dt>
+<dt>4) Exit</dt>
+<dd></dd>
+</dl>
+
+<pre><code>
+So we have address of any symbols of the `libc.so.6`.
+
+Let's check the binary in IDA, the main function is `sub_C46`.
 </code></pre>
 
-<p>So we have address of any symbols of the <code>libc.so.6</code>.</p>
-
-<p>Let&rsquo;s check the binary in IDA, the main function is <code>sub_C46</code>.</p>
-
-<pre><code>__int64 sub_C46()
+<p><strong>int64 sub_C46()
 {
-  __int64 v0; // rax@2
+  </strong>int64 v0; // rax@2
   signed int v1; // eax@4
-  __int64 v2; // rax@12
-  unsigned __int64 v3; // r14@15
+  <strong>int64 v2; // rax@12
+  unsigned </strong>int64 v3; // r14@15
   int v4; // er13@17
   size_t v5; // r12@17
   int v6; // eax@18
   void *handle; // [sp+8h] [bp-448h]@1
   char nptr[1088]; // [sp+10h] [bp-440h]@2
-  __int64 savedregs; // [sp+450h] [bp+0h]@22
+  __int64 savedregs; // [sp+450h] [bp+0h]@22</p>
 
-  setvbuf(stdout, 0LL, 2, 0LL);
+<p>  setvbuf(stdout, 0LL, 2, 0LL);
   signal(14, handler);
-  puts("\nWelcome to an easy Return Oriented Programming challenge...");
-  puts("Menu:");
-  handle = dlopen("libc.so.6", 1);
+  puts(&ldquo;\nWelcome to an easy Return Oriented Programming challenge&hellip;&rdquo;);
+  puts(&ldquo;Menu:&rdquo;);
+  handle = dlopen(&ldquo;libc.so.6&rdquo;, 1);
   while ( 1 )
   {
     while ( 1 )
@@ -274,38 +284,38 @@ Symbol system: 0x00007FF034A9DC40
           LODWORD(v0) = sub_B9A(nptr, 1024LL);
           if ( !v0 )
           {
-            puts("Bad choice.");
+            puts(&ldquo;Bad choice.&rdquo;);
             return 0LL;
           }
           v1 = strtol(nptr, 0LL, 10);
           if ( v1 != 2 )
             break;
-          __printf_chk(1LL, "Enter symbol: ");
+          <strong>printf_chk(1LL, &ldquo;Enter symbol: &rdquo;);
           LODWORD(v2) = sub_B9A(nptr, 64LL);
           if ( v2 )
           {
             dlsym(handle, nptr);
-            __printf_chk(1LL, "Symbol %s: 0x%016llX\n");
+            </strong>printf_chk(1LL, &ldquo;Symbol %s: 0x%016llX\n&rdquo;);
           }
           else
           {
-            puts("Bad symbol.");
+            puts(&ldquo;Bad symbol.&rdquo;);
           }
         }
-        if ( v1 &gt; 2 )
+        if ( v1 > 2 )
           break;
         if ( v1 != 1 )
           goto LABEL_24;
-        __printf_chk(1LL, "libc.so.6: 0x%016llX\n");
+        <strong>printf_chk(1LL, &ldquo;libc.so.6: 0x%016llX\n&rdquo;);
       }
       if ( v1 != 3 )
         break;
-      __printf_chk(1LL, "Enter bytes to send (max 1024): ");
+      </strong>printf_chk(1LL, &ldquo;Enter bytes to send (max 1024): &rdquo;);
       sub_B9A(nptr, 1024LL);
       v3 = (signed int)strtol(nptr, 0LL, 10);
-      if ( v3 - 1 &gt; 0x3FF )
+      if ( v3 - 1 > 0x3FF )
       {
-        puts("Invalid amount.");
+        puts(&ldquo;Invalid amount.&rdquo;);
       }
       else
       {
@@ -337,13 +347,13 @@ LABEL_22:
     if ( v1 == 4 )
       break;
 LABEL_24:
-    puts("Bad choice.");
+    puts(&ldquo;Bad choice.&rdquo;);
   }
   dlclose(handle);
-  puts("Exiting.");
+  puts(&ldquo;Exiting.&rdquo;);
   return 0LL;
 }
-</code></pre>
+&#8220;`</p>
 
 <p>After resolving symbols we can use third menu to overflow and execute our chain.</p>
 
@@ -543,124 +553,67 @@ Commands: ping, dig, host, exit
 </code>
 the <code>v1</code>  param which passes to <code>sprintf</code> returning from <code>inet_ntoa</code> so it cannot be a arbitrary value.</p></li>
 <li><p>let&rsquo;s look at host code:
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;strong&gt;int64 &lt;/strong&gt;fastcall sub_10BD(&lt;strong&gt;int64 a1)
-</span><span class='line'>{
-</span><span class='line'>char &lt;em&gt;v1; // rax@6
-</span><span class='line'>FILE &lt;/em&gt;v2; // rbp@10
-</span><span class='line'>struct in_addr v4; // [sp+0h] [bp-538h]@5
-</span><span class='line'>char command; // [sp+10h] [bp-528h]@6
-</span><span class='line'>char cp; // [sp+190h] [bp-3A8h]@3
-</span><span class='line'>char s; // [sp+310h] [bp-228h]@12
-</span><span class='line'>&lt;/strong&gt;int64 v8; // [sp+518h] [bp-20h]@1&lt;/p&gt;&lt;/li&gt;
-</span><span class='line'>&lt;/ol&gt;
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;  v8 = &lt;em&gt;MK_FP(&lt;strong&gt;FS&lt;/strong&gt;, 40LL);
-</span><span class='line'>  if ( a1 )
-</span><span class='line'>  {
-</span><span class='line'>    if ( (unsigned int)sub_D65(a1, (&lt;strong&gt;int64)&amp;cp) )
-</span><span class='line'>    {
-</span><span class='line'>      if ( inet_aton(&amp;cp, &amp;v4) )
-</span><span class='line'>      {
-</span><span class='line'>        v1 = inet_ntoa(v4);
-</span><span class='line'>        &lt;/strong&gt;sprintf_chk(&amp;command, 1LL, 384LL, &ldquo;host %s&rdquo;, v1);
-</span><span class='line'>      }
-</span><span class='line'>      else
-</span><span class='line'>      {
-</span><span class='line'>        if ( !(unsigned int)sub_DCC((__int64)&amp;cp) )
-</span><span class='line'>        {
-</span><span class='line'>          puts(&ldquo;Invalid hostname.&rdquo;);
-</span><span class='line'>          return &lt;/em&gt;MK_FP(&lt;strong&gt;FS&lt;/strong&gt;, 40LL) ^ v8;
-</span><span class='line'>        }
-</span><span class='line'>        &lt;strong&gt;sprintf_chk(&amp;command, 1LL, 384LL, &ldquo;host \&rdquo;%s\&ldquo;&rdquo;, &amp;cp);
-</span><span class='line'>      }
-</span><span class='line'>      v2 = popen(&amp;command, &ldquo;r&rdquo;);
-</span><span class='line'>      if ( v2 )
-</span><span class='line'>      {
-</span><span class='line'>        while ( fgets(&amp;s, 512, v2) )
-</span><span class='line'>          &lt;/strong&gt;printf_chk(1LL, &amp;s);
-</span><span class='line'>        pclose(v2);
-</span><span class='line'>      }
-</span><span class='line'>      else
-</span><span class='line'>      {
-</span><span class='line'>        puts(&ldquo;Command failed.&rdquo;);
-</span><span class='line'>      }
-</span><span class='line'>    }
-</span><span class='line'>    else
-</span><span class='line'>    {
-</span><span class='line'>      puts(&ldquo;Invalid Host or IP address sent to dig.&rdquo;);
-</span><span class='line'>    }
-</span><span class='line'>  }
-</span><span class='line'>  else
-</span><span class='line'>  {
-</span><span class='line'>    puts(&ldquo;No address specified.&rdquo;);
-</span><span class='line'>  }
-</span><span class='line'>  return *MK_FP(&lt;strong&gt;FS&lt;/strong&gt;, 40LL) ^ v8;
-</span><span class='line'>}
-</span><span class='line'>&lt;code&gt;``
-</span><span class='line'>As you can see, second&lt;/code&gt;__sprintf_chk&lt;code&gt;may acts unexpectedly. but there could be problem in using&lt;/code&gt;sub_DCC`.&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;ol&gt;
-</span><span class='line'>&lt;li&gt;&lt;code&gt;sub_DCC&lt;/code&gt; code:</span></code></pre></td></tr></table></div></figure>
+&#8220;`
+<strong>int64 </strong>fastcall sub_10BD(<strong>int64 a1)
+{
+char <em>v1; // rax@6
+FILE </em>v2; // rbp@10
+struct in_addr v4; // [sp+0h] [bp-538h]@5
+char command; // [sp+10h] [bp-528h]@6
+char cp; // [sp+190h] [bp-3A8h]@3
+char s; // [sp+310h] [bp-228h]@12
+</strong>int64 v8; // [sp+518h] [bp-20h]@1</p></li>
+</ol>
+
+
+<p>  v8 = <em>MK_FP(<strong>FS</strong>, 40LL);
+  if ( a1 )
+  {
+    if ( (unsigned int)sub_D65(a1, (<strong>int64)&amp;cp) )
+    {
+      if ( inet_aton(&amp;cp, &amp;v4) )
+      {
+        v1 = inet_ntoa(v4);
+        </strong>sprintf_chk(&amp;command, 1LL, 384LL, &ldquo;host %s&rdquo;, v1);
+      }
+      else
+      {
+        if ( !(unsigned int)sub_DCC((__int64)&amp;cp) )
+        {
+          puts(&ldquo;Invalid hostname.&rdquo;);
+          return </em>MK_FP(<strong>FS</strong>, 40LL) ^ v8;
+        }
+        <strong>sprintf_chk(&amp;command, 1LL, 384LL, &ldquo;host \&rdquo;%s\&ldquo;&rdquo;, &amp;cp);
+      }
+      v2 = popen(&amp;command, &ldquo;r&rdquo;);
+      if ( v2 )
+      {
+        while ( fgets(&amp;s, 512, v2) )
+          </strong>printf_chk(1LL, &amp;s);
+        pclose(v2);
+      }
+      else
+      {
+        puts(&ldquo;Command failed.&rdquo;);
+      }
+    }
+    else
+    {
+      puts(&ldquo;Invalid Host or IP address sent to dig.&rdquo;);
+    }
+  }
+  else
+  {
+    puts(&ldquo;No address specified.&rdquo;);
+  }
+  return *MK_FP(<strong>FS</strong>, 40LL) ^ v8;
+}
+<code>``
+As you can see, second</code>__sprintf_chk<code>may acts unexpectedly. but there could be problem in using</code>sub_DCC`.</p>
+
+<ol>
+<li><code>sub_DCC</code> code:
+&#8220;`
 signed <strong>int64 </strong>fastcall sub_DCC(<strong>int64 a1)
 {
 </strong>int64 v1; // rsi@1
