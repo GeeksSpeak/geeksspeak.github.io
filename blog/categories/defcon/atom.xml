@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Defcon | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/defcon/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-19T00:55:20+04:30</updated>
+  <updated>2015-05-19T01:08:23+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,115 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[DefConCTF 2015 Quals - Access Control Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/"/>
-    <updated>2015-05-19T00:52:48+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/05/19/defconctf-2015-quals-access-control-writeup</id>
-    <content type="html"><![CDATA[<p><strong>DefConCTF 2015 Access-Control Writeup</strong><br/>
-<strong>Point = 1</strong><br/>
-<strong>Category = Reverse</strong></p>
-
-<p>TL;DR</p>
-
-<p>we are given a binary which seems to be a client to access a server.</p>
-
-<!--more-->
-
-
-<p>you can see my solution here:</p>
-
-<pre><code>import socket 
-import telnetlib
-
-
-s = socket.create_connection(("access_control_server_f380fcad6e9b2cdb3c73c651824222dc.quals.shallweplayaga.me", 17069))
-
-cid =  s.recv(1024).split(" ")[2]
-#cid = "H\"Y1)3IY+yEl\\3\n"
-print cid , len(cid)
-s80 = ord(cid[7])
-print chr(s80)
-s80 = s80 % 3
-#s80 = 0
-dst = cid[s80+1:s80+1+5]
-print dst
-p = "duchess" #grumpy
-passw = ""
-
-for i in range(5):
-    passw += chr(ord(p[i]) ^ ord(dst[i]))
-passw = list(passw)
-print passw
-for i in range(5):
-    if ord(passw[i]) &lt;= 0x1f:
-        passw[i] = chr(ord(passw[i]) + ord(' '))
-    if ord(passw[i]) == 0x7f:
-        passw[i] = chr(ord(passw[i]) - 0x7E + 0x20)
-
-passw = ''.join(passw)
-print passw
-print s.recv(1024)
-#print s.recv(1024)
-s.send("version 3.11.54\n")
-print s.recv(1024)
-s.send("duchess\n")
-print s.recv(1024)
-s.send(passw+"\n")
-print s.recv(1024)
-
-s.send("print key\n")
-print s.recv(1024)
-chall = s.recv(1024)
-print chall
-chall = chall.split(" ")[1]
-print chall
-#print s.recv(1024)
-
-# compute answer on chall
-
-dst = cid[s80+7:s80+7+5]
-print dst
-passw = ""
-
-for i in range(5):
-    passw += chr(ord(chall[i]) ^ ord(dst[i]))
-passw = list(passw)
-print passw
-for i in range(5):
-    if ord(passw[i]) &lt;= 0x1f:
-        passw[i] = chr(ord(passw[i]) + ord(' '))
-    if ord(passw[i]) == 0x7f:
-        passw[i] = chr(ord(passw[i]) - 0x7E + 0x20)
-
-passw = ''.join(passw)
-print passw, len(passw)
-
-s.send(passw+"\n")
-
-
-
-
-t = telnetlib.Telnet()
-t.sock = s
-t.interact()
-</code></pre>
-
-<p>Running the script:</p>
-
-<pre><code>$ python access-sol.py
-XZI_}jT.'l@Km+
-[..]
-
-the key is: The only easy day was yesterday. 44564
-
-hello duchess, what would you like to do?
-</code></pre>
-
-<p>@HAMIDx9</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[DefConCTF 2015 Quals - Babyecho Writeup]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-18T21:46:21+04:30</updated>
+  <updated>2015-05-19T01:08:23+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -51,6 +51,9 @@
 
 
 <p>There is format string vulnerability, and based on binary properties we should run our shellcode.</p>
+
+<!--more-->
+
 
 <p>but there&rsquo;s a limit, 13 bytes? right?</p>
 
@@ -381,7 +384,11 @@ Please check my implementation:</p>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>./r0pbaby_542ee6516410709a1421141501f03760 
+</span><span class='line'>
+</span><span class='line'>&lt;!--more--&gt;
 </span><span class='line'>
 </span><span class='line'>Welcome to an easy Return Oriented Programming challenge...
 </span><span class='line'>Menu:

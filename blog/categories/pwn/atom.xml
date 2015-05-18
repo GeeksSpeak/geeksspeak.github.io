@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Pwn | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/pwn/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-19T00:55:20+04:30</updated>
+  <updated>2015-05-19T01:08:23+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -552,105 +552,106 @@ Commands: ping, dig, host, exit
      }
 </code>
 the <code>v1</code>  param which passes to <code>sprintf</code> returning from <code>inet_ntoa</code> so it cannot be a arbitrary value.</p></li>
-<li><p>let&rsquo;s look at host code:
-&#8220;`
-<strong>int64 </strong>fastcall sub_10BD(<strong>int64 a1)
-{
-char <em>v1; // rax@6
-FILE </em>v2; // rbp@10
-struct in_addr v4; // [sp+0h] [bp-538h]@5
-char command; // [sp+10h] [bp-528h]@6
-char cp; // [sp+190h] [bp-3A8h]@3
-char s; // [sp+310h] [bp-228h]@12
-</strong>int64 v8; // [sp+518h] [bp-20h]@1</p></li>
+<li><p>let&rsquo;s look at host code:</p></li>
 </ol>
 
 
-<p>  v8 = <em>MK_FP(<strong>FS</strong>, 40LL);
+<pre><code>__int64 __fastcall sub_10BD(__int64 a1)
+{
+  char *v1; // rax@6
+  FILE *v2; // rbp@10
+  struct in_addr v4; // [sp+0h] [bp-538h]@5
+  char command; // [sp+10h] [bp-528h]@6
+  char cp; // [sp+190h] [bp-3A8h]@3
+  char s; // [sp+310h] [bp-228h]@12
+  __int64 v8; // [sp+518h] [bp-20h]@1
+
+  v8 = *MK_FP(__FS__, 40LL);
   if ( a1 )
   {
-    if ( (unsigned int)sub_D65(a1, (<strong>int64)&amp;cp) )
+    if ( (unsigned int)sub_D65(a1, (__int64)&amp;cp) )
     {
       if ( inet_aton(&amp;cp, &amp;v4) )
       {
         v1 = inet_ntoa(v4);
-        </strong>sprintf_chk(&amp;command, 1LL, 384LL, &ldquo;host %s&rdquo;, v1);
+        __sprintf_chk(&amp;command, 1LL, 384LL, "host %s", v1);
       }
       else
       {
         if ( !(unsigned int)sub_DCC((__int64)&amp;cp) )
         {
-          puts(&ldquo;Invalid hostname.&rdquo;);
-          return </em>MK_FP(<strong>FS</strong>, 40LL) ^ v8;
+          puts("Invalid hostname.");
+          return *MK_FP(__FS__, 40LL) ^ v8;
         }
-        <strong>sprintf_chk(&amp;command, 1LL, 384LL, &ldquo;host \&rdquo;%s\&ldquo;&rdquo;, &amp;cp);
+        __sprintf_chk(&amp;command, 1LL, 384LL, "host \"%s\"", &amp;cp);
       }
-      v2 = popen(&amp;command, &ldquo;r&rdquo;);
+      v2 = popen(&amp;command, "r");
       if ( v2 )
       {
         while ( fgets(&amp;s, 512, v2) )
-          </strong>printf_chk(1LL, &amp;s);
+          __printf_chk(1LL, &amp;s);
         pclose(v2);
       }
       else
       {
-        puts(&ldquo;Command failed.&rdquo;);
+        puts("Command failed.");
       }
     }
     else
     {
-      puts(&ldquo;Invalid Host or IP address sent to dig.&rdquo;);
+      puts("Invalid Host or IP address sent to dig.");
     }
   }
   else
   {
-    puts(&ldquo;No address specified.&rdquo;);
+    puts("No address specified.");
   }
-  return *MK_FP(<strong>FS</strong>, 40LL) ^ v8;
+  return *MK_FP(__FS__, 40LL) ^ v8;
 }
-<code>``
-As you can see, second</code>__sprintf_chk<code>may acts unexpectedly. but there could be problem in using</code>sub_DCC`.</p>
+</code></pre>
+
+<p>As you can see, second <code>__sprintf_chk</code> may acts unexpectedly. but there could be problem in using <code>sub_DCC</code>.</p>
 
 <ol>
-<li><code>sub_DCC</code> code:
-&#8220;`
-signed <strong>int64 </strong>fastcall sub_DCC(<strong>int64 a1)
-{
-</strong>int64 v1; // rsi@1
-signed <strong>int64 v2; // rcx@1
-bool v3; // zf@3
-signed </strong>int64 v4; // rcx@4
-signed __int64 result; // rax@4
-char v6; // dl@7</li>
+<li><code>sub_DCC</code> code:</li>
 </ol>
 
 
-<p>  v1 = a1;
+<pre><code>signed __int64 __fastcall sub_DCC(__int64 a1)
+{
+  __int64 v1; // rsi@1
+  signed __int64 v2; // rcx@1
+  bool v3; // zf@3
+  signed __int64 v4; // rcx@4
+  signed __int64 result; // rax@4
+  char v6; // dl@7
+
+  v1 = a1;
   v2 = -1LL;
   do
   {
     if ( !v2 )
       break;
-    v3 = <em>(_BYTE </em>)a1++ == 0;
-    &ndash;v2;
+    v3 = *(_BYTE *)a1++ == 0;
+    --v2;
   }
   while ( !v3 );
   v4 = ~v2;
   result = 0LL;
-  if ( (unsigned <strong>int64)(v4 - 4) &lt;= 0x3C )
+  if ( (unsigned __int64)(v4 - 4) &lt;= 0x3C )
   {
-    if ( (unsigned </strong>int8)((<em>(_BYTE </em>)v1 &amp; 0xDF) - 0x41) &lt;= 0x19u
-      || (result = 0LL, (unsigned <strong>int8)(<em>(_BYTE </em>)v1 - 48) &lt;= 9u) )
+    if ( (unsigned __int8)((*(_BYTE *)v1 &amp; 0xDF) - 0x41) &lt;= 0x19u
+      || (result = 0LL, (unsigned __int8)(*(_BYTE *)v1 - 48) &lt;= 9u) )
     {
-      v6 = <em>(_BYTE </em>)(v1 + v4 - 1 - 1);
+      v6 = *(_BYTE *)(v1 + v4 - 1 - 1);
       result = 1LL;
-      if ( (unsigned </strong>int8)((v6 &amp; 0xDF) - 0x41) > 0x19u )
+      if ( (unsigned __int8)((v6 &amp; 0xDF) - 0x41) &gt; 0x19u )
         result = (unsigned __int8)(v6 - 0x30) &lt;= 9u;
     }
   }
   return result;
 }
-&#8220;`</p>
+</code></pre>
 
 <p>i just noticed that it filters some bytes but not chr(0x60) which can be used to execute command and tried some tests on input.</p>
 
