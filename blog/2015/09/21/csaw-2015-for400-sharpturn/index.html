@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>CSAW 2015 - FOR400 - Sharpturn - GeeksSpeak Team Blog</title>
+  <meta name="author" content="GeeksSpeak">
+
+  
+  <meta name="description" content="CSAW 2015 - FOR400 - Sharpturn Basic useful feature list: I think my SATA controller is dying.
+HINT: git fsck -v We had a tar.xz file , after &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="GeeksSpeak Team Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-63164229-1']);
+    _gaq.push(['_setDomainName','github.io']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">GeeksSpeak Team Blog</a></h1>
+  
+    <h2>WriteUps and random thoughts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="geeksspeak.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">CSAW 2015 - FOR400 - Sharpturn</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-21T17:42:51+04:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>5:42 pm</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>CSAW 2015 - FOR400 - Sharpturn</h1>
+
+<p>Basic useful feature list:</p>
+
+<ul>
+<li>I think my SATA controller is dying.</li>
+<li>HINT: git fsck -v</li>
+</ul>
+
+
+<p>We had a tar.xz file , after extracting found a git repository.
+We had a good hint :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git fsck -v
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and the response :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Checking HEAD link
+</span><span class='line'>Checking object directory
+</span><span class='line'>Checking directory objects/2b
+</span><span class='line'>Checking directory objects/2e
+</span><span class='line'>Checking directory objects/35
+</span><span class='line'>Checking directory objects/4a
+</span><span class='line'>Checking directory objects/4c
+</span><span class='line'>Checking directory objects/7c
+</span><span class='line'>Checking directory objects/a1
+</span><span class='line'>Checking directory objects/cb
+</span><span class='line'>Checking directory objects/d5
+</span><span class='line'>Checking directory objects/d9
+</span><span class='line'>Checking directory objects/e5
+</span><span class='line'>Checking directory objects/ef
+</span><span class='line'>Checking directory objects/f8
+</span><span class='line'>Checking tree 2bd4c81f7261a60ecded9bae3027a46b9746fa4f
+</span><span class='line'>Checking commit 2e5d553f41522fc9036bacce1398c87c2483c2d5
+</span><span class='line'>error: sha1 mismatch 354ebf392533dce06174f9c8c093036c138935f3
+</span><span class='line'>error: 354ebf392533dce06174f9c8c093036c138935f3: object corrupt or missing
+</span><span class='line'>Checking commit 4a2f335e042db12cc32a684827c5c8f7c97fe60b
+</span><span class='line'>Checking tree 4c0555b27c05dbdf044598a0601e5c8e28319f67
+</span><span class='line'>Checking commit 7c9ba8a38ffe5ce6912c69e7171befc64da12d4c
+</span><span class='line'>Checking tree a1607d81984206648265fbd23a4af5e13b289f83
+</span><span class='line'>Checking tree cb6c9498d7f33305f32522f862bce592ca4becd5
+</span><span class='line'>Checking commit d57aaf773b1a8c8e79b6e515d3f92fc5cb332860
+</span><span class='line'>error: sha1 mismatch d961f81a588fcfd5e57bbea7e17ddae8a5e61333
+</span><span class='line'>error: d961f81a588fcfd5e57bbea7e17ddae8a5e61333: object corrupt or missing
+</span><span class='line'>Checking blob e5e5f63b462ec6012bc69dfa076fa7d92510f22f
+</span><span class='line'>Checking blob efda2f556de36b9e9e1d62417c5f282d8961e2f8
+</span><span class='line'>error: sha1 mismatch f8d0839dd728cb9a723e32058dcc386070d5e3b5
+</span><span class='line'>error: f8d0839dd728cb9a723e32058dcc386070d5e3b5: object corrupt or missing
+</span><span class='line'>Checking connectivity <span class="o">(</span><span class="m">32</span> objects<span class="o">)</span>
+</span><span class='line'>Checking a1607d81984206648265fbd23a4af5e13b289f83
+</span><span class='line'>Checking e5e5f63b462ec6012bc69dfa076fa7d92510f22f
+</span><span class='line'>Checking 4a2f335e042db12cc32a684827c5c8f7c97fe60b
+</span><span class='line'>Checking cb6c9498d7f33305f32522f862bce592ca4becd5
+</span><span class='line'>Checking 4c0555b27c05dbdf044598a0601e5c8e28319f67
+</span><span class='line'>Checking 2bd4c81f7261a60ecded9bae3027a46b9746fa4f
+</span><span class='line'>Checking 2e5d553f41522fc9036bacce1398c87c2483c2d5
+</span><span class='line'>Checking efda2f556de36b9e9e1d62417c5f282d8961e2f8
+</span><span class='line'>Checking 354ebf392533dce06174f9c8c093036c138935f3
+</span><span class='line'>missing blob 354ebf392533dce06174f9c8c093036c138935f3
+</span><span class='line'>Checking d57aaf773b1a8c8e79b6e515d3f92fc5cb332860
+</span><span class='line'>Checking f8d0839dd728cb9a723e32058dcc386070d5e3b5
+</span><span class='line'>missing blob f8d0839dd728cb9a723e32058dcc386070d5e3b5
+</span><span class='line'>Checking d961f81a588fcfd5e57bbea7e17ddae8a5e61333
+</span><span class='line'>missing blob d961f81a588fcfd5e57bbea7e17ddae8a5e61333
+</span><span class='line'>Checking 7c9ba8a38ffe5ce6912c69e7171befc64da12d4c
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can see a missing blobs and SHA1 mismatch . maybe its broken so we need to repair objects hashes .
+but lets search more .</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git ls-tree -r HEAD
+</span><span class='line'><span class="m">100644</span> blob e5e5f63b462ec6012bc69dfa076fa7d92510f22f   Makefile
+</span><span class='line'><span class="m">100644</span> blob f8d0839dd728cb9a723e32058dcc386070d5e3b5   sharp.cpp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can see sharp.cpp and Makefile , its good .go on lets check commits log :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git log --oneline --raw -c
+</span><span class='line'>
+</span><span class='line'>4a2f335 All <span class="k">done</span> now! Should calculate the flag..assuming everything went okay.
+</span><span class='line'>:000000 <span class="m">100644</span> 0000000... e5e5f63... A  Makefile
+</span><span class='line'>:100644 <span class="m">100644</span> d961f81... f8d0839... M  sharp.cpp
+</span><span class='line'>d57aaf7 There<span class="s1">&#39;s only two factors. Don&#39;</span>t <span class="nb">let </span>your calculator lie.
+</span><span class='line'>:100644 <span class="m">100644</span> 354ebf3... d961f81... M  sharp.cpp
+</span><span class='line'>2e5d553 It<span class="err">&#39;</span>s getting better!
+</span><span class='line'>:100644 <span class="m">100644</span> efda2f5... 354ebf3... M  sharp.cpp
+</span><span class='line'>7c9ba8a Initial commit! This one should be fun.
+</span><span class='line'>:000000 <span class="m">100644</span> 0000000... efda2f5... A  sharp.cpp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>it seems we are in a good way , it seems sharp.cpp calculate flag .
+lets try read sharp.cpp , logs should be a good place :)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git log -p -m
+</span><span class='line'>
+</span><span class='line'>All <span class="k">done</span> now! Should calculate the flag..assuming everything went okay.
+</span><span class='line'>
+</span><span class='line'>diff --git a/Makefile b/Makefile
+</span><span class='line'>new file mode 100644
+</span><span class='line'>index 0000000..e5e5f63
+</span><span class='line'>--- /dev/null
+</span><span class='line'>+++ b/Makefile
+</span><span class='line'>@@ -0,0 +1,6 @@
+</span><span class='line'>+
+</span><span class='line'>+CXXFLAGS:<span class="o">=</span>-O2 -g -Wall -Wextra -Wshadow -std<span class="o">=</span>c++11
+</span><span class='line'>+LDFLAGS:<span class="o">=</span>-lcrypto
+</span><span class='line'>+
+</span><span class='line'>+ALL:
+</span><span class='line'>+       <span class="k">$(</span>CXX<span class="k">)</span> <span class="k">$(</span>CXXFLAGS<span class="k">)</span> <span class="k">$(</span>LDFLAGS<span class="k">)</span> -o sharp sharp.cpp
+</span><span class='line'>diff --git a/sharp.cpp b/sharp.cpp
+</span><span class='line'>index d961f81..f8d0839 100644
+</span><span class='line'>--- a/sharp.cpp
+</span><span class='line'>+++ b/sharp.cpp
+</span><span class='line'>@@ -2,8 +2,57 @@
+</span><span class='line'> <span class="c">#include &lt;string&gt;</span>
+</span><span class='line'> <span class="c">#include &lt;algorithm&gt;</span>
+</span><span class='line'>
+</span><span class='line'>+#include &lt;stdint.h&gt;
+</span><span class='line'>+#include &lt;stdio.h&gt;
+</span><span class='line'>+#include &lt;openssl/sha.h&gt;
+</span><span class='line'>+
+</span><span class='line'> using namespace std<span class="p">;</span>
+</span><span class='line'>+std::string calculate_flag<span class="o">(</span>
+</span><span class='line'>+               std::string <span class="p">&amp;</span>part1,
+</span><span class='line'>+               int64_t part2,
+</span><span class='line'>+               std::string <span class="p">&amp;</span>part4,
+</span><span class='line'>+               uint64_t factor1,
+</span><span class='line'>+               uint64_t factor2<span class="o">)</span>
+</span><span class='line'> ........ Bunch of Code .
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>`
+We find it .
+Full  source Code here : <a href="http://paste2.org/9Mnm1MX6">http://paste2.org/9Mnm1MX6</a></p>
+
+<p>after compiling , and running :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>parsa@xored:~/Desktop<span class="nv">$ </span>./for400
+</span><span class='line'>Part1: Enter flag:
+</span><span class='line'>flag
+</span><span class='line'>Part2: Input 31337:
+</span><span class='line'>31337
+</span><span class='line'>Part3: Watch this: https://www.youtube.com/watch?v<span class="o">=</span>PBwAxmrE194
+</span><span class='line'>watched
+</span><span class='line'>Part4: C.R.E.A.M. Get da _____:
+</span><span class='line'>money
+</span><span class='line'>Part5: Input the two prime factors of the number 272031727027.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>we need 5 part to get flag , it seems we have 4 parts , they are flag,31337,watched,money but we need 5th part .
+lets factor 272031727027 to primes .</p>
+
+<p>Python Code :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">factors</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>    <span class="n">factors</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">while</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="n">i</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">n</span> <span class="o">//=</span> <span class="n">i</span>
+</span><span class='line'>            <span class="n">factors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">factors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">factors</span>
+</span><span class='line'><span class="n">num</span> <span class="o">=</span> <span class="mi">272031727027</span>
+</span><span class='line'><span class="k">print</span> <span class="n">factors</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Result :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>parsa@xored:~/Desktop<span class="nv">$ </span>python aaa.py
+</span><span class='line'><span class="o">[</span>31357, 8675311<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>lets run Binary again :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>parsa@xored:~/Desktop<span class="nv">$ </span>./for400
+</span><span class='line'>Part1: Enter flag:
+</span><span class='line'>flag
+</span><span class='line'>Part2: Input 31337:
+</span><span class='line'>31337
+</span><span class='line'>Part3: Watch this: https://www.youtube.com/watch?v<span class="o">=</span>PBwAxmrE194
+</span><span class='line'>watched
+</span><span class='line'>Part4: C.R.E.A.M. Get da _____:
+</span><span class='line'>money
+</span><span class='line'>Part5: Input the two prime factors of the number 272031727027.
+</span><span class='line'>31357
+</span><span class='line'>8675311
+</span><span class='line'>flag<span class="o">{</span>3b532e0a187006879d262141e16fa5f05f2e6752<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and done The flag is :
+3b532e0a187006879d262141e16fa5f05f2e6752</p>
+
+<p>Good Luck .</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">GeeksSpeak</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-09-21T17:42:51+04:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>5:42 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/csaw/'>csaw,</a>, <a class='category' href='/blog/categories/ctf/'>ctf,</a>, <a class='category' href='/blog/categories/forensics/'>forensics,</a>, <a class='category' href='/blog/categories/git/'>git</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/" data-via="" data-counturl="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/" title="Previous Post: DefConCTF 2015 Quals - Access Control Writeup">&laquo; DefConCTF 2015 Quals - Access Control Writeup</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/09/21/csaw-2015-pwn250-contacts/" title="Next Post: CSAW 2015 - PWN250 - contacts">CSAW 2015 - PWN250 - contacts &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/csaw-2015-pwn250-contacts/">CSAW 2015 - PWN250 - Contacts</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/csaw-2015-for400-sharpturn/">CSAW 2015 - FOR400 - Sharpturn</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/">DefConCTF 2015 Quals - Access Control Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/">DefConCTF 2015 Quals - Babyecho Writeup</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/">DefConCTF 2015 Quals - ROPBaby Writeup</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/GeeksSpeak">@GeeksSpeak</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'GeeksSpeak',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - GeeksSpeak -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'geeksspeak';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/';
+        var disqus_url = 'http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

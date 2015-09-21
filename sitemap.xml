@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts/</loc>
+    <lastmod>2015-09-21T17:43:52+04:30</lastmod>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/</loc>
+    <lastmod>2015-09-21T17:42:51+04:30</lastmod>
+  </url>
+  <url>
     <loc>http://geeksspeak.github.io/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/</loc>
     <lastmod>2015-05-19T00:52:48+04:30</lastmod>
   </url>
@@ -190,6 +198,15 @@
     <loc>http://geeksspeak.github.io/blog/categories/auth/</loc>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/posts/2/</loc>
+    <loc>http://geeksspeak.github.io/blog/categories/csaw/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/forensics/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/git/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/pwn/</loc>
   </url>
 </urlset>
