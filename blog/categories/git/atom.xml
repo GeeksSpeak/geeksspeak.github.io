@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Git | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-09-21T17:56:58+04:30</updated>
+  <updated>2015-09-21T18:11:52+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -33,9 +33,12 @@ We had a good hint :
 <code>bash
 git fsck -v
 </code>
-and the response :
-<code>bash
-Checking HEAD link
+and the response :</p>
+
+<!--more-->
+
+
+<pre><code class="bash">Checking HEAD link
 Checking object directory
 Checking directory objects/2b
 Checking directory objects/2e
@@ -83,7 +86,7 @@ missing blob f8d0839dd728cb9a723e32058dcc386070d5e3b5
 Checking d961f81a588fcfd5e57bbea7e17ddae8a5e61333
 missing blob d961f81a588fcfd5e57bbea7e17ddae8a5e61333
 Checking 7c9ba8a38ffe5ce6912c69e7171befc64da12d4c
-</code></p>
+</code></pre>
 
 <p>We can see a missing blobs and SHA1 mismatch . maybe its broken so we need to repair objects hashes .
 but lets search more .

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Fmt | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/fmt/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-09-21T17:56:58+04:30</updated>
+  <updated>2015-09-21T18:11:52+04:30</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -44,6 +44,9 @@ contacts: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically 
 <p><code>desc</code> is the contacs description and allocates a buffer with buffer size <code>des_length</code>. <code>num</code> is the contact number with size <code>0xb</code>.</p>
 
 <p>So, we are going to find vulnerabilities.</p>
+
+<!--more-->
+
 
 <p>I named <code>0x08048980</code> => <code>editCon</code>, this function edites the contact which you give its name, let&rsquo;s check the decompilation:</p>
 
