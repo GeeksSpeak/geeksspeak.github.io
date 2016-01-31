@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Defcon | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/defcon/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-09-21T18:11:52+04:30</updated>
+  <updated>2016-01-31T16:08:00-05:00</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[DefConCTF 2015 Quals - Access Control Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/"/>
-    <updated>2015-05-19T00:52:48+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/05/19/defconctf-2015-quals-access-control-writeup</id>
+    <link href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-access-control-writeup/"/>
+    <updated>2015-05-18T16:22:48-04:00</updated>
+    <id>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-access-control-writeup</id>
     <content type="html"><![CDATA[<p><strong>DefConCTF 2015 Access-Control Writeup</strong><br/>
 <strong>Point = 1</strong><br/>
 <strong>Category = Reverse</strong></p>
@@ -125,7 +125,7 @@ hello duchess, what would you like to do?
   <entry>
     <title type="html"><![CDATA[DefConCTF 2015 Quals - Babyecho Writeup]]></title>
     <link href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/"/>
-    <updated>2015-05-18T21:45:44+04:30</updated>
+    <updated>2015-05-18T13:15:44-04:00</updated>
     <id>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup</id>
     <content type="html"><![CDATA[<p><strong>DefConCTF 2015 babycho Writeup</strong><br/>
 <strong>Point = 1</strong><br/>

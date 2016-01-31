@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Fmt | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/fmt/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-09-21T18:11:52+04:30</updated>
+  <updated>2016-01-31T16:08:00-05:00</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[CSAW 2015 - PWN250 - Contacts]]></title>
     <link href="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts/"/>
-    <updated>2015-09-21T17:43:52+04:30</updated>
+    <updated>2015-09-21T09:13:52-04:00</updated>
     <id>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts</id>
     <content type="html"><![CDATA[<p><strong>CSAW 2015 contacts Writeup</strong><br/>
 <strong>Point = 250</strong><br/>
@@ -318,7 +318,7 @@ flag{f0rm47_s7r1ng5_4r3_fun_57uff}
   <entry>
     <title type="html"><![CDATA[DefConCTF 2015 Quals - Babyecho Writeup]]></title>
     <link href="http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/"/>
-    <updated>2015-05-18T21:45:44+04:30</updated>
+    <updated>2015-05-18T13:15:44-04:00</updated>
     <id>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup</id>
     <content type="html"><![CDATA[<p><strong>DefConCTF 2015 babycho Writeup</strong><br/>
 <strong>Point = 1</strong><br/>
@@ -511,7 +511,7 @@ The flag is: 1s 1s th3r3 th3r3 @n @n 3ch0 3ch0 1n 1n h3r3 h3r3? 3uoiw!T0*%
   <entry>
     <title type="html"><![CDATA[PlaidCTF CTF 2015 - EBP Writeup]]></title>
     <link href="http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/"/>
-    <updated>2015-04-20T22:40:13+04:30</updated>
+    <updated>2015-04-20T14:10:13-04:00</updated>
     <id>http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup</id>
     <content type="html"><![CDATA[<p><strong>PlaidCTF 2015 EBP Writeup</strong><br/>
 <strong>Point = 160</strong><br/>
@@ -645,9 +645,9 @@ who_needs_stack_control_anyway?
   
   <entry>
     <title type="html"><![CDATA[Backdoor CTF 2015 - TEAM Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup/"/>
-    <updated>2015-04-03T03:16:39+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup</id>
+    <link href="http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-team-writeup/"/>
+    <updated>2015-04-02T18:46:39-04:00</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-team-writeup</id>
     <content type="html"><![CDATA[<p><strong>Backdoor 2015 TEAM Writeup</strong><br/>
 <strong>Point = 600</strong><br/>
 <strong>Category = Exploit</strong></p>

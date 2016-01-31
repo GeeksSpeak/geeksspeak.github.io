@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Web | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/web/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-09-21T18:11:52+04:30</updated>
+  <updated>2016-01-31T16:08:00-05:00</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[NDH CTF 2015 - Facesec Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/"/>
-    <updated>2015-04-06T01:56:25+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-facesec-writeup</id>
+    <link href="http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-facesec-writeup/"/>
+    <updated>2015-04-05T17:26:25-04:00</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-facesec-writeup</id>
     <content type="html"><![CDATA[<p><strong>NDH 2015 Facesec Writeup</strong><br/>
 <strong>Point = 100</strong><br/>
 <strong>Category = Web</strong><br/>
@@ -66,9 +66,9 @@ so we try to Symlink /etc/passwd to CV.txt</p>
   
   <entry>
     <title type="html"><![CDATA[NDH CTF 2015 - Updator Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-updator-writeup/"/>
-    <updated>2015-04-05T03:28:56+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-updator-writeup</id>
+    <link href="http://geeksspeak.github.io/blog/2015/04/04/ndh-ctf-2015-updator-writeup/"/>
+    <updated>2015-04-04T18:58:56-04:00</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/04/ndh-ctf-2015-updator-writeup</id>
     <content type="html"><![CDATA[<p><strong>NDH 2015 Updator Writeup</strong><br/>
 <strong>Point = 200</strong><br/>
 <strong>Category = Exploit</strong></p>
@@ -249,9 +249,9 @@ logs/2015-04-04_admin
   
   <entry>
     <title type="html"><![CDATA[Backdoor CTF 2015 - Medusa Writeup]]></title>
-    <link href="http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-medusa-writeup/"/>
-    <updated>2015-04-03T01:06:09+04:30</updated>
-    <id>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-medusa-writeup</id>
+    <link href="http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-medusa-writeup/"/>
+    <updated>2015-04-02T16:36:09-04:00</updated>
+    <id>http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-medusa-writeup</id>
     <content type="html"><![CDATA[<p><strong>Backdoor2015 Medusa Writeup</strong><br/>
 <strong>Point = 100</strong><br/>
 <strong>Category = Web</strong><br/>

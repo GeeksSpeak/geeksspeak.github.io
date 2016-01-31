@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Csaw, | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/csaw/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2015-09-21T18:11:52+04:30</updated>
+  <updated>2016-01-31T16:08:00-05:00</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[CSAW 2015 - PWN250 - Contacts]]></title>
     <link href="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts/"/>
-    <updated>2015-09-21T17:43:52+04:30</updated>
+    <updated>2015-09-21T09:13:52-04:00</updated>
     <id>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts</id>
     <content type="html"><![CDATA[<p><strong>CSAW 2015 contacts Writeup</strong><br/>
 <strong>Point = 250</strong><br/>
@@ -318,7 +318,7 @@ flag{f0rm47_s7r1ng5_4r3_fun_57uff}
   <entry>
     <title type="html"><![CDATA[CSAW 2015 - FOR400 - Sharpturn]]></title>
     <link href="http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/"/>
-    <updated>2015-09-21T17:42:51+04:30</updated>
+    <updated>2015-09-21T09:12:51-04:00</updated>
     <id>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn</id>
     <content type="html"><![CDATA[<h1>CSAW 2015 - FOR400 - Sharpturn</h1>
 

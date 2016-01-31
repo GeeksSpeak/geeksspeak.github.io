@@ -1,84 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://geeksspeak.github.io/blog/2016/01/31/nullcon-ctf-hackim-expl-100-arm/</loc>
+    <lastmod>2016-01-31T15:44:47-05:00</lastmod>
+  </url>
+  <url>
     <loc>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-pwn250-contacts/</loc>
-    <lastmod>2015-09-21T17:43:52+04:30</lastmod>
+    <lastmod>2015-09-21T09:13:52-04:00</lastmod>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/2015/09/21/csaw-2015-for400-sharpturn/</loc>
-    <lastmod>2015-09-21T17:42:51+04:30</lastmod>
+    <lastmod>2015-09-21T09:12:51-04:00</lastmod>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/blog/2015/05/19/defconctf-2015-quals-access-control-writeup/</loc>
-    <lastmod>2015-05-19T00:52:48+04:30</lastmod>
+    <loc>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-access-control-writeup/</loc>
+    <lastmod>2015-05-18T16:22:48-04:00</lastmod>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babyecho-writeup/</loc>
-    <lastmod>2015-05-18T21:45:44+04:30</lastmod>
+    <lastmod>2015-05-18T13:15:44-04:00</lastmod>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-ropbaby-writeup/</loc>
-    <lastmod>2015-05-18T21:16:42+04:30</lastmod>
+    <lastmod>2015-05-18T12:46:42-04:00</lastmod>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-catwestern-writeup/</loc>
-    <lastmod>2015-05-18T14:19:44+04:30</lastmod>
+    <lastmod>2015-05-18T05:49:44-04:00</lastmod>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-mathwize-writeup/</loc>
-    <lastmod>2015-05-18T14:00:56+04:30</lastmod>
+    <lastmod>2015-05-18T05:30:56-04:00</lastmod>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/2015/05/18/defconctf-2015-quals-babycmd-writeup/</loc>
-    <lastmod>2015-05-18T13:39:52+04:30</lastmod>
+    <lastmod>2015-05-18T05:09:52-04:00</lastmod>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/2015/04/20/plaidctf-ctf-2015-ebp-writeup/</loc>
-    <lastmod>2015-04-20T22:40:13+04:30</lastmod>
+    <lastmod>2015-04-20T14:10:13-04:00</lastmod>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-weshgrow-writeup/</loc>
-    <lastmod>2015-04-06T16:58:41+04:30</lastmod>
+    <lastmod>2015-04-06T08:28:41-04:00</lastmod>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-facesec-writeup/</loc>
-    <lastmod>2015-04-06T01:56:25+04:30</lastmod>
+    <loc>http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-facesec-writeup/</loc>
+    <lastmod>2015-04-05T17:26:25-04:00</lastmod>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/blog/2015/04/06/ndh-ctf-2015-cooper-writeup/</loc>
-    <lastmod>2015-04-06T01:52:15+04:30</lastmod>
+    <loc>http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-cooper-writeup/</loc>
+    <lastmod>2015-04-05T17:22:15-04:00</lastmod>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-private-writeup/</loc>
-    <lastmod>2015-04-05T15:43:15+04:30</lastmod>
+    <lastmod>2015-04-05T07:13:15-04:00</lastmod>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/blog/2015/04/05/ndh-ctf-2015-updator-writeup/</loc>
-    <lastmod>2015-04-05T03:28:56+04:30</lastmod>
+    <loc>http://geeksspeak.github.io/blog/2015/04/04/ndh-ctf-2015-updator-writeup/</loc>
+    <lastmod>2015-04-04T18:58:56-04:00</lastmod>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-team-writeup/</loc>
-    <lastmod>2015-04-03T03:16:39+04:30</lastmod>
+    <loc>http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-team-writeup/</loc>
+    <lastmod>2015-04-02T18:46:39-04:00</lastmod>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-forgot-writeup/</loc>
-    <lastmod>2015-04-03T02:57:55+04:30</lastmod>
+    <loc>http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-forgot-writeup/</loc>
+    <lastmod>2015-04-02T18:27:55-04:00</lastmod>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-concealed-writeup/</loc>
-    <lastmod>2015-04-03T02:33:31+04:30</lastmod>
+    <loc>http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-concealed-writeup/</loc>
+    <lastmod>2015-04-02T18:03:31-04:00</lastmod>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-echo-writeup/</loc>
-    <lastmod>2015-04-03T02:12:58+04:30</lastmod>
+    <loc>http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-echo-writeup/</loc>
+    <lastmod>2015-04-02T17:42:58-04:00</lastmod>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-medusa-writeup/</loc>
-    <lastmod>2015-04-03T01:06:09+04:30</lastmod>
+    <loc>http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-medusa-writeup/</loc>
+    <lastmod>2015-04-02T16:36:09-04:00</lastmod>
   </url>
   <url>
-    <loc>http://geeksspeak.github.io/blog/2015/04/03/backdoor-ctf-2015-noname-writeup/</loc>
-    <lastmod>2015-04-03T00:42:36+04:30</lastmod>
+    <loc>http://geeksspeak.github.io/blog/2015/04/02/backdoor-ctf-2015-noname-writeup/</loc>
+    <lastmod>2015-04-02T16:12:36-04:00</lastmod>
   </url>
   <url>
     <loc>http://geeksspeak.github.io/</loc>
@@ -208,5 +212,14 @@
   </url>
   <url>
     <loc>http://geeksspeak.github.io/blog/categories/pwn/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/arm/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/dupsh/</loc>
+  </url>
+  <url>
+    <loc>http://geeksspeak.github.io/blog/categories/shellcode/</loc>
   </url>
 </urlset>
