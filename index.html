@@ -9,7 +9,7 @@
   <meta name="author" content="GeeksSpeak">
 
   
-  <meta name="description" content="Hi, I participate in NullCon CTF with my team in this week. one of the challenge i solved was an arm binary pwn one. 1
+  <meta name="description" content="Hi, I participated in NullCon CTF with my team in this week. one of the challenge i solved was an arm binary pwnable. 1
 2
 hamidx9@expl:~/ctf/nullcon/ &hellip;">
   
@@ -107,7 +107,7 @@ hamidx9@expl:~/ctf/nullcon/ &hellip;">
 
   <div class="entry-content"><p>Hi,</p>
 
-<p>I participate in NullCon CTF with my team in this week. one of the challenge i solved was an arm binary pwn one.</p>
+<p>I participated in NullCon CTF with my team in this week. one of the challenge i solved was an arm binary pwnable.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -116,7 +116,7 @@ hamidx9@expl:~/ctf/nullcon/ &hellip;">
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><code>pinkfloyd</code> is a arm binary which provide saving playlist functionality. we can see two methods <em>create, print</em>. Analyzing <code>cmd_do_create</code> gives us the clue that it read from input 3 param, <em>name, tag, # of songs</em>. A little more reading the diseases shows if we use more that 84 chars in tag we overflow the stack. So we can abuse this method.</p>
+<p><code>pinkfloyd</code> is an arm binary which provide saving playlist functionality. we can see two methods <em>create, print</em>. Analyzing <code>cmd_do_create</code> gives us the clue that it read from input 3 param, <em>name, tag, # of songs</em>. A little more reading the diseases shows if we use more that 84 chars in tag we overflow the stack. So we can abuse this method.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

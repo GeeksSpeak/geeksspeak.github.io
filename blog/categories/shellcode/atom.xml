@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Shellcode | GeeksSpeak Team Blog]]></title>
   <link href="http://geeksspeak.github.io/blog/categories/shellcode/atom.xml" rel="self"/>
   <link href="http://geeksspeak.github.io/"/>
-  <updated>2016-01-31T16:08:00-05:00</updated>
+  <updated>2016-01-31T16:11:24-05:00</updated>
   <id>http://geeksspeak.github.io/</id>
   <author>
     <name><![CDATA[GeeksSpeak]]></name>
@@ -20,13 +20,13 @@
     <id>http://geeksspeak.github.io/blog/2016/01/31/nullcon-ctf-hackim-expl-100-arm</id>
     <content type="html"><![CDATA[<p>Hi,</p>
 
-<p>I participate in NullCon CTF with my team in this week. one of the challenge i solved was an arm binary pwn one.</p>
+<p>I participated in NullCon CTF with my team in this week. one of the challenge i solved was an arm binary pwnable.</p>
 
 <pre><code class="bash">hamidx9@expl:~/ctf/nullcon/expl100$ file pinkfloyd
 pinkfloyd: ELF 32-bit LSB  executable, ARM, EABI5 version 1 (SYSV), statically linked, for GNU/Linux 2.6.32, BuildID[sha1]=62c86841d0c0384ce39d70fef5afe0eee5cad7b4, not stripped
 </code></pre>
 
-<p><code>pinkfloyd</code> is a arm binary which provide saving playlist functionality. we can see two methods <em>create, print</em>. Analyzing <code>cmd_do_create</code> gives us the clue that it read from input 3 param, <em>name, tag, # of songs</em>. A little more reading the diseases shows if we use more that 84 chars in tag we overflow the stack. So we can abuse this method.</p>
+<p><code>pinkfloyd</code> is an arm binary which provide saving playlist functionality. we can see two methods <em>create, print</em>. Analyzing <code>cmd_do_create</code> gives us the clue that it read from input 3 param, <em>name, tag, # of songs</em>. A little more reading the diseases shows if we use more that 84 chars in tag we overflow the stack. So we can abuse this method.</p>
 
 <pre><code>gdb-peda$ checksec 
 CANARY    : disabled
